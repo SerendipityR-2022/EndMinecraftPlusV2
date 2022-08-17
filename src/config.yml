@@ -21,6 +21,7 @@ AttackSettings:
   TabAttack: true
   AntiAttackMode: true
   DoubleExploitPlayer: "ImOldSix_666"
+  ShowFails: false
 
 BotSettings:
   # 可用占位符:
@@ -38,13 +39,14 @@ BotSettings:
   RegisterCommands:
     - "/register $pwd $pwd"
     - "/login $pwd"
+  ChatSpam: true
   CustomChat:
     - "喵喵喵萌喵~ $rnd"
     - "喵喵喵萌~ $rnd"
     - "喵喵喵~ $rnd"
     - "喵喵~ $rnd"
     - "喵~ $rnd"
-  ChatDelay: 3
+  ChatDelay: 3000
 
 Proxy:
   # 代理获取方式:
@@ -52,6 +54,10 @@ Proxy:
   # 2 - File - 从本地读取
   # 3 - File + API - 两种方式同时获取
   GetType: 1
+  # 代理类型:
+  # 1 - HTTP/HTTPS
+  # 2 - SOCKS4/SOCKS5
+  ProxyType: 1
   UpdateTime: 300
   File: "proxies.txt"
   APIs:

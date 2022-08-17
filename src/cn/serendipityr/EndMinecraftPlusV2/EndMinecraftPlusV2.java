@@ -8,7 +8,7 @@ import cn.serendipityr.EndMinecraftPlusV2.Tools.ProxyUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "1.0_Dev";
+    public static String ver = "1.0.2_Dev";
 
     public static void main(String[] args) {
         System.out.println("========================-Forked by SerendipityR-========================");

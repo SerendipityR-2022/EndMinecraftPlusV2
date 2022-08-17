@@ -22,6 +22,7 @@ public class ConfigUtil {
     public static Boolean TabAttack;
     public static Boolean AntiAttackMode;
     public static String DoubleExploitPlayer;
+    public static Boolean ShowFails;
     public static String BotName;
     public static Integer BotCount;
     public static Boolean RegisterAndLogin;
@@ -31,8 +32,10 @@ public class ConfigUtil {
     public static Long RejoinDelay;
     public static List<String> ClickVerifiesDetect;
     public static List<String> CustomChat;
-    public static Integer ChatDelay;
+    public static Boolean ChatSpam;
+    public static Long ChatDelay;
     public static Integer ProxyGetType;
+    public static Integer ProxyType;
     public static Integer ProxyUpdateTime;
     public static File ProxyFile;
     public static List<String> ProxyAPIs;
@@ -57,6 +60,7 @@ public class ConfigUtil {
             TabAttack = config.getBoolean("AttackSettings.TabAttack");
             AntiAttackMode = config.getBoolean("AttackSettings.AntiAttackMode");
             DoubleExploitPlayer = config.getString("AttackSettings.DoubleExploitPlayer");
+            ShowFails = config.getBoolean("AttackSettings.ShowFails");
             BotName = config.getString("BotSettings.BotName");
             BotCount = config.getInt("BotSettings.BotCount");
             RegisterAndLogin = config.getBoolean("BotSettings.Register&Login");
@@ -65,9 +69,11 @@ public class ConfigUtil {
             RejoinDetect = config.getStringList("BotSettings.RejoinDetect");
             RejoinDelay = config.getLong("BotSettings.RejoinDelay");
             ClickVerifiesDetect = config.getStringList("BotSettings.ClickVerifiesDetect");
+            ChatSpam = config.getBoolean("BotSettings.ChatSpam");
             CustomChat = config.getStringList("BotSettings.CustomChat");
-            ChatDelay = config.getInt("BotSettings.ChatDelay");
+            ChatDelay = config.getLong("BotSettings.ChatDelay");
             ProxyGetType = config.getInt("Proxy.GetType");
+            ProxyType = config.getInt("Proxy.ProxyType");
             ProxyUpdateTime = config.getInt("Proxy.UpdateTime");
             ProxyFile = new File(config.getString("Proxy.File"));
             ProxyAPIs = config.getStringList("Proxy.APIs");
