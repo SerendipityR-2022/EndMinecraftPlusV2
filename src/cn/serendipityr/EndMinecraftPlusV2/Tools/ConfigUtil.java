@@ -28,6 +28,7 @@ public class ConfigUtil {
     public static List<String> RegisterCommands;
     public static Integer RejoinCount;
     public static List<String> RejoinDetect;
+    public static Long RejoinDelay;
     public static List<String> ClickVerifiesDetect;
     public static List<String> CustomChat;
     public static Integer ChatDelay;
@@ -62,6 +63,7 @@ public class ConfigUtil {
             RegisterCommands = config.getStringList("BotSettings.RegisterCommands");
             RejoinCount = config.getInt("BotSettings.RejoinCount");
             RejoinDetect = config.getStringList("BotSettings.RejoinDetect");
+            RejoinDelay = config.getLong("BotSettings.RejoinDelay");
             ClickVerifiesDetect = config.getStringList("BotSettings.ClickVerifiesDetect");
             CustomChat = config.getStringList("BotSettings.CustomChat");
             ChatDelay = config.getInt("BotSettings.ChatDelay");

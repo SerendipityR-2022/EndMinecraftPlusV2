@@ -33,7 +33,7 @@ public class MotdAttackP extends IAttack {
                 if (this.attack_maxconnect > 0 && (threads.size() > this.attack_maxconnect))
                     return;
             } catch (Exception e) {
-                LogUtil.doLog(1,"发生错误: " + e.getMessage(), null);
+                LogUtil.doLog(1,"发生错误: " + e, null);
             }
         }
     }
@@ -72,7 +72,7 @@ public class MotdAttackP extends IAttack {
                         LogUtil.doLog(0, "连接已断开。", "MotdAttackP" + Thread.currentThread().getName());
                     }
                 } catch (Throwable e) {
-                    LogUtil.doLog(0, "发生错误: " + e.getMessage(), "MotdAttackP" + Thread.currentThread().getName());
+                    LogUtil.doLog(0, "发生错误: " + e, "MotdAttackP" + Thread.currentThread().getName());
                     errorTimes++;
                 }
 

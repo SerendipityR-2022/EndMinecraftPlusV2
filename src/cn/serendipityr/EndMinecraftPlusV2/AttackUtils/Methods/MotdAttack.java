@@ -47,7 +47,7 @@ public class MotdAttack extends IAttack {
                         OtherUtils.doSleep(attack_joinsleep);
                     }
                 } catch (Throwable e) {
-                    LogUtil.doLog(0, "发生错误: " + e.getMessage(), "MotdAttack" + Thread.currentThread().getName());
+                    LogUtil.doLog(0, "发生错误: " + e, "MotdAttack" + Thread.currentThread().getName());
                     errorTimes++;
                 }
             }

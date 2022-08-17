@@ -23,14 +23,14 @@ public class HTTPUtil {
                 result.append(line);
             }
         } catch (Exception e) {
-            LogUtil.doLog(1, "HTTP请求出错! 详细信息: " + e.getMessage(), null);
+            LogUtil.doLog(1, "HTTP请求出错! 详细信息: " + e, null);
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
             } catch (Exception e) {
-                LogUtil.doLog(1, "IO异常! 详细信息: " + e.getMessage(), null);
+                LogUtil.doLog(1, "IO异常! 详细信息: " + e, null);
             }
         }
         return result.toString();

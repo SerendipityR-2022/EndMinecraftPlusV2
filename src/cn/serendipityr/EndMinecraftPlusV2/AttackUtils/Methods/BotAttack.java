@@ -107,7 +107,7 @@ public class BotAttack extends IAttack {
                     }
                     LogUtil.doLog(0, "当前连接数: " + clients.size() + "个", "BotAttack");
                 } catch (Exception e) {
-                    LogUtil.doLog(1, "发生错误: " + e.getMessage(), null);
+                    LogUtil.doLog(1, "发生错误: " + e, null);
                 }
             }
         });
@@ -175,7 +175,7 @@ public class BotAttack extends IAttack {
                 if (this.attack_joinsleep > 0)
                     OtherUtils.doSleep(attack_joinsleep);
             } catch (Exception e) {
-                LogUtil.doLog(1, "发生错误: " + e.getMessage(), null);
+                LogUtil.doLog(1, "发生错误: " + e, null);
             }
         }
     }
@@ -210,6 +210,22 @@ public class BotAttack extends IAttack {
                             for (int i = 0; i < ConfigUtil.RejoinCount; i++) {
                                 createClient(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, username, proxy);
                                 rejoin++;
+
+                                LogUtil.doLog(0,"[假人尝试重连] [" + username + "] [" + proxy + "]", "BotAttack");
+
+                                OtherUtils.doSleep(ConfigUtil.RejoinDelay);
+
+                                boolean canBreak = false;
+
+                                for (Client client:clientName.keySet()) {
+                                    if (clientName.get(client).contains(username)) {
+                                        canBreak = true;
+                                    }
+                                }
+
+                                if (canBreak) {
+                                    break;
+                                }
                             }
                         }
                     }
@@ -272,7 +288,9 @@ public class BotAttack extends IAttack {
             session.setFlag("join", true);
             LogUtil.doLog(0, "[假人加入服务器] [" + username + "]", "BotAttack");
             joined++;
-            alivePlayers.add(username);
+            if (!alivePlayers.contains(username)) {
+                alivePlayers.add(username);
+            }
             MultiVersionPacket.sendClientSettingPacket(session, "zh_CN");
             MultiVersionPacket.sendClientPlayerChangeHeldItemPacket(session, 1);
         } else if (recvPacket instanceof ServerPlayerPositionRotationPacket) {
@@ -303,8 +321,13 @@ public class BotAttack extends IAttack {
             session.send(new ClientChatPacket(message.getStyle().getClickEvent().getValue()));
             clickVerifies++;
         } else {
-            LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + message, "BotAttack");
-            alivePlayers.add(username);
+            if (!message.getText().equals("")) {
+                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + message, "BotAttack");
+            }
+
+            if (!alivePlayers.contains(username)) {
+                alivePlayers.add(username);
+            }
         }
 
         if (message.getExtra() != null && !message.getExtra().isEmpty()) {

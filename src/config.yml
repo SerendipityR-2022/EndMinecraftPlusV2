@@ -29,6 +29,7 @@ BotSettings:
   BotName: "ImOldSix_$rnd"
   BotCount: 1000
   RejoinCount: 5
+  RejoinDelay: 2000
   RejoinDetect:
     - "AntiAttack"
   ClickVerifiesDetect:
