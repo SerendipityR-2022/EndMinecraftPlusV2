@@ -18,8 +18,10 @@ public class DataUtil {
         botRegPasswords = data.getStringList("Data");
 
         for (String PwdData:botRegPasswords) {
-            String[] aPwdData = PwdData.split("@");
-            botRegPasswordsMap.put(aPwdData[0], aPwdData[1]);
+            try {
+                String[] aPwdData = PwdData.split("@");
+                botRegPasswordsMap.put(aPwdData[0], aPwdData[1]);
+            } catch (Exception ignored) {}
         }
     }
 

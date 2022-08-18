@@ -5,7 +5,11 @@ import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
 
 import javax.naming.directory.Attribute;
 import javax.naming.directory.InitialDirContext;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Scanner;
@@ -99,6 +103,108 @@ public class ConfigUtil {
         } catch (Exception e) {
             LogUtil.emptyLog();
             LogUtil.doLog(1, "载入配置文件失败! 详细信息: " + e, null);
+            LogUtil.doLog(-1, "配置可能存在编码问题，是否尝试转换编码以解决问题？ [y/n]:", "CFGUtil");
+            Scanner scanner = new Scanner(System.in);
+            if (scanner.nextLine().contains("y")) {
+                String currentCharset = getFileCharset(configFile);
+
+                File tempConfigFile = new File("config_temp.yml");
+
+                switch (currentCharset) {
+                    case "GBK":
+                        convertFileCharset(configFile, tempConfigFile, currentCharset, "UTF-8");
+                        break;
+                    case "UTF-8":
+                    default:
+                        convertFileCharset(configFile, tempConfigFile, currentCharset, "GBK");
+                        break;
+                }
+
+                if (configFile.delete()) {
+                    tempConfigFile.renameTo(configFile);
+                }
+
+                LogUtil.doLog(0, "任务完成。转换前编码: " + currentCharset + " | 转换后编码: " + getFileCharset(configFile) , "CFGUtil");
+            }
+
+            loadConfig();
+        }
+    }
+
+    public static String getFileCharset(File file) {
+        String charset = "GBK";
+
+        byte[] first3Bytes = new byte[3];
+
+        try {
+            boolean checked = false;
+            BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(file.toPath()));
+            bis.mark(100);
+
+            int read = bis.read(first3Bytes, 0, 3);
+
+            if (read == -1) {
+                bis.close();
+                return charset; // 文件编码为 ANSI
+            } else if (first3Bytes[0] == (byte) 0xFF && first3Bytes[1] == (byte) 0xFE) {
+                charset = "UTF-16LE"; // 文件编码为 Unicode
+                checked = true;
+            } else if (first3Bytes[0] == (byte) 0xFE && first3Bytes[1] == (byte) 0xFF) {
+                charset = "UTF-16BE"; // 文件编码为 Unicode big endian
+                checked = true;
+            } else if (first3Bytes[0] == (byte) 0xEF && first3Bytes[1] == (byte) 0xBB
+                    && first3Bytes[2] == (byte) 0xBF) {
+                charset = "UTF-8"; // 文件编码为 UTF-8
+                checked = true;
+            }
+
+            bis.reset();
+
+            if (!checked) {
+                while ((read = bis.read()) != -1) {
+                    if (read >= 0xF0)
+                        break;
+                    if (0x80 <= read && read <= 0xBF)
+                        break;
+                    if (0xC0 <= read && read <= 0xDF) {
+                        read = bis.read();
+                        if (!(0x80 <= read && read <= 0xBF)) {
+                            break;
+                        }
+                    } else if (0xE0 <= read) {
+                        read = bis.read();
+                        if (0x80 <= read && read <= 0xBF) {
+                            read = bis.read();
+                            if (0x80 <= read && read <= 0xBF) {
+                                charset = "UTF-8";
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            bis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return charset;
+    }
+
+    public static void convertFileCharset(File inputFile, File outputFile,String currentCharset ,String targetCharset) {
+        try {
+            InputStreamReader isr = new InputStreamReader(Files.newInputStream(inputFile.toPath()) ,currentCharset);
+            java.io.OutputStreamWriter osw = new OutputStreamWriter(Files.newOutputStream(outputFile.toPath()) ,targetCharset);
+
+            int len;
+            while((len = isr.read())!=-1){
+                osw.write(len);
+            }
+
+            osw.close();
+            isr.close();
+        } catch (Exception e) {
+            LogUtil.doLog(1, "转换文件编码时发生错误! 详细信息: " + e, null);
             EndMinecraftPlusV2.Exit();
         }
     }

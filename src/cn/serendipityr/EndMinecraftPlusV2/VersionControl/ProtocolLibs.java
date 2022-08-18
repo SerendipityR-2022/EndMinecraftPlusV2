@@ -106,7 +106,7 @@ public class ProtocolLibs {
             LogUtil.emptyLog();
             LogUtil.doLog(1, "加载Minecraft协议库时发生错误! 详细信息:" + e, null);
             LogUtil.doLog(0, "=========================错误排除=========================", "ProtocolLib");
-            LogUtil.doLog(0, " 1.检查/libs文件夹内依赖库是否完整", "ProtocolLib");
+            LogUtil.doLog(0, " 1.检查[/libs]文件夹内依赖库是否完整", "ProtocolLib");
             LogUtil.doLog(0, " 2.检查对应依赖库是否存在", "ProtocolLib");
             LogUtil.doLog(0, "   (如[1.8]需要[MC-1.8.jar])", "ProtocolLib");
             LogUtil.doLog(0, " 3.请输入正确的协议库序号(如10)", "ProtocolLib");

@@ -1,5 +1,6 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtocol;
 
+import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
@@ -55,11 +56,13 @@ public class MCForgeMOTD {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
+            LogUtil.doLog(1, "获取服务器上的Forge Mods时发生错误。详细信息: " + e.getMessage(), null);
+
             try {
                 if (socket.isConnected())
                     socket.close();
-            } catch (IOException e1) {}
+            } catch (IOException ignored) {}
         }
         return modList;
     }
