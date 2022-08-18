@@ -1,14 +1,19 @@
 package cn.serendipityr.EndMinecraftPlusV2.Tools;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import org.spacehq.packetlib.Session;
+
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 
 public class ProxyUtil {
     public static List<String> proxies = new ArrayList<>();
+    public static HashMap<Object,Proxy> clientsProxy = new HashMap<>();
+    public static List<Proxy> workingProxiesList = new ArrayList<>();
 
     public static void getProxies() {
         String getMethod;
@@ -124,5 +129,22 @@ public class ProxyUtil {
                 LogUtil.doLog(0, "代理更新完毕! (通过API获取 | 数量: " + proxies.size() + "个)", "ProxyUtil");
             }
         }).start();
+    }
+
+    public static void saveWorkingProxy(Proxy proxy) {
+        File workingProxies = new File("working-proxies.txt");
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) proxy.address();
+
+        if (!workingProxiesList.contains(proxy)) {
+            try {
+                FileWriter fileWriter = new FileWriter(workingProxies, true);
+                String proxyAddress = (inetSocketAddress.getAddress() + ":" + inetSocketAddress.getPort() + "\n").replace("/","");
+                fileWriter.write(proxyAddress);
+                fileWriter.close();
+                workingProxiesList.add(proxy);
+            } catch (IOException e) {
+                LogUtil.doLog(1, "保存有效代理失败! IO异常。", null);
+            }
+        }
     }
 }

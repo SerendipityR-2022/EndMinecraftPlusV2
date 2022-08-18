@@ -1,7 +1,7 @@
 package cn.serendipityr.EndMinecraftPlusV2;
 
-import cn.serendipityr.EndMinecraftPlusV2.AttackUtils.AttackManager;
-import cn.serendipityr.EndMinecraftPlusV2.AttackUtils.ProtocolLibs;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ProxyUtil;

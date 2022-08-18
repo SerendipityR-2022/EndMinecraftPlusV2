@@ -39,6 +39,7 @@ public class ConfigUtil {
     public static Integer ProxyUpdateTime;
     public static File ProxyFile;
     public static List<String> ProxyAPIs;
+    public static Boolean SaveWorkingProxy;
 
     public void loadConfig() {
         try {
@@ -77,6 +78,7 @@ public class ConfigUtil {
             ProxyUpdateTime = config.getInt("Proxy.UpdateTime");
             ProxyFile = new File(config.getString("Proxy.File"));
             ProxyAPIs = config.getStringList("Proxy.APIs");
+            SaveWorkingProxy = config.getBoolean("Proxy.SaveWorkingProxy");
 
             checkSRV();
 
