@@ -2,8 +2,8 @@
 ___
 ### EndMinecraftPlusV2 - EMP重制版！
 ### 支持Minecraft 1.7.2-1.16.4 (再往上需更新PacketLib版本，等有时间再适配啦)
-### Forked from Pochinki98 by SerendipityR~
-### 源于<a href="https://github.com/Pochinki98/EndMinecraftPlus">EndMinecraftPlus</a>优化修改的Minecraft压力测试工具
+### Forked by SerendipityR~
+### 源于<a href="https://github.com/ReActRailGun/EndMinecraftPlus">EndMinecraftPlus</a>优化修改的Minecraft压力测试工具
 ___
 ## 更新了什么？
 ### 自定义假人名称、自定义刷屏内容/指令、高级假人绕过(点击验证/重进验证)
