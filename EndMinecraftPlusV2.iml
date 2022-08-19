@@ -10,5 +10,11 @@
     <orderEntry type="library" name="jna-5.12.1" level="project" />
     <orderEntry type="library" name="bukkitYaml-0.1-pre-jar-with-dependencies" level="project" />
     <orderEntry type="library" name="libs" level="project" />
+    <orderEntry type="module" module-name="VersionSupport-578" />
+    <orderEntry type="module" module-name="VersionSupport-754" />
+    <orderEntry type="module" module-name="VersionSupport-758" />
+    <orderEntry type="library" name="adventure" level="project" />
+    <orderEntry type="module" module-name="VersionSupport-759" />
+    <orderEntry type="module" module-name="VersionSupport-760" />
   </component>
 </module>

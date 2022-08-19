@@ -1,6 +1,6 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl;
 
-import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.AttackUtils.Methods.*;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.AttackUtils.*;
 import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtocol.MCForge;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtocol.MCForgeMOTD;
@@ -31,15 +31,17 @@ public class AttackManager {
                 Map<String, String> modList = new HashMap<>();
 
                 if (ProtocolLibs.highVersion) {
-                    if (!cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge.isAfterVersion1_13()) {
-                        LogUtil.doLog(0, "正在获取服务器上的Forge Mods...", "BotAttack");
-                        modList = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForgeMOTD().pingGetModsList(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge.getProtocolVersion());
-                        LogUtil.doLog(0, "Mods: " + Arrays.toString(modList.keySet().toArray()), "BotAttack");
-                    }
+                    LogUtil.doLog(0, "当前选定协议库版本不支持获取Forge Mods。", "BotAttack");
 
-                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.Methods.BotAttack botAttack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.Methods.BotAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
-                    botAttack.setBotConfig(ConfigUtil.AntiAttackMode, ConfigUtil.TabAttack, modList);
-                    botAttack.start();
+                    if (ProtocolLibs.adaptAfter754) {
+                        cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.NewBotAttack botAttack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.NewBotAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                        botAttack.setBotConfig(ConfigUtil.AntiAttackMode, ConfigUtil.TabAttack, modList);
+                        botAttack.start();
+                    } else {
+                        cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.BotAttack botAttack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.BotAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                        botAttack.setBotConfig(ConfigUtil.AntiAttackMode, ConfigUtil.TabAttack, modList);
+                        botAttack.start();
+                    }
                 } else {
                     if (!MCForge.isAfterVersion1_13()) {
                         LogUtil.doLog(0, "正在获取服务器上的Forge Mods...", "BotAttack");
@@ -56,7 +58,7 @@ public class AttackManager {
             case 2:
                 // MotdAttack
                 if (ProtocolLibs.highVersion) {
-                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.Methods.IAttack motdAttack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.Methods.MotdAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.IAttack motdAttack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MotdAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
                     motdAttack.start();
                 } else {
                     IAttack motdAttack = new MotdAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
@@ -67,7 +69,7 @@ public class AttackManager {
             case 3:
                 // MotdAttackP
                 if (ProtocolLibs.highVersion) {
-                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.Methods.IAttack motdAttackP = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.Methods.MotdAttackP(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.IAttack motdAttackP = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MotdAttackP(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
                     motdAttackP.start();
                 } else {
                     IAttack motdAttackP = new MotdAttackP(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
@@ -80,13 +82,9 @@ public class AttackManager {
                 Map<String, String> doubleModList = new HashMap<>();
 
                 if (ProtocolLibs.highVersion) {
-                    if (!cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge.isAfterVersion1_13()) {
-                        LogUtil.doLog(0, "正在获取服务器上的Forge Mods...", "DoubleAttack");
-                        doubleModList = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForgeMOTD().pingGetModsList(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge.getProtocolVersion());
-                        LogUtil.doLog(0, "Mods: " + Arrays.toString(doubleModList.keySet().toArray()), "DoubleAttack");
-                    }
+                    LogUtil.doLog(0, "当前选定协议库版本不支持获取Forge Mods。", "DoubleAttack");
 
-                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.Methods.DoubleAttack attack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.Methods.DoubleAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.DoubleAttack attack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.DoubleAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
                     attack.setBotConfig(ConfigUtil.AntiAttackMode, ConfigUtil.TabAttack, doubleModList);
                     attack.setUsername(ConfigUtil.DoubleExploitPlayer);
                     attack.start();

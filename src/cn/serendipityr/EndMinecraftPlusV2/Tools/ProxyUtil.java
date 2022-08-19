@@ -1,7 +1,5 @@
 package cn.serendipityr.EndMinecraftPlusV2.Tools;
 
-import org.spacehq.packetlib.Session;
-
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -119,14 +117,18 @@ public class ProxyUtil {
                 switch (ConfigUtil.ProxyGetType) {
                     case 1:
                         getProxiesFromAPIs(true, true);
+                        LogUtil.doLog(0, "代理更新完毕! (通过API获取 | 数量: " + proxies.size() + "个)", "ProxyUtil");
+                        break;
+                    case 2:
+                        getProxiesFromFile(true, true);
+                        LogUtil.doLog(0, "代理更新完毕! (通过本地文件获取 | 数量: " + proxies.size() + "个)", "ProxyUtil");
                         break;
                     case 3:
                         getProxiesFromFile(true, true);
                         getProxiesFromAPIs(true, false);
+                        LogUtil.doLog(0, "代理更新完毕! (通过API+本地文件获取 | 数量: " + proxies.size() + "个)", "ProxyUtil");
                         break;
                 }
-
-                LogUtil.doLog(0, "代理更新完毕! (通过API获取 | 数量: " + proxies.size() + "个)", "ProxyUtil");
             }
         }).start();
     }

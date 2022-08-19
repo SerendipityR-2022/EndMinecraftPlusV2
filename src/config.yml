@@ -56,7 +56,8 @@ Proxy:
   GetType: 1
   # 代理类型:
   # 1 - HTTP/HTTPS
-  # 2 - SOCKS4/SOCKS5
+  # 2 - SOCKS4
+  # 3 - SOCKS5
   ProxyType: 1
   UpdateTime: 300
   File: "proxies.txt"

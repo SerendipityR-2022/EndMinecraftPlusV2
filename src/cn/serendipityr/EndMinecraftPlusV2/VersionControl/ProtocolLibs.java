@@ -2,15 +2,41 @@ package cn.serendipityr.EndMinecraftPlusV2.VersionControl;
 
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.OtherUtils;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge;
+import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundChatPacket;
 
 import java.io.File;
 import java.util.*;
 
 public class ProtocolLibs {
     public static boolean highVersion = false;
+    public static boolean adaptAfter578 = false;
+    public static boolean adaptAfter754 = false;
+    public static boolean adaptAfter758 = false;
+    public static boolean adaptAfter759 = false;
+    public static boolean adaptAfter760 = false;
     public static void loadProtocolLib() {
         LogUtil.doLog(0, "==========================================================", "ProtocolLib");
         choseProtocolVer(scanProtocolLibs(), scanSupportLibs());
+
+        int currentVersion = MCForge.getProtocolVersion();
+
+        if (currentVersion > 498 || currentVersion == -1) {
+            adaptAfter578 = true;
+        }
+
+        if (currentVersion > 578 || currentVersion == -1) {
+            adaptAfter754 = true;
+        }
+
+        if (currentVersion == -1) {
+            adaptAfter758 = true;
+        }
+
+        try {
+            Class.forName("com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundSystemChatPacket");
+            adaptAfter759 = true;
+        } catch (ClassNotFoundException ignored) {}
     }
 
     public static List<File> scanProtocolLibs() {
@@ -51,8 +77,6 @@ public class ProtocolLibs {
     }
 
     public static void choseProtocolVer(List<File> versionLibs, List<File> supportLibs) {
-        int dependency = -1;
-
         for (int i = 0; i < versionLibs.size(); i++) {
             String filename = versionLibs.get(i).getName();
             StringBuilder info = new StringBuilder();
@@ -66,14 +90,6 @@ public class ProtocolLibs {
             LogUtil.doLog(0, info.toString(), "ProtocolLib");
         }
 
-        for (int i = 0; i < supportLibs.size(); i++) {
-            String filename = supportLibs.get(i).getName();
-
-            if (filename.contains("Dependency")) {
-                dependency = i;
-            }
-        }
-
         LogUtil.doLog(-1, "请选择一个Minecraft协议库版本: ", "ProtocolLib");
 
         try {
@@ -83,22 +99,10 @@ public class ProtocolLibs {
 
             if (versionLib.getName().contains("MCP")) {
                 highVersion = true;
+            }
 
-                if (dependency == -1) {
-                    LogUtil.emptyLog();
-                    LogUtil.doLog(1, "加载Minecraft协议库时发生错误!", null);
-                    LogUtil.doLog(0, "=========================错误排除=========================", "ProtocolLib");
-                    LogUtil.doLog(0, " 你选择了高于1.13.2的版本，但缺少必要支持库，", "ProtocolLib");
-                    LogUtil.doLog(0, " 请检查[libs]文件夹中，下列文件是否存在: ", "ProtocolLib");
-                    LogUtil.doLog(0, " (Dependency.jar)", "ProtocolLib");
-                    LogUtil.doLog(0, "==========================================================", "ProtocolLib");
-                    LogUtil.emptyLog();
-
-                    choseProtocolVer(scanProtocolLibs(), scanSupportLibs());
-                }
-
-                File dependencyFile = supportLibs.get(dependency);
-                OtherUtils.loadLibrary(dependencyFile);
+            if (versionLib.getName().contains("1.19.1")) {
+                adaptAfter760 = true;
             }
 
             OtherUtils.loadLibrary(versionLib);

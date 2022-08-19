@@ -1,14 +1,14 @@
 package cn.serendipityr.EndMinecraftPlusV2;
 
-import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
-import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ProxyUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "1.1.1_Dev";
+    public static String ver = "1.2.0";
 
     public static void main(String[] args) {
         System.out.println("========================-Forked by SerendipityR-========================");

@@ -2,7 +2,6 @@ package cn.serendipityr.EndMinecraftPlusV2.Tools;
 
 import cc.summermc.bukkitYaml.file.YamlConfiguration;
 import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
-
 import javax.naming.directory.Attribute;
 import javax.naming.directory.InitialDirContext;
 import java.io.BufferedInputStream;

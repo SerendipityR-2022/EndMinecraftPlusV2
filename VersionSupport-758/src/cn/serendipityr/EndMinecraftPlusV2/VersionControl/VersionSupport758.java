@@ -10,6 +10,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class VersionSupport758 {
-    public static List<String> clickVerifiesHandle(ClientboundChatPacket packet, Session session, List<String> ClickVerifiesDetect, Component Message) {
+    public static List<String> clickVerifiesHandle(Packet packet, Session session, List<String> ClickVerifiesDetect, Component Message) {
+        ClientboundChatPacket chatPacket = (ClientboundChatPacket) packet;
+
         List<String> result = new ArrayList<>();
         boolean needClick = false;
         Component message;
@@ -26,7 +29,7 @@ public class VersionSupport758 {
         if (Message != null) {
             message = Message;
         } else {
-            message = packet.getMessage();
+            message = chatPacket.getMessage();
         }
 
         String simpleMsg = PlainTextComponentSerializer.plainText().serialize(message);
@@ -134,5 +137,15 @@ public class VersionSupport758 {
             field.set(packet, text);
             session.send(packet);
         } catch (Exception ignored) {}
+    }
+
+    public static boolean checkServerChatPacket(Packet packet) {
+        try {
+            Class.forName("com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundChatPacket");
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+
+        return packet instanceof ClientboundChatPacket;
     }
 }

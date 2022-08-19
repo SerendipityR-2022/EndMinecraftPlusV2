@@ -5,6 +5,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessag
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.event.session.*;
+import com.github.steveice10.packetlib.packet.Packet;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -32,7 +33,19 @@ public class MCForge {
                 }
             }
 
+            public void packetReceived(Session session, Packet packet) {
+
+            }
+
             public void packetSending(PacketSendingEvent packetSendingEvent) {
+
+            }
+
+            public void packetSent(Session session, Packet packet) {
+
+            }
+
+            public void packetError(PacketErrorEvent packetErrorEvent) {
 
             }
 
@@ -85,7 +98,7 @@ public class MCForge {
     }
 
     public static boolean isAfterVersion1_13() {
-        return (getProtocolVersion() >= 393);
+        return ((getProtocolVersion() >= 393 || getProtocolVersion() == -1));
     }
 
     public static int getProtocolVersion() {
@@ -100,14 +113,7 @@ public class MCForge {
             Field field = cls.getDeclaredField("PROTOCOL_VERSION");
             return field.getInt(null);
         } catch (Exception e) {
-            LogUtil.doLog(1, "检测Minecraft协议版本时发生错误!", null);
-            LogUtil.doLog(0, "=========================================================", "ForgeSupport");
-            LogUtil.doLog(0, " 如果你不知道这是什么，请查阅", "ForgeSupport");
-            LogUtil.doLog(0, " https://minecraft.fandom.com/zh/wiki/协议版本?variant=zh", "ForgeSupport");
-            LogUtil.doLog(0, "=========================================================", "ForgeSupport");
-            LogUtil.doLog(-1, "请手动输入协议版本: ", "ForgeSupport");
-            Scanner scanner = new Scanner(System.in);
-            return Integer.parseInt(scanner.nextLine());
+            return -1;
         }
     }
 }
