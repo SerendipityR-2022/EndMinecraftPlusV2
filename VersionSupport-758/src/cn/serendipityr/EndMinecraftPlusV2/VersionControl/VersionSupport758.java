@@ -1,6 +1,7 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl;
 
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundChatPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.clientbound.entity.player.ClientboundPlayerPositionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundClientInformationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundCommandSuggestionPacket;
@@ -98,11 +99,18 @@ public class VersionSupport758 {
         } catch (Exception ignored) {}
     }
 
-    public static void sendClientTeleportConfirmPacket(Session session, Packet packet) {
+    public static void sendClientTeleportConfirmPacket(Session session, int id) {
         try {
             Class<?> cls = Class.forName("com.github.steveice10.mc.protocol.packet.ingame.serverbound.level.ServerboundAcceptTeleportationPacket");
             Constructor<?> constructor = cls.getConstructor(int.class);
+            Packet packet = (Packet) constructor.newInstance(id);
             session.send(packet);
+        } catch (Exception ignored) {}
+    }
+
+    public static void sendClientTeleportConfirmPacket(Session session, ClientboundPlayerPositionPacket packet) {
+        try {
+            sendClientTeleportConfirmPacket(session, (int) ClientboundPlayerPositionPacket.class.getMethod("getTeleportId").invoke(packet));
         } catch (Exception ignored) {}
     }
 
