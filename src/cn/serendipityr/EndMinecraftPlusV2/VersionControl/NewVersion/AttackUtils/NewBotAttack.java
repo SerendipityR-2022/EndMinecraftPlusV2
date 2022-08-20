@@ -16,6 +16,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePack
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundCustomPayloadPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.serverbound.player.ServerboundMovePlayerStatusOnlyPacket;
 import com.github.steveice10.packetlib.ProxyInfo;
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.event.session.*;
@@ -87,9 +88,9 @@ public class NewBotAttack extends IAttack {
                                 } else {
                                     c.send(new ClientChatPacket(getRandMessage(clientName.get(c))));
                                 }
-                            }
 
-                            OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                            }
                         } else if (c.hasFlag("join")) {
                             if (ConfigUtil.RegisterAndLogin) {
                                 for (String cmd:ConfigUtil.RegisterCommands) {
@@ -469,11 +470,10 @@ public class NewBotAttack extends IAttack {
             VersionSupport758.sendClientPlayerChangeHeldItemPacket(session, 1);
         } else if (recvPacket instanceof ClientboundPlayerPositionPacket) {
             try {
-                // BUG: 稳定触发Unregistered packet错误
-                //ClientboundPlayerPositionPacket packet = (ClientboundPlayerPositionPacket) recvPacket;
-                //VersionSupport758.sendPosPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
-                //session.send(new ServerboundMovePlayerStatusOnlyPacket(true));
-                //VersionSupport758.sendClientTeleportConfirmPacket(session, packet);
+                ClientboundPlayerPositionPacket packet = (ClientboundPlayerPositionPacket) recvPacket;
+                VersionSupport758.sendPosPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
+                session.send(new ServerboundMovePlayerStatusOnlyPacket(true));
+                VersionSupport758.sendClientTeleportConfirmPacket(session, packet);
             } catch (Exception ignored) {}
         } else if (ProtocolLibs.adaptAfter760 && VersionSupport760.checkServerChatPacket(recvPacket)) {
             List<String> result = VersionSupport760.clickVerifiesHandle(recvPacket, session, ConfigUtil.ClickVerifiesDetect, null);
