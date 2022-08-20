@@ -9,13 +9,27 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DataUtil {
-    public static List<String> botRegPasswords = new ArrayList<>();
+    public static List<String> botRegPasswords;
     public static HashMap<String,String> botRegPasswordsMap = new HashMap<>();
-    public static File dataFile = new File("data.yml");
 
     public static void loadData() {
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(dataFile);
-        botRegPasswords = data.getStringList("Data");
+        File dataFile = new File("data.yml");
+        if (dataFile.exists()) {
+            YamlConfiguration data = YamlConfiguration.loadConfiguration(dataFile);
+            botRegPasswords = data.getStringList("Data");
+        } else {
+            botRegPasswords = new ArrayList<>();
+        }
+
+        if (botRegPasswords.size() < ConfigUtil.BotCount) {
+            int count = ConfigUtil.BotCount - botRegPasswords.size();
+
+            for (int i = 0; i < count; i++) {
+                String newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString(3,5));
+                String newBotPwd = OtherUtils.getRandomString(8,10);
+                botRegPasswords.add(newBotName + "@" + newBotPwd);
+            }
+        }
 
         for (String PwdData:botRegPasswords) {
             try {
@@ -23,17 +37,15 @@ public class DataUtil {
                 botRegPasswordsMap.put(aPwdData[0], aPwdData[1]);
             } catch (Exception ignored) {}
         }
+
+        updateData(botRegPasswords);
     }
 
-    public static void updateData(String name, String pwd) {
+    public static void updateData(List<String> dataList) {
+        File dataFile = new File("data.yml");
         YamlConfiguration data = YamlConfiguration.loadConfiguration(dataFile);
-        List<String> datas = data.getStringList("Data");
 
-        String aPwdData = name + "@" + pwd;
-        datas.add(aPwdData);
-        data.set("Data", datas);
-        botRegPasswords.add(aPwdData);
-        botRegPasswordsMap.put(name, pwd);
+        data.set("Data", dataList);
 
         try {
             data.save(dataFile);

