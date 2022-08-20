@@ -3,6 +3,7 @@ ___
 ### EndMinecraftPlusV2 - EMP重制版！
 ### 支持Minecraft 1.7.2-1.19.1
 ### (注意：较新版本的Minecraft支持可能仍存在一些问题，遇到错误可以提交Issues~)
+### 温馨提示 - 此工具仅允许用作测试，请勿滥用，如因使用此工具而造成任何后果，本人概不负责！
 ___
 ### Forked by SerendipityR~
 ### 源于<a href="https://github.com/ReActRailGun/EndMinecraftPlus">EndMinecraftPlus</a>优化修改的Minecraft压力测试工具
