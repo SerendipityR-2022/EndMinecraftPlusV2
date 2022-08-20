@@ -15,6 +15,8 @@ ___
 ## 常见问题：
 ### 1. java.lang.ClassCastException: class jdk.internal.loader.ClassLoaders$AppClassLoader cannot be cast to class java.net.URLClassLoader
 工具仅支持Java8，请使用正确的Java版本后再试。
+### 2. 配置内BotSettings中BotName更改后无效果
+将「data.yml」删除后即可生效。
 ___
 ## 有其他Bug怎么办？
 ### 发Issues，心情好的时候可能会修~
