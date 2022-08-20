@@ -8,11 +8,11 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "1.2.0";
+    public static String ver = "1.2.1";
 
     public static void main(String[] args) {
         System.out.println("========================-Forked by SerendipityR-========================");
-        System.out.println(" EndMinecraftPlus原作者 - @iuli-moe");
+        System.out.println(" EndMinecraft原作者 - @iuli-moe");
         System.out.println(" Github发布页: https://github.com/SerendipityR-2022/EndMinecraftPlusV2");
         System.out.println(" EndMinecraftPlusV2 (Ver: " + ver + ")" + " is loading......");
         System.out.println("========================================================================");

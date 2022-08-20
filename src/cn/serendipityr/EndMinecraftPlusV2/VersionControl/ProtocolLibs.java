@@ -1,9 +1,9 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl;
 
+import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.OtherUtils;
-import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge;
-import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundChatPacket;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtocol.MCForge;
 
 import java.io.File;
 import java.util.*;
@@ -16,10 +16,20 @@ public class ProtocolLibs {
     public static boolean adaptAfter759 = false;
     public static boolean adaptAfter760 = false;
     public static void loadProtocolLib() {
+        if (ConfigUtil.AttackMethod.equals(2) || ConfigUtil.AttackMethod.equals(3)) {
+            return;
+        }
+
         LogUtil.doLog(0, "==========================================================", "ProtocolLib");
         choseProtocolVer(scanProtocolLibs(), scanSupportLibs());
 
-        int currentVersion = MCForge.getProtocolVersion();
+        int currentVersion;
+
+        if (highVersion) {
+            currentVersion = cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge.getProtocolVersion();
+        } else {
+            currentVersion = MCForge.getProtocolVersion();
+        }
 
         if (currentVersion > 498 || currentVersion == -1) {
             adaptAfter578 = true;
