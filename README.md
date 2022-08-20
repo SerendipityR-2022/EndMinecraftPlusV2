@@ -1,7 +1,7 @@
 # EndMinecraftPlusV2
 ___
 ### EndMinecraftPlusV2 - EMP重制版！
-### 支持Minecraft 1.7.2-1.19
+### 支持Minecraft 1.7.2-1.19.1
 ### (注意：较新版本的Minecraft支持可能仍存在一些问题，遇到错误可以提交Issues~)
 ___
 ### Forked by SerendipityR~
