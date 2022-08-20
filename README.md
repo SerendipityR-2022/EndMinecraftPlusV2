@@ -14,7 +14,7 @@ ___
 ___
 ## 常见问题：
 ### 1. java.lang.ClassCastException: class jdk.internal.loader.ClassLoaders$AppClassLoader cannot be cast to class java.net.URLClassLoader
-工具仅支持Java8，请使用正确的Java版本后再试。
+工具仅支持Java 8，请使用正确的Java版本后再试。
 ___
 ## 有其他Bug怎么办？
 ### 发Issues，心情好的时候可能会修~
