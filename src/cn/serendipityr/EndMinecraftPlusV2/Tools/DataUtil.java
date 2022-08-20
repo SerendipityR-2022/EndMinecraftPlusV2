@@ -17,6 +17,7 @@ public class DataUtil {
         if (dataFile.exists()) {
             YamlConfiguration data = YamlConfiguration.loadConfiguration(dataFile);
             botRegPasswords = data.getStringList("Data");
+            botRegPasswords.remove("");
         } else {
             botRegPasswords = new ArrayList<>();
         }
