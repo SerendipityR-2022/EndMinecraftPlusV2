@@ -12,5 +12,9 @@ ___
 ### 自定义假人名称、自定义刷屏内容/指令、高级假人绕过(点击验证/重进验证)
 ### 优化内部逻辑、支持代理API更改、更加好看的输出界面~
 ___
-## 有Bug怎么办？
+## 常见问题：
+### 1. java.lang.ClassCastException: class jdk.internal.loader.ClassLoaders$AppClassLoader cannot be cast to class java.net.URLClassLoader
+工具仅支持Java8，请使用正确的Java版本后再试。
+___
+## 有其他Bug怎么办？
 ### 发Issues，心情好的时候可能会修~
