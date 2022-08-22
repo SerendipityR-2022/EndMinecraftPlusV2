@@ -10,10 +10,12 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.VersionSupport578;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerMovementPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.github.steveice10.packetlib.Client;
@@ -397,6 +399,12 @@ public class BotAttack extends IAttack {
                 }
             } else {
                 clickVerifiesHandle(chatPacket.getMessage(), session, username);
+            }
+        } else if (recvPacket instanceof ServerKeepAlivePacket) {
+            ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
+            session.send(keepAlivePacket);
+            if (!alivePlayers.contains(username)) {
+                alivePlayers.add(username);
             }
         }
     }

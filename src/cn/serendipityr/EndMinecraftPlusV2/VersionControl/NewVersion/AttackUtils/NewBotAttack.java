@@ -6,16 +6,20 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.A
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.AntiCheat3;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerMovementPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundCustomPayloadPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundLoginPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.entity.player.ClientboundPlayerPositionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundCustomPayloadPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.player.ServerboundMovePlayerStatusOnlyPacket;
 import com.github.steveice10.packetlib.ProxyInfo;
 import com.github.steveice10.packetlib.Session;
@@ -429,6 +433,9 @@ public class NewBotAttack extends IAttack {
                     alivePlayers.add(username);
                 }
             }
+        } else if (recvPacket instanceof ServerKeepAlivePacket) {
+            ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
+            session.send(keepAlivePacket);
         }
     }
 
@@ -468,6 +475,12 @@ public class NewBotAttack extends IAttack {
 
             VersionSupport758.sendClientSettingPacket(session, "zh_CN");
             VersionSupport758.sendClientPlayerChangeHeldItemPacket(session, 1);
+        } else if (recvPacket instanceof ClientboundKeepAlivePacket) {
+            ServerboundKeepAlivePacket keepAlivePacket = new ServerboundKeepAlivePacket(((ClientboundKeepAlivePacket) recvPacket).getPingId());
+            session.send(keepAlivePacket);
+            if (!alivePlayers.contains(username)) {
+                alivePlayers.add(username);
+            }
         } else if (recvPacket instanceof ClientboundPlayerPositionPacket) {
             try {
                 ClientboundPlayerPositionPacket packet = (ClientboundPlayerPositionPacket) recvPacket;
