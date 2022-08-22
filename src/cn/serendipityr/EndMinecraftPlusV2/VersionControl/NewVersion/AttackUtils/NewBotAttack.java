@@ -191,7 +191,7 @@ public class NewBotAttack extends IAttack {
                 alivePlayers.remove(username);
                 clientName.remove(client);
                 clients.remove(client);
-            } else if (!alivePlayers.contains(username)) {
+            } else if (!alivePlayers.contains(username) && (client.hasFlag("login") || client.hasFlag("join"))) {
                 alivePlayers.add(username);
             }
         }

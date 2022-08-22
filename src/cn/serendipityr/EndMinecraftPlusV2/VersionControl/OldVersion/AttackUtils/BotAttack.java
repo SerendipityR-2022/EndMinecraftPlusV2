@@ -178,7 +178,7 @@ public class BotAttack extends IAttack {
                 alivePlayers.remove(username);
                 clientName.remove(client);
                 clients.remove(client);
-            } else if (!alivePlayers.contains(username)) {
+            } else if (!alivePlayers.contains(username) && (client.getSession().hasFlag("login") || client.getSession().hasFlag("join"))) {
                 alivePlayers.add(username);
             }
         }
