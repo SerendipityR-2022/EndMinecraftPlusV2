@@ -15,6 +15,11 @@ ___
 ## 常见问题：
 ### 1. java.lang.ClassCastException: class jdk.internal.loader.ClassLoaders$AppClassLoader cannot be cast to class java.net.URLClassLoader
 工具仅支持Java 8，请使用正确的Java版本后再试。
+### 2. java.lang.OutOfMemoryError: GC overhead limit exceeded
+内存溢出，尝试修改「Run.bat」文件中-Xmx参数以使用更大的内存运行。
+### 3. 工具运行期间CPU占用率飙升，以致卡顿甚至假死
+内存严重不足，此时JVM频繁进行GC操作以释放内存，占用了大量运算资源。
+尝试修改「Run.bat」文件中-Xmx参数以使用更大的内存运行。
 ___
 ## 有其他Bug怎么办？
 ### 发Issues，心情好的时候可能会修~
