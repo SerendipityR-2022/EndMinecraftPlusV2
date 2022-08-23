@@ -8,7 +8,7 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "1.2.6";
+    public static String ver = "1.2.7";
     public static Integer CfgVer = 2;
 
     public static void main(String[] args) {

@@ -10,5 +10,6 @@ public abstract class MCForgeHandShake {
     }
 
     public abstract void handle(Packet recvPacket);
+    public abstract void newHandle(Packet recvPacket);
     public abstract String getFMLVersion();
 }

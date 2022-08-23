@@ -1,15 +1,16 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol;
 
-import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundCustomPayloadPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundCustomPayloadPacket;
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.event.session.*;
 import com.github.steveice10.packetlib.packet.Packet;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.Scanner;
 
 public class MCForge {
     private final MCForgeHandShake handshake;
@@ -24,44 +25,93 @@ public class MCForge {
     }
 
     public void init() {
-        this.session.addListener(new SessionListener() {
-            public void packetReceived(PacketReceivedEvent e) {
-                if (e.getPacket() instanceof ServerPluginMessagePacket) {
-                    handle(e.getPacket());
-                } else if (e.getPacket().getClass().getSimpleName().equals("LoginPluginRequestPacket")) {
-                    handshake.handle(e.getPacket());
+        if (ProtocolLibs.adaptAfter754) {
+            this.session.addListener(new SessionListener() {
+                public void packetReceived(PacketReceivedEvent e) {
+                    if (e.getPacket() instanceof ClientboundCustomPayloadPacket) {
+                        handle(e.getPacket());
+                    } else if (e.getPacket().getClass().getSimpleName().equals("ClientboundCustomQueryPacket")) {
+                        handshake.newHandle(e.getPacket());
+                    }
                 }
-            }
 
-            public void packetReceived(Session session, Packet packet) {
+                public void packetReceived(Session session, Packet packet) {
+                    if (packet instanceof ClientboundCustomPayloadPacket) {
+                        newHandle((ClientboundCustomPayloadPacket) packet);
+                    } else if (packet.getClass().getSimpleName().equals("ClientboundCustomQueryPacket")) {
+                        handshake.newHandle(packet);
+                    }
+                }
 
-            }
+                public void packetSending(PacketSendingEvent packetSendingEvent) {
 
-            public void packetSending(PacketSendingEvent packetSendingEvent) {
+                }
 
-            }
+                public void packetSent(Session session, Packet packet) {
 
-            public void packetSent(Session session, Packet packet) {
+                }
 
-            }
+                public void packetError(PacketErrorEvent packetErrorEvent) {
 
-            public void packetError(PacketErrorEvent packetErrorEvent) {
+                }
 
-            }
+                public void packetSent(PacketSentEvent e) {
+                }
 
-            public void packetSent(PacketSentEvent e) {
-            }
+                public void connected(ConnectedEvent e) {
+                    modifyHost();
+                }
 
-            public void connected(ConnectedEvent e) {
-                modifyHost();
-            }
+                public void disconnecting(DisconnectingEvent e) {
+                }
 
-            public void disconnecting(DisconnectingEvent e) {
-            }
+                public void disconnected(DisconnectedEvent e) {
+                }
+            });
+        } else {
+            this.session.addListener(new SessionListener() {
+                public void packetReceived(PacketReceivedEvent e) {
+                    if (e.getPacket() instanceof ServerPluginMessagePacket) {
+                        handle(e.getPacket());
+                    } else if (e.getPacket().getClass().getSimpleName().equals("LoginPluginRequestPacket")) {
+                        handshake.handle(e.getPacket());
+                    }
+                }
 
-            public void disconnected(DisconnectedEvent e) {
-            }
-        });
+                public void packetReceived(Session session, Packet packet) {
+                    if (packet instanceof ServerPluginMessagePacket) {
+                        handle((ServerPluginMessagePacket) packet);
+                    } else if (packet.getClass().getSimpleName().equals("LoginPluginRequestPacket")) {
+                        handshake.handle(packet);
+                    }
+                }
+
+                public void packetSending(PacketSendingEvent packetSendingEvent) {
+
+                }
+
+                public void packetSent(Session session, Packet packet) {
+
+                }
+
+                public void packetError(PacketErrorEvent packetErrorEvent) {
+
+                }
+
+                public void packetSent(PacketSentEvent e) {
+                }
+
+                public void connected(ConnectedEvent e) {
+                    modifyHost();
+                }
+
+                public void disconnecting(DisconnectingEvent e) {
+                }
+
+                public void disconnected(DisconnectedEvent e) {
+                }
+            });
+        }
     }
 
     public void handle(ServerPluginMessagePacket packet) {
@@ -70,13 +120,29 @@ public class MCForge {
             this.handshake.handle(packet);
             break;
         case "REGISTER":
-        case "minecraft:register": // 1.13
+        case "minecraft:register":
             this.session.send(new ClientPluginMessagePacket(packet.getChannel(), packet.getData()));
             break;
         case "MC|Brand":
-        case "minecraft:brand": // 1.13
+        case "minecraft:brand":
             this.session.send(new ClientPluginMessagePacket(packet.getChannel(), "fml,forge".getBytes()));
             break;
+        }
+    }
+
+    public void newHandle(ClientboundCustomPayloadPacket packet) {
+        switch (packet.getChannel()) {
+            case "FML|HS":
+                this.handshake.handle(packet);
+                break;
+            case "REGISTER":
+            case "minecraft:register":
+                this.session.send(new ServerboundCustomPayloadPacket(packet.getChannel(), packet.getData()));
+                break;
+            case "MC|Brand":
+            case "minecraft:brand":
+                this.session.send(new ServerboundCustomPayloadPacket(packet.getChannel(), "fml,forge".getBytes()));
+                break;
         }
     }
 
