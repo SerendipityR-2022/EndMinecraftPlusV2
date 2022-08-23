@@ -22,6 +22,7 @@ public class ConfigUtil {
     public static Integer AttackMethod;
     public static Integer AttackTime;
     public static Long ConnectDelay;
+    public static Long ConnectTimeout;
     public static Integer MaxConnections;
     public static Boolean TabAttack;
     public static Boolean AntiAttackMode;
@@ -67,6 +68,7 @@ public class ConfigUtil {
             AttackMethod = config.getInt("AttackSettings.Method");
             AttackTime = config.getInt("AttackSettings.Time");
             ConnectDelay = config.getLong("AttackSettings.ConnectDelay");
+            ConnectTimeout = config.getLong("AttackSettings.ConnectTimeout");
             MaxConnections = config.getInt("AttackSettings.MaxConnections");
             TabAttack = config.getBoolean("AttackSettings.TabAttack");
             AntiAttackMode = config.getBoolean("AttackSettings.AntiAttackMode");

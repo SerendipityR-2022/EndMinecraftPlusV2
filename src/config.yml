@@ -3,7 +3,7 @@
 #    Forked by SerendipityR  #
 ##############################
 
-CfgVer: 1
+CfgVer: 2
 
 AttackSettings:
   Address: "example.com"
@@ -16,6 +16,7 @@ AttackSettings:
   Method: 1
   Time: 3600
   ConnectDelay: 250
+  ConnectTimeout: 8000
   # 实际连接数由代理质量和机器性能有关
   # 进行无代理Motd压测时不建议大于32
   MaxConnections: 2000

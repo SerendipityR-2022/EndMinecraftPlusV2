@@ -9,7 +9,7 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
     public static String ver = "1.2.6";
-    public static Integer CfgVer = 1;
+    public static Integer CfgVer = 2;
 
     public static void main(String[] args) {
         System.out.println("========================-Forked by SerendipityR-========================");
