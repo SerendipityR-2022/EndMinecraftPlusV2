@@ -23,7 +23,14 @@ public class DataUtil {
             botRegPasswords.remove("");
 
             String lastBotName = data.getString("LastBotName");
-            if (lastBotName != null && !ConfigUtil.BotName.equals(lastBotName)) {
+            Integer lastRandomFlag = data.getInt("LastRandomFlag");
+            String lastRandomLength = data.getString("LastRandomLength");
+
+            boolean needReset;
+
+            needReset = !ConfigUtil.BotName.equals(lastBotName) || !ConfigUtil.RandomFlag.equals(lastRandomFlag) || !(ConfigUtil.RandomMinLength + "|" + ConfigUtil.RandomMaxLength).equals(lastRandomLength);
+
+            if (lastBotName != null && needReset) {
                 LogUtil.doLog(-1, "检测到BotName已被修改，是否重置数据文件以使更改生效？ [y/n]:", "DataUtil");
                 Scanner scanner = new Scanner(System.in);
                 if (scanner.nextLine().contains("y")) {
@@ -48,7 +55,24 @@ public class DataUtil {
             int count = ConfigUtil.BotCount - botRegPasswords.size();
 
             for (int i = 0; i < count; i++) {
-                String newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString(3,5));
+                String newBotName;
+
+                switch (ConfigUtil.RandomFlag) {
+                    case 2:
+                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_Ili(ConfigUtil.RandomMinLength,ConfigUtil.RandomMaxLength));
+                        break;
+                    case 3:
+                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_Abc(ConfigUtil.RandomMinLength,ConfigUtil.RandomMaxLength));
+                        break;
+                    case 4:
+                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_123(ConfigUtil.RandomMinLength,ConfigUtil.RandomMaxLength));
+                        break;
+                    case 1:
+                    default:
+                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString(ConfigUtil.RandomMinLength,ConfigUtil.RandomMaxLength));
+                        break;
+                }
+
                 String newBotPwd = OtherUtils.getRandomString(8,10);
                 botRegPasswords.add(newBotName + "@" + newBotPwd);
             }
@@ -72,6 +96,8 @@ public class DataUtil {
 
         if (!notModify) {
             data.set("LastBotName", ConfigUtil.BotName);
+            data.set("LastRandomFlag", ConfigUtil.RandomFlag);
+            data.set("LastRandomLength", ConfigUtil.RandomMinLength + "|" + ConfigUtil.RandomMaxLength);
         }
 
         try {

@@ -16,6 +16,7 @@ import java.util.Scanner;
 public class ConfigUtil {
     public static File configFile;
     public static YamlConfiguration config;
+    public static Integer CfgVer;
     public static String AttackAddress;
     public static Integer AttackPort;
     public static Integer AttackMethod;
@@ -27,6 +28,10 @@ public class ConfigUtil {
     public static String DoubleExploitPlayer;
     public static Boolean ShowFails;
     public static String BotName;
+    public static Integer RandomFlag;
+    public static Integer RandomMinLength;
+    public static Integer RandomMaxLength;
+    public static Boolean RandomTeleport;
     public static Integer BotCount;
     public static Boolean RegisterAndLogin;
     public static List<String> RegisterCommands;
@@ -55,6 +60,13 @@ public class ConfigUtil {
 
             config = YamlConfiguration.loadConfiguration(configFile);
 
+            CfgVer = config.getInt("CfgVer");
+
+            if (!EndMinecraftPlusV2.CfgVer.equals(CfgVer)) {
+                LogUtil.doLog(1, "载入配置文件失败! 配置文件版本不匹配，请前往发布页更新配置文件。", null);
+                EndMinecraftPlusV2.Exit();
+            }
+
             AttackAddress = config.getString("AttackSettings.Address");
             AttackPort = config.getInt("AttackSettings.Port");
             AttackMethod = config.getInt("AttackSettings.Method");
@@ -67,6 +79,10 @@ public class ConfigUtil {
             ShowFails = config.getBoolean("AttackSettings.ShowFails");
             BotName = config.getString("BotSettings.BotName");
             BotCount = config.getInt("BotSettings.BotCount");
+            RandomTeleport = config.getBoolean("BotSettings.RandomTeleport");
+            RandomFlag = config.getInt("BotSettings.RandomFlag");
+            RandomMinLength = config.getInt("BotSettings.RandomMinLength");
+            RandomMaxLength = config.getInt("BotSettings.RandomMaxLength");
             RegisterAndLogin = config.getBoolean("BotSettings.Register&Login");
             RegisterCommands = config.getStringList("BotSettings.RegisterCommands");
             RejoinCount = config.getInt("BotSettings.RejoinCount");

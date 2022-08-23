@@ -82,18 +82,20 @@ public class BotAttack extends IAttack {
                                 OtherUtils.doSleep(ConfigUtil.ChatDelay);
                             }
 
-                            /*ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c.getSession());
-                            if (c.getSession().isConnected() && positionRotationPacket != null) {
-                                new Thread(() -> {
-                                    try {
-                                        MultiVersionPacket.sendPosPacket(c.getSession(), positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
-                                        Thread.sleep(500);
-                                        MultiVersionPacket.sendPosPacket(c.getSession(), positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
-                                    } catch (InterruptedException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                }).start();
-                            }*/
+                            if (ConfigUtil.RandomTeleport) {
+                                ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c.getSession());
+                                if (c.getSession().isConnected() && positionRotationPacket != null) {
+                                    new Thread(() -> {
+                                        try {
+                                            MultiVersionPacket.sendPosPacket(c.getSession(), positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                            Thread.sleep(500);
+                                            MultiVersionPacket.sendPosPacket(c.getSession(), positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                        } catch (InterruptedException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }).start();
+                                }
+                            }
                         } else if (c.getSession().hasFlag("join")) {
                             if (ConfigUtil.RegisterAndLogin) {
                                 for (String cmd:ConfigUtil.RegisterCommands) {

@@ -3,6 +3,8 @@
 #    Forked by SerendipityR  #
 ##############################
 
+CfgVer: 1
+
 AttackSettings:
   Address: "example.com"
   Port: 25565
@@ -29,6 +31,16 @@ BotSettings:
   # $pwd - 随机生成密码
   BotName: "ImOldSix_$rnd"
   BotCount: 1000
+  # 随机字符规则 (仅影响BotName):
+  # 1 - Normal - 简单随机化
+  # 2 - Ili - iii混淆式
+  # 3 - ABC - 纯字母
+  # 4 - 123 - 纯数字
+  RandomFlag: 1
+  RandomMinLength: 4
+  RandomMaxLength: 6
+  # 尝试发送随机传送数据包
+  RandomTeleport: true
   RejoinCount: 5
   RejoinDelay: 2000
   RejoinDetect:

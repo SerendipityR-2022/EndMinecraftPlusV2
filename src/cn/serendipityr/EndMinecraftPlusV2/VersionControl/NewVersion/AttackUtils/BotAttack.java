@@ -324,7 +324,6 @@ public class BotAttack extends IAttack {
                         }
                     }
                 } else if (ConfigUtil.ShowFails) {
-                    //msg = e.getCause().getMessage();
                     LogUtil.doLog(0,"[假人断开连接] [" + username + "] " + e.getCause(), "BotAttack");
                 }
 

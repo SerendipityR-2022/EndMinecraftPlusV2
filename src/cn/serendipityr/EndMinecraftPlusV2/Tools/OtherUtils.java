@@ -34,6 +34,42 @@ public class OtherUtils {
         return stringBuilder.toString();
     }
 
+    public static String getRandomString_Ili(int minLength, int maxLength) {
+        String str = "Ili";
+        Random random = new Random();
+        int length = random.nextInt(maxLength) % (maxLength - minLength + 1) + minLength;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; ++i) {
+            int number = random.nextInt(3);
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
+    }
+
+    public static String getRandomString_Abc(int minLength, int maxLength) {
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+        int length = random.nextInt(maxLength) % (maxLength - minLength + 1) + minLength;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; ++i) {
+            int number = random.nextInt(52);
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
+    }
+
+    public static String getRandomString_123(int minLength, int maxLength) {
+        String str = "1234567890";
+        Random random = new Random();
+        int length = random.nextInt(maxLength) % (maxLength - minLength + 1) + minLength;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; ++i) {
+            int number = random.nextInt(10);
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
+    }
+
     public static Integer getRandomInt(int min, int max) {
         return (int)(Math.random()*(max-min+1)+min);
     }
