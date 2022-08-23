@@ -251,12 +251,20 @@ public class BotAttack extends IAttack {
         client.getSession().addListener(new SessionListener() {
             public void packetReceived(PacketReceivedEvent e) {
                 new Thread(() -> handlePacket(e.getSession(), e.getPacket(), username)).start();
+
+                if (ConfigUtil.SaveWorkingProxy) {
+                    ProxyUtil.saveWorkingProxy(proxy);
+                }
             }
 
             public void packetReceived(Session session, Packet packet) {
                 new Thread(() -> {
                     handlePacket(session, packet, username);
                 }).start();
+
+                if (ConfigUtil.SaveWorkingProxy) {
+                    ProxyUtil.saveWorkingProxy(proxy);
+                }
             }
 
             public void packetSending(PacketSendingEvent packetSendingEvent) {
@@ -296,6 +304,8 @@ public class BotAttack extends IAttack {
                         if (msg.contains(rejoinDetect)) {
                             new Thread(() -> {
                                 for (int i = 0; i < ConfigUtil.RejoinCount; i++) {
+                                    OtherUtils.doSleep(ConfigUtil.RejoinDelay);
+
                                     Client rejoinClient = createClient(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, username, proxy);
                                     rejoinClient.getSession().setReadTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
                                     rejoinClient.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
@@ -305,8 +315,6 @@ public class BotAttack extends IAttack {
                                     clientName.put(rejoinClient, username);
                                     clients.add(rejoinClient);
                                     rejoinClient.getSession().connect(false);
-
-                                    OtherUtils.doSleep(ConfigUtil.RejoinDelay);
 
                                     if (rejoinClient.getSession().hasFlag("join") || rejoinClient.getSession().hasFlag("login")) {
                                         break;
@@ -379,10 +387,6 @@ public class BotAttack extends IAttack {
             session.setFlag("join", true);
             LogUtil.doLog(0, "[假人加入服务器] [" + username + "]", "BotAttack");
             joined++;
-
-            if (ConfigUtil.SaveWorkingProxy) {
-                ProxyUtil.saveWorkingProxy(ProxyUtil.clientsProxy.get(session));
-            }
 
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
