@@ -51,7 +51,6 @@ public class MCForgeMOTD {
                     if (response.modinfo != null) {
                         for (Response.ModInfo.ModID modid : response.modinfo.modList) {
                             modList.put(modid.modid, modid.version);
-                            LogUtil.doLog(0, modid.modid + " | " + modid.version, "[Debug]");
                         }
                     }
                 }
