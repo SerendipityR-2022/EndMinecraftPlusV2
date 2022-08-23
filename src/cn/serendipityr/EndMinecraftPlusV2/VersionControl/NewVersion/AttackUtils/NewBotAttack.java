@@ -346,8 +346,8 @@ public class NewBotAttack extends IAttack {
                                     OtherUtils.doSleep(ConfigUtil.RejoinDelay);
 
                                     Session rejoinClient = createClient(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, username, proxy);
-                                    rejoinClient.setReadTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
-                                    rejoinClient.setWriteTimeout(Math.toIntExact(ConfigUtil.RejoinDelay));
+                                    rejoinClient.setReadTimeout(5000);
+                                    rejoinClient.setWriteTimeout(5000);
 
                                     rejoin++;
                                     LogUtil.doLog(0,"[假人尝试重连] [" + username + "] [" + proxy + "]", "BotAttack");
