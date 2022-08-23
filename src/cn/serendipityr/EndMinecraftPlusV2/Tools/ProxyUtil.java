@@ -137,7 +137,9 @@ public class ProxyUtil {
         File workingProxies = new File("working-proxies.txt");
         InetSocketAddress inetSocketAddress = (InetSocketAddress) proxy.address();
 
-        if (!workingProxiesList.contains(proxy)) {
+        List<Proxy> tempList = workingProxiesList;
+
+        if (!tempList.contains(proxy)) {
             try {
                 FileWriter fileWriter = new FileWriter(workingProxies, true);
                 String proxyAddress = (inetSocketAddress.getAddress() + ":" + inetSocketAddress.getPort() + "\n").replace("/","");
