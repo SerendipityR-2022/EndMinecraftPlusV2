@@ -62,11 +62,6 @@ public class ConfigUtil {
 
             CfgVer = config.getInt("CfgVer");
 
-            if (!EndMinecraftPlusV2.CfgVer.equals(CfgVer)) {
-                LogUtil.doLog(1, "载入配置文件失败! 配置文件版本不匹配，请前往发布页更新配置文件。", null);
-                EndMinecraftPlusV2.Exit();
-            }
-
             AttackAddress = config.getString("AttackSettings.Address");
             AttackPort = config.getInt("AttackSettings.Port");
             AttackMethod = config.getInt("AttackSettings.Method");
@@ -143,6 +138,11 @@ public class ConfigUtil {
             }
 
             loadConfig();
+        }
+
+        if (!EndMinecraftPlusV2.CfgVer.equals(CfgVer)) {
+            LogUtil.doLog(1, "载入配置文件失败! 配置文件版本不匹配，请前往发布页更新配置文件。", null);
+            EndMinecraftPlusV2.Exit();
         }
     }
 

