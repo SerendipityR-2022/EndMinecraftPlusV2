@@ -48,7 +48,7 @@ public class MultiVersionPacket {
             ClientSettingsPacket packet;
             try {
                 Class<?> parm1Class = Class.forName("org.spacehq.mc.protocol.data.game.setting.ChatVisibility");
-                Class<?> parm2Class = Class.forName("[Lorg.spacehq.mc.protocol.data.game.setting.SkinPart;");
+                Class<?> parm2Class = Class.forName("org.spacehq.mc.protocol.data.game.setting.SkinPart;");
                 Class<?> parm3Class = Class.forName("org.spacehq.mc.protocol.data.game.entity.player.Hand");
 
                 Class<?> skinClass = Class.forName("org.spacehq.mc.protocol.data.game.setting.SkinPart");
