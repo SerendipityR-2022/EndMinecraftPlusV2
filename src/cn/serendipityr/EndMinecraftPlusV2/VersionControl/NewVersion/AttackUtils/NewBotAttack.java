@@ -459,7 +459,6 @@ public class NewBotAttack extends IAttack {
                     if (new String(packet.getData()).equals("GET:Verification"))
                         session.send(new ClientPluginMessagePacket("VexView", "Verification:1.8.10".getBytes()));
                     break;
-                default:
             }
         } else if (recvPacket instanceof ServerJoinGamePacket) {
             session.setFlag("join", true);

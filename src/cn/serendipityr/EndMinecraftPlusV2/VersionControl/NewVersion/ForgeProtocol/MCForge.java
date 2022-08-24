@@ -10,6 +10,7 @@ import com.github.steveice10.packetlib.event.session.*;
 import com.github.steveice10.packetlib.packet.Packet;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Map;
 
 public class MCForge {
@@ -25,7 +26,7 @@ public class MCForge {
     }
 
     public void init() {
-        if (ProtocolLibs.adaptAfter754) {
+        if (ProtocolLibs.adaptAfter758) {
             this.session.addListener(new SessionListener() {
                 public void packetReceived(PacketReceivedEvent e) {
                     if (e.getPacket() instanceof ClientboundCustomPayloadPacket) {
@@ -116,18 +117,20 @@ public class MCForge {
 
     public void handle(ServerPluginMessagePacket packet) {
         switch (packet.getChannel()) {
-        case "FML|HS":
-            this.handshake.handle(packet);
-            break;
-        case "REGISTER":
-        case "minecraft:register":
-            this.session.send(new ClientPluginMessagePacket(packet.getChannel(), packet.getData()));
-            break;
-        case "MC|Brand":
-        case "minecraft:brand":
-            this.session.send(new ClientPluginMessagePacket(packet.getChannel(), "fml,forge".getBytes()));
-            break;
+            case "FML|HS":
+                this.handshake.handle(packet);
+                break;
+            case "REGISTER":
+            case "minecraft:register":
+                this.session.send(new ClientPluginMessagePacket(packet.getChannel(), packet.getData()));
+                break;
+            case "MC|Brand":
+            case "minecraft:brand":
+                this.session.send(new ClientPluginMessagePacket(packet.getChannel(), "fml,forge".getBytes()));
+                break;
         }
+
+        // System.out.println(packet.getChannel() + " | " + Arrays.toString(packet.getData()));
     }
 
     public void newHandle(ClientboundCustomPayloadPacket packet) {
