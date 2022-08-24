@@ -20,6 +20,8 @@ ___
 ### 3. 工具运行期间CPU占用率飙升，以致卡顿甚至假死
 内存严重不足，此时JVM频繁进行GC操作以释放内存，占用了大量运算资源。
 尝试修改「Run.bat」文件中-Xmx参数以使用更大的内存运行。
+### 4. 部分高版本模组服务器出现java.lang.IllegalArgumentException: Invalid packet id: 33
+服务端使用了LightFall或其他模组代理端，工具目前仅支持Forge官服。
 ___
 ## 有其他Bug怎么办？
 ### 发Issues，心情好的时候可能会修~
