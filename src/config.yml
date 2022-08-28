@@ -10,8 +10,8 @@ AttackSettings:
   Port: 25565
   # 攻击方式:
   # 1 - BotAttack - 集群假人(代理)
-  # 2 - MotdAttackP - MOTD压测(代理)
-  # 3 - MotdAttack - MOTD压测(无代理)
+  # 2 - MotdAttack - MOTD压测(无代理)
+  # 3 - MotdAttackP - MOTD压测(代理)
   # 4 - DoubleAttack - 影分身攻击(代理，仅原版单服可用)
   Method: 1
   Time: 3600
