@@ -3,7 +3,7 @@
 #    Forked by SerendipityR  #
 ##############################
 
-CfgVer: 2
+CfgVer: 3
 
 AttackSettings:
   Address: "example.com"

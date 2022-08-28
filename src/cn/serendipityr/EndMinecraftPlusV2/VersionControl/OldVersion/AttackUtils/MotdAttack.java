@@ -1,5 +1,6 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.AttackUtils;
 
+import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.OtherUtils;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
@@ -47,7 +48,9 @@ public class MotdAttack extends IAttack {
                         OtherUtils.doSleep(attack_joinsleep);
                     }
                 } catch (Throwable e) {
-                    LogUtil.doLog(0, "发生错误: " + e, "MotdAttack#" + Thread.currentThread().getName());
+                    if (ConfigUtil.ShowFails) {
+                        LogUtil.doLog(0, "发生错误: " + e, "MotdAttack#" + Thread.currentThread().getName());
+                    }
                     errorTimes++;
                 }
             }

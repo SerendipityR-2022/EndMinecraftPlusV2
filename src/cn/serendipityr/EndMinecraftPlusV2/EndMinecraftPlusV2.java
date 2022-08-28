@@ -8,8 +8,8 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "1.2.8";
-    public static Integer CfgVer = 2;
+    public static String ver = "1.2.9";
+    public static Integer CfgVer = 3;
 
     public static void main(String[] args) {
         System.out.println("========================-Forked by SerendipityR-========================");
@@ -30,7 +30,7 @@ public class EndMinecraftPlusV2 {
     }
 
     public static void prepareProxy() {
-        if (!ConfigUtil.AttackMethod.equals(3)) {
+        if (!ConfigUtil.AttackMethod.equals(2)) {
             LogUtil.doLog(0, "正在获取代理...", "ProxyUtil");
             ProxyUtil.getProxies();
             ProxyUtil.runUpdateProxiesTask(ConfigUtil.ProxyUpdateTime);

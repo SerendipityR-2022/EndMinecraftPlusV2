@@ -81,13 +81,16 @@ public class MotdAttackP extends IAttack {
                         LogUtil.doLog(0, "连接已断开。", "MotdAttackP#" + Thread.currentThread().getName());
                     }
                 } catch (Throwable e) {
-                    LogUtil.doLog(0, "发生错误: " + e, "MotdAttackP#" + Thread.currentThread().getName());
+                    if (ConfigUtil.ShowFails) {
+                        LogUtil.doLog(0, "发生错误: " + e, "MotdAttackP#" + Thread.currentThread().getName());
+                    }
                     errorTimes++;
                 }
 
                 OtherUtils.doSleep(attack_joinsleep);
             }
         };
+
         return new Thread(task);
     }
 }
