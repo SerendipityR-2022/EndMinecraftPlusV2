@@ -377,7 +377,9 @@ public class BotAttack extends IAttack {
                         session.send(new ClientPluginMessagePacket("VexView", "Verification:1.8.10".getBytes()));
                     break;
                 case "MAC|Check":
-                    if (ConfigUtil.RandomMAC && packet.getData()[0] == 1) {
+                    LogUtil.doLog(0, "Channel: " + packet.getChannel() + " | Data: " + Arrays.toString(packet.getData()), "DEBUG");
+
+                    if (ConfigUtil.RandomMAC) {
                         byte[] MACAddress;
 
                         ByteArrayOutputStream buf = new ByteArrayOutputStream();
@@ -405,6 +407,7 @@ public class BotAttack extends IAttack {
                     }
                     break;
                 default:
+                    LogUtil.doLog(0, "Channel: " + packet.getChannel() + " | Data: " + Arrays.toString(packet.getData()), "DEBUG");
             }
         } else if (recvPacket instanceof ServerJoinGamePacket) {
             session.setFlag("join", true);

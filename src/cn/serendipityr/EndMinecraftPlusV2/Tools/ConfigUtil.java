@@ -138,7 +138,7 @@ public class ConfigUtil {
                 ForgeModList.put("catanticheat", "1.2.6");
             }
 
-            RandomMAC = config.getBoolean("MACChecker.RandomMAC");
+            RandomMAC = config.getBoolean("AdvancedSettings.MACChecker.RandomMAC");
 
             checkSRV();
 
