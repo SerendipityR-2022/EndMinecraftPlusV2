@@ -2,6 +2,7 @@ package cn.serendipityr.EndMinecraftPlusV2.Tools;
 
 import cc.summermc.bukkitYaml.file.YamlConfiguration;
 import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
+
 import javax.naming.directory.Attribute;
 import javax.naming.directory.InitialDirContext;
 import java.io.BufferedInputStream;
@@ -9,9 +10,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ConfigUtil {
     public static File configFile;
@@ -49,6 +48,13 @@ public class ConfigUtil {
     public static File ProxyFile;
     public static List<String> ProxyAPIs;
     public static Boolean SaveWorkingProxy;
+    public static Boolean ForgeSupport;
+    public static HashMap<String, String> ForgeModList;
+    public static Boolean CatAntiCheat;
+    public static File CACCustomScreenShot;
+    public static List<String> CACLoadedClass;
+    public static File CACLoadedMods;
+    public static Boolean RandomMAC;
 
     public void loadConfig() {
         try {
@@ -95,6 +101,44 @@ public class ConfigUtil {
             ProxyFile = new File(config.getString("Proxy.File"));
             ProxyAPIs = config.getStringList("Proxy.APIs");
             SaveWorkingProxy = config.getBoolean("Proxy.SaveWorkingProxy");
+            ForgeSupport = config.getBoolean("AdvancedSettings.ForgeSupport");
+
+            if (ForgeSupport) {
+                ForgeModList = new HashMap<>();
+
+                for (String modInfo:config.getStringList("AdvancedSettings.ModList")) {
+                    String modName = modInfo.split(":")[0];
+                    String modVersion = modInfo.split(":")[1];
+                    ForgeModList.put(modName, modVersion);
+                }
+            }
+
+            CatAntiCheat = config.getBoolean("AdvancedSettings.CatAntiCheat.Enable");
+
+            if (CatAntiCheat) {
+                CACCustomScreenShot = new File(config.getString("AdvancedSettings.CatAntiCheat.CustomScreenShot"));
+                CACLoadedClass = config.getStringList("AdvancedSettings.CatAntiCheat.LoadedClass");
+                CACLoadedMods = new File(config.getString("AdvancedSettings.CatAntiCheat.LoadedMods"));
+
+                if (!CACCustomScreenShot.exists()) {
+                    LogUtil.doLog(1, "CustomScreenShot不存在，CatAntiCheat相关功能已关闭。", null);
+                    CatAntiCheat = false;
+                }
+
+                if (CACLoadedClass.isEmpty()) {
+                    LogUtil.doLog(1, "LoadedClass为空，CatAntiCheat相关功能已关闭。", null);
+                    CatAntiCheat = false;
+                }
+
+                if (Objects.requireNonNull(CACLoadedMods.listFiles()).length <= 5) {
+                    LogUtil.doLog(1, "LoadedMods数量不足(<=5)，CatAntiCheat相关功能已关闭。", null);
+                    CatAntiCheat = false;
+                }
+
+                ForgeModList.put("catanticheat", "1.2.6");
+            }
+
+            RandomMAC = config.getBoolean("MACChecker.RandomMAC");
 
             checkSRV();
 
@@ -105,8 +149,10 @@ public class ConfigUtil {
             LogUtil.doLog(0, "攻击时间: " + AttackTime + "秒", "CFGUtil");
             LogUtil.doLog(0, "连接间隔: " + timeToSeconds(ConnectDelay) + "秒", "CFGUtil");
             LogUtil.doLog(0, "最大连接数: " + MaxConnections + "个", "CFGUtil");
+            LogUtil.doLog(0, "Forge支持: " + booleanToStr(ForgeSupport), "CFGUtil");
             LogUtil.doLog(0, "同时进行Tab攻击: " + booleanToStr(TabAttack), "CFGUtil");
             LogUtil.doLog(0, "AntiAttack模式: " + booleanToStr(AntiAttackMode), "CFGUtil");
+            LogUtil.doLog(0, "CatAntiCheat绕过: " + booleanToStr(CatAntiCheat), "CFGUtil");
             LogUtil.doLog(0, "代理类型: " + getProxyFrom(ProxyGetType), "CFGUtil");
             LogUtil.doLog(0, "代理API: " + ProxyAPIs.size() + "个", "CFGUtil");
             LogUtil.doLog(0, "代理更新间隔: " + ProxyUpdateTime + "秒", "CFGUtil");

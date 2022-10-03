@@ -8,8 +8,8 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "1.3.0";
-    public static Integer CfgVer = 3;
+    public static String ver = "1.4.0";
+    public static Integer CfgVer = 4;
 
     public static void main(String[] args) {
         System.out.println("========================-Forked by SerendipityR-========================");

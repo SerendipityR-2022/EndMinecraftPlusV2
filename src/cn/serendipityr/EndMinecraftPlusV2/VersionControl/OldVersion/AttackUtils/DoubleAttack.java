@@ -6,6 +6,7 @@ import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.Session;
 import org.spacehq.packetlib.packet.Packet;
 
+import java.io.IOException;
 import java.net.Proxy;
 
 public class DoubleAttack extends BotAttack {
@@ -26,7 +27,7 @@ public class DoubleAttack extends BotAttack {
         return super.createClient(ip, port, this.username, proxy);
     }
 
-    protected void handlePacket(Session session, Packet recvPacket, String username) {
+    protected void handlePacket(Session session, Packet recvPacket, String username) throws IOException {
         super.handlePacket(session, recvPacket, username);
         if (recvPacket instanceof ServerJoinGamePacket) {
             session.disconnect("Double Exploit - Connection Reset!");

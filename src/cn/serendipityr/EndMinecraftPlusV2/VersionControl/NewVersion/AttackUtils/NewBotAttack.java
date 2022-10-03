@@ -308,7 +308,10 @@ public class NewBotAttack extends IAttack {
         ProxyInfo proxyInfo = new ProxyInfo(proxyType, new InetSocketAddress(proxyAddress[0], Integer.parseInt(proxyAddress[1])));
         client = VersionSupport754.getSession(ip, port, username, proxyInfo);
 
-        new MCForge(client, this.modList).init();
+        if (ConfigUtil.ForgeSupport) {
+            modList.putAll(ConfigUtil.ForgeModList);
+            new MCForge(client, this.modList).init();
+        }
 
         client.addListener(new SessionListener() {
             public void packetReceived(PacketReceivedEvent e) {

@@ -4,6 +4,7 @@ import cn.serendipityr.EndMinecraftPlusV2.Tools.*;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ACProtocol.AnotherStarAntiCheat;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ACProtocol.AntiCheat3;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.CatAntiCheat.CatAntiCheat;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtocol.MCForge;
 import io.netty.util.internal.ConcurrentSet;
 import org.spacehq.mc.protocol.MinecraftProtocol;
@@ -20,9 +21,12 @@ import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPo
 import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.Session;
 import org.spacehq.packetlib.event.session.*;
+import org.spacehq.packetlib.io.stream.StreamNetOutput;
 import org.spacehq.packetlib.packet.Packet;
 import org.spacehq.packetlib.tcp.TcpSessionFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -244,12 +248,19 @@ public class BotAttack extends IAttack {
 
     public Client createClient(final String ip, int port, final String username, Proxy proxy) {
         Client client = new Client(ip, port, new MinecraftProtocol(username), new TcpSessionFactory(proxy));
-        new MCForge(client.getSession(), this.modList).init();
+        if (ConfigUtil.ForgeSupport) {
+            modList.putAll(ConfigUtil.ForgeModList);
+            new MCForge(client.getSession(), modList).init();
+        }
 
         client.getSession().addListener(new SessionListener() {
             public void packetReceived(PacketReceivedEvent e) {
                 new Thread(() -> {
-                    handlePacket(e.getSession(), e.getPacket(), username);
+                    try {
+                        handlePacket(e.getSession(), e.getPacket(), username);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }).start();
 
                 if (ConfigUtil.SaveWorkingProxy) {
@@ -346,7 +357,7 @@ public class BotAttack extends IAttack {
         } catch (Exception ignored) {}
     }
 
-    protected void handlePacket(Session session, Packet recvPacket, String username) {
+    protected void handlePacket(Session session, Packet recvPacket, String username) throws IOException {
         if (recvPacket instanceof ServerPluginMessagePacket) {
             ServerPluginMessagePacket packet = (ServerPluginMessagePacket) recvPacket;
             switch (packet.getChannel()) {
@@ -364,6 +375,34 @@ public class BotAttack extends IAttack {
                 case "VexView":
                     if (new String(packet.getData()).equals("GET:Verification"))
                         session.send(new ClientPluginMessagePacket("VexView", "Verification:1.8.10".getBytes()));
+                    break;
+                case "MAC|Check":
+                    if (ConfigUtil.RandomMAC && packet.getData()[0] == 1) {
+                        byte[] MACAddress;
+
+                        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                        StreamNetOutput out = new StreamNetOutput(buf);
+
+                        for (int i = 0; i < 6 ; i++) {
+                            byte[] bytes = new byte[1];
+                            new Random().nextBytes(bytes);
+                            try {
+                                out.writeByte(bytes[0]);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        MACAddress = buf.toByteArray();
+                        LogUtil.doLog(0, "[" + username + "] 已发送随机MACAddress数据。(" + Arrays.toString(MACAddress) + ")", "MACCheck");
+                        session.send(new ClientPluginMessagePacket(packet.getChannel(), MACAddress));
+                    }
+                    break;
+                case "CatAntiCheat":
+                case "catanticheat:data":
+                    if (ConfigUtil.CatAntiCheat) {
+                        CatAntiCheat.packetHandle(session, packet.getChannel(), packet.getData(), username);
+                    }
                     break;
                 default:
             }
@@ -394,8 +433,8 @@ public class BotAttack extends IAttack {
             ServerChatPacket chatPacket = (ServerChatPacket) recvPacket;
             clickVerifiesHandle(chatPacket.getMessage(), session, username);
         } else if (recvPacket instanceof ServerKeepAlivePacket) {
-            ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
-            session.send(keepAlivePacket);
+            // ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
+            // session.send(keepAlivePacket);
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
             }

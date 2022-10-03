@@ -3,7 +3,7 @@
 #    Forked by SerendipityR  #
 ##############################
 
-CfgVer: 3
+CfgVer: 4
 
 AttackSettings:
   Address: "example.com"
@@ -25,6 +25,26 @@ AttackSettings:
   AntiAttackMode: true
   DoubleExploitPlayer: "ImOldSix_666"
   ShowFails: false
+
+AdvancedSettings:
+  # 启用Forge支持
+  ForgeSupport: true
+  ModList:
+    - "exampleMod:1.0.0"
+  # 猫反作弊欺骗
+  CatAntiCheat:
+    Enable: false
+    CustomScreenShot: "test.png"
+    # 类加载列表，请注意版本特征
+    # 1.7.10 - net.minecraft.launchwrapper.ITweaker
+    # 1.12.2 - net.minecraft.launchwrapper.LaunchClassLoader
+    LoadedClass:
+      - "net.minecraft.launchwrapper.LaunchClassLoader"
+    # 需在mods文件夹中放入5个以上原始客户端模组
+    LoadedMods: "mods"
+  # MAC|Check欺骗
+  MACChecker:
+    RandomMAC: true
 
 BotSettings:
   # 可用占位符:

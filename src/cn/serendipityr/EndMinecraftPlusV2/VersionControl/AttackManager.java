@@ -25,7 +25,7 @@ public class AttackManager {
                 Map<String, String> modList = new HashMap<>();
 
                 if (ProtocolLibs.highVersion) {
-                    LogUtil.doLog(0, "当前选定协议库版本不支持获取Forge Mods。", "BotAttack");
+                    LogUtil.doLog(0, "当前选定协议库版本不支持自动获取Forge Mods。", "BotAttack");
 
                     if (ProtocolLibs.adaptAfter754) {
                         cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.NewBotAttack botAttack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.NewBotAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);
@@ -65,7 +65,7 @@ public class AttackManager {
                 isDoubleAttack = true;
 
                 if (ProtocolLibs.highVersion) {
-                    LogUtil.doLog(0, "当前选定协议库版本不支持获取Forge Mods。", "DoubleAttack");
+                    LogUtil.doLog(0, "当前选定协议库版本不支持自动获取Forge Mods。", "DoubleAttack");
 
                     if (ProtocolLibs.adaptAfter754) {
                         cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.NewDoubleAttack attack = new cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.NewDoubleAttack(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, ConfigUtil.AttackTime, ConfigUtil.MaxConnections, ConfigUtil.ConnectDelay);

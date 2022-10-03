@@ -268,7 +268,10 @@ public class BotAttack extends IAttack {
             client = new Client(ip, port, new MinecraftProtocol(username), new TcpSessionFactory(proxy));
         }
 
-        new MCForge(client.getSession(), this.modList).init();
+        if (ConfigUtil.ForgeSupport) {
+            modList.putAll(ConfigUtil.ForgeModList);
+            new MCForge(client.getSession(), this.modList).init();
+        }
 
         client.getSession().addListener(new SessionListener() {
             public void packetReceived(PacketReceivedEvent e) {
