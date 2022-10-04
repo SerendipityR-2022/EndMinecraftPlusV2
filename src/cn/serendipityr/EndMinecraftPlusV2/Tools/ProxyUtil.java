@@ -147,7 +147,7 @@ public class ProxyUtil {
                 fileWriter.close();
                 workingProxiesList.add(proxy);
             } catch (IOException e) {
-                LogUtil.doLog(1, "保存有效代理失败! IO异常。", null);
+                LogUtil.doLog(1, "保存有效代理失败! IO异常: " + e.getMessage(), null);
             }
         }
     }
