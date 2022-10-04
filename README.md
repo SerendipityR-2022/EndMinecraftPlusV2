@@ -32,8 +32,8 @@ Linux系统对线程有一定限制，尝试修改配置并重启系统。
 [/etc/systemd/system.conf] 及 [/etc/systemd/user.conf]
 
 ```
-DefaultLimitNOFILE=65535
-DefaultLimitNPROC=65535
+DefaultLimitNOFILE=100000
+DefaultLimitNPROC=100000
 ```
 ___
 ## 有其他Bug怎么办？
