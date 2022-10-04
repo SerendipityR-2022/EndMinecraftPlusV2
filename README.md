@@ -25,6 +25,15 @@ ___
 尝试修改「Run.bat」文件中-Xmx参数以使用更大的内存运行。
 ### 4. 部分高版本模组服务器出现java.lang.IllegalArgumentException: Invalid packet id: XX
 服务端使用了LightFall或其他模组代理端，工具目前仅支持Forge官服。
+### 5. IO异常: Too many open files
+Linux系统对线程有一定限制，尝试修改配置并重启系统。
+
+[/etc/systemd/system.conf] 及 [/etc/systemd/user.conf]
+
+```
+DefaultLimitNOFILE=65535
+DefaultLimitNPROC=65535
+```
 ___
 ## 有其他Bug怎么办？
 ### 发Issues，心情好的时候可能会修~
