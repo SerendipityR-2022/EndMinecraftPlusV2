@@ -26,6 +26,7 @@ import com.github.steveice10.packetlib.event.session.*;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import io.netty.util.internal.ConcurrentSet;
+import sun.rmi.runtime.Log;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -102,8 +103,8 @@ public class BotAttack extends IAttack {
                         } else if (c.getSession().hasFlag("join")) {
                             if (ConfigUtil.RegisterAndLogin) {
                                 for (String cmd:ConfigUtil.RegisterCommands) {
-                                    c.getSession().send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
                                     OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                    c.getSession().send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
                                 }
                             }
 

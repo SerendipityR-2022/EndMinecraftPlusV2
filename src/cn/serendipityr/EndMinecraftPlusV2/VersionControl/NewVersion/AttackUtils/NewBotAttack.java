@@ -133,6 +133,8 @@ public class NewBotAttack extends IAttack {
                         } else if (c.hasFlag("join")) {
                             if (ConfigUtil.RegisterAndLogin) {
                                 for (String cmd:ConfigUtil.RegisterCommands) {
+                                    OtherUtils.doSleep(ConfigUtil.ChatDelay);
+
                                     if (ProtocolLibs.adaptAfter760) {
                                         VersionSupport760.sendChatPacket(c, cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c))));
                                     } else if (ProtocolLibs.adaptAfter759) {
@@ -142,8 +144,6 @@ public class NewBotAttack extends IAttack {
                                     } else {
                                         c.send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
                                     }
-
-                                    OtherUtils.doSleep(ConfigUtil.ChatDelay);
                                 }
                             }
 
