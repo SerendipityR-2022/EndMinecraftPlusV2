@@ -1,5 +1,6 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.AttackUtils;
 
+import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.*;
 import org.spacehq.packetlib.Client;
 
@@ -77,7 +78,9 @@ public class MotdAttackP extends IAttack {
     }
 
     public Thread createThread(Proxy proxy, String ip, int port) {
-        SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - MotdAttack | 当前连接数: " + threads.size() + "个 | 发包次数: " + runTimes + "次 | 有效包数: " + successTimes + "次 | 错误次数: " + errorTimes);
+        if (!EndMinecraftPlusV2.isLinux) {
+            SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - MotdAttack | 当前连接数: " + threads.size() + "个 | 发包次数: " + runTimes + "次 | 有效包数: " + successTimes + "次 | 错误次数: " + errorTimes);
+        }
         runTimes++;
         Runnable task = () -> {
             try {

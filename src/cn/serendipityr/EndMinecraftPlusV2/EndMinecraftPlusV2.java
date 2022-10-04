@@ -8,8 +8,9 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "1.4.0";
+    public static String ver = "1.4.1";
     public static Integer CfgVer = 4;
+    public static Boolean isLinux = false;
 
     public static void main(String[] args) {
         System.out.println("========================-Forked by SerendipityR-========================");
@@ -17,7 +18,11 @@ public class EndMinecraftPlusV2 {
         System.out.println(" Github发布页: https://github.com/SerendipityR-2022/EndMinecraftPlusV2");
         System.out.println(" EndMinecraftPlusV2 (Ver: " + ver + ")" + " is loading......");
         System.out.println("========================================================================");
-        SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - Forked by SerendipityR");
+        try {
+            SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - Forked by SerendipityR");
+        } catch (Throwable e) {
+            isLinux = true;
+        }
         LogUtil.emptyLog();
         prepareConfig();
         prepareProxy();

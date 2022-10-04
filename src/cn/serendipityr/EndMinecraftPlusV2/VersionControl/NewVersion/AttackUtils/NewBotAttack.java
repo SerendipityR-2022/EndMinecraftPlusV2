@@ -1,5 +1,6 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils;
 
+import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.*;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.*;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.AnotherStarAntiCheat;
@@ -248,7 +249,9 @@ public class NewBotAttack extends IAttack {
         while (run) {
             for (String p: ProxyUtil.proxies) {
                 try {
-                    SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
+                    if (!EndMinecraftPlusV2.isLinux) {
+                        SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
+                    }
 
                     String[] _p = p.split(":");
                     Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));

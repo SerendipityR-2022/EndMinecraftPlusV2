@@ -37,7 +37,7 @@ public class AttackManager {
                         botAttack.start();
                     }
                 } else {
-                    if (!MCForge.isAfterVersion1_13()) {
+                    if (!MCForge.isAfterVersion1_13() && ConfigUtil.ForgeSupport) {
                         LogUtil.doLog(0, "正在获取服务器上的Forge Mods...", "BotAttack");
                         modList = new MCForgeMOTD().pingGetModsList(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, MCForge.getProtocolVersion());
                         LogUtil.doLog(0, "Mods: " + Arrays.toString(modList.keySet().toArray()), "BotAttack");
@@ -79,7 +79,7 @@ public class AttackManager {
                         attack.start();
                     }
                 } else {
-                    if (!MCForge.isAfterVersion1_13()) {
+                    if (!MCForge.isAfterVersion1_13() && ConfigUtil.ForgeSupport) {
                         LogUtil.doLog(0, "正在获取服务器上的Forge Mods...", "DoubleAttack");
                         doubleModList = new MCForgeMOTD().pingGetModsList(ConfigUtil.AttackAddress, ConfigUtil.AttackPort, MCForge.getProtocolVersion());
                         LogUtil.doLog(0, "Mods: " + Arrays.toString(doubleModList.keySet().toArray()), "DoubleAttack");

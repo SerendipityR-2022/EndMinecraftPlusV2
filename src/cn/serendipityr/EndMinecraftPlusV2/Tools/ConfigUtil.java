@@ -135,7 +135,12 @@ public class ConfigUtil {
                     CatAntiCheat = false;
                 }
 
-                ForgeModList.put("catanticheat", "1.2.6");
+                if (!ForgeSupport) {
+                    LogUtil.doLog(1, "ForgeSupport未开启，CatAntiCheat相关功能已关闭。", null);
+                    CatAntiCheat = false;
+                } else {
+                    ForgeModList.put("catanticheat", "1.2.6");
+                }
             }
 
             RandomMAC = config.getBoolean("AdvancedSettings.MACChecker.RandomMAC");

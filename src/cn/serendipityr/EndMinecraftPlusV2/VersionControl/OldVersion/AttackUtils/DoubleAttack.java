@@ -1,5 +1,6 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.AttackUtils;
 
+import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.packetlib.Client;
@@ -32,7 +33,9 @@ public class DoubleAttack extends BotAttack {
         if (recvPacket instanceof ServerJoinGamePacket) {
             session.disconnect("Double Exploit - Connection Reset!");
             runTimes++;
-            SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - DoubleAttack | 总连接数: " + totalTimes + "次 | 尝试分身: " + runTimes + "次");
+            if (!EndMinecraftPlusV2.isLinux) {
+                SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - DoubleAttack | 总连接数: " + totalTimes + "次 | 尝试分身: " + runTimes + "次");
+            }
         }
     }
 }

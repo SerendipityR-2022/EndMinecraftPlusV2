@@ -1,12 +1,11 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.AttackUtils;
 
+import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.OtherUtils;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -32,7 +31,9 @@ public class MotdAttack extends IAttack {
         }
 
         while (true) {
-            SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - MotdAttack | 当前连接数: " + threads.size() + "个 | 发包次数: " + runTimes + "次 | 有效包数: " + successTimes + "次 | 错误次数: " + errorTimes);
+            if (!EndMinecraftPlusV2.isLinux) {
+                SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - MotdAttack | 当前连接数: " + threads.size() + "个 | 发包次数: " + runTimes + "次 | 有效包数: " + successTimes + "次 | 错误次数: " + errorTimes);
+            }
 
             if (this.attack_time > 0 && (System.currentTimeMillis() - this.starttime) / 1000 > this.attack_time) {
                 stop();

@@ -1,5 +1,6 @@
 package cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils;
 
+import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
@@ -37,7 +38,9 @@ public class NewDoubleAttack extends NewBotAttack {
             }
 
             runTimes++;
-            SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - DoubleAttack | 总连接数: " + totalTimes + "次 | 尝试分身: " + runTimes + "次");
+            if (!EndMinecraftPlusV2.isLinux) {
+                SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - DoubleAttack | 总连接数: " + totalTimes + "次 | 尝试分身: " + runTimes + "次");
+            }
         }
     }
 
@@ -47,7 +50,9 @@ public class NewDoubleAttack extends NewBotAttack {
             session.disconnect("Double Exploit - Connection Reset!");
             LogUtil.doLog(0, "Double Exploit - Connection Reset!", "DoubleAttack");
             runTimes++;
-            SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - DoubleAttack | 总连接数: " + totalTimes + "次 | 尝试分身: " + runTimes + "次");
+            if (!EndMinecraftPlusV2.isLinux) {
+                SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - DoubleAttack | 总连接数: " + totalTimes + "次 | 尝试分身: " + runTimes + "次");
+            }
         }
     }
 }
