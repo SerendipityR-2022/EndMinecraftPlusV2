@@ -106,6 +106,8 @@ public class BotAttack extends IAttack {
                                     OtherUtils.doSleep(ConfigUtil.ChatDelay);
                                     c.getSession().send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
                                 }
+
+                                LogUtil.doLog(0, "[" + clientName.get(c) + "] 注册信息已发送。", "BotAttack");
                             }
 
                             c.getSession().setFlag("login", true);

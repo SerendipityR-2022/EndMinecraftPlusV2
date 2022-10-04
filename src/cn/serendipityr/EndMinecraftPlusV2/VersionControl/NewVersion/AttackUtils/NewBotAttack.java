@@ -145,6 +145,8 @@ public class NewBotAttack extends IAttack {
                                         c.send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
                                     }
                                 }
+
+                                LogUtil.doLog(0, "[" + clientName.get(c) + "] 注册信息已发送。", "BotAttack");
                             }
 
                             c.setFlag("login", true);
