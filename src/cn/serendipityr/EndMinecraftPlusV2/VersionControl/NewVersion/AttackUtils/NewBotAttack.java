@@ -29,6 +29,7 @@ import com.github.steveice10.packetlib.event.session.*;
 import com.github.steveice10.packetlib.packet.Packet;
 import io.netty.util.internal.ConcurrentSet;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
@@ -368,7 +369,8 @@ public class NewBotAttack extends IAttack {
                         msg = e.getReason();
 
                         if (ProtocolLibs.adaptAfter754) {
-                            Component component = GsonComponentSerializer.gson().deserialize(msg);
+                            // Component component = GsonComponentSerializer.gson().deserialize(msg);
+                            Component component = PlainTextComponentSerializer.plainText().deserialize(msg);
                             msg = PlainTextComponentSerializer.plainText().serialize(component);
                         }
 
@@ -475,7 +477,6 @@ public class NewBotAttack extends IAttack {
 
         } else if (recvPacket instanceof ServerChatPacket) {
             ServerChatPacket chatPacket = (ServerChatPacket) recvPacket;
-            Message message = chatPacket.getMessage();
             Map<String, String> result = VersionSupport754.clickVerifiesHandle(chatPacket, session, ConfigUtil.ClickVerifiesDetect, null);
 
             if (result.get("result").contains("true")) {
@@ -491,8 +492,8 @@ public class NewBotAttack extends IAttack {
                 alivePlayers.add(username);
             }
 
-            if (ConfigUtil.ShowServerMessages && !message.getText().equals("")) {
-                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + message.getFullText(), "BotAttack");
+            if (ConfigUtil.ShowServerMessages && !result.get("msg").equals("")) {
+                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get("msg"), "BotAttack");
             }
         } else if (recvPacket instanceof ServerKeepAlivePacket) {
             ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
