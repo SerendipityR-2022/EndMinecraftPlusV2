@@ -32,7 +32,9 @@ public class DoubleAttack extends BotAttack {
         super.handlePacket(session, recvPacket, username);
         if (recvPacket instanceof ServerJoinGamePacket) {
             session.disconnect("Double Exploit - Connection Reset!");
+
             runTimes++;
+
             if (!EndMinecraftPlusV2.isLinux) {
                 SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - DoubleAttack | 总连接数: " + totalTimes + "次 | 尝试分身: " + runTimes + "次");
             }

@@ -8,15 +8,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class VersionSupport760 {
-    public static List<String> clickVerifiesHandle(Packet packet, Session session, List<String> ClickVerifiesDetect, Component Message) {
+    public static Map<String, String> clickVerifiesHandle(Packet packet, Session session, List<String> ClickVerifiesDetect, Component Message) {
         ClientboundSystemChatPacket chatPacket = (ClientboundSystemChatPacket) packet;
 
-        List<String> result = new ArrayList<>();
+        Map<String, String> result = new HashMap<>();
         boolean needClick = false;
         Component message;
 
@@ -39,20 +37,20 @@ public class VersionSupport760 {
 
         if (needClick) {
             session.send(new ServerboundChatPacket(Objects.requireNonNull(message.style().clickEvent()).value(), Instant.now().toEpochMilli(), 0, new byte[0], false, new ArrayList<>(), null));
-            result.add("1");
-            result.add(simpleMsg);
-            result.add(Objects.requireNonNull(message.style().clickEvent()).value());
+            String msg = Objects.requireNonNull(message.style().clickEvent()).value();
+            result.put("result", "true");
+            result.put("msg", msg);
             return result;
         }
 
         if (!message.children().isEmpty()) {
             for (Component extraMessage:message.children()) {
-                clickVerifiesHandle(null, session, ClickVerifiesDetect, extraMessage);
+                return clickVerifiesHandle(null, session, ClickVerifiesDetect, extraMessage);
             }
         }
 
-        result.add("0");
-        result.add(simpleMsg);
+        result.put("result", "false");
+        result.put("msg", simpleMsg);
         return result;
     }
 

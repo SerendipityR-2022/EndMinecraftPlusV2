@@ -9,17 +9,15 @@ import com.github.steveice10.packetlib.tcp.TcpClientSession;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class VersionSupport754 {
     public static Session getSession(String ip, Integer port, String username, ProxyInfo proxyInfo) {
         return new TcpClientSession(ip, port, new MinecraftProtocol(username), proxyInfo);
     }
 
-    public static List<String> clickVerifiesHandle(ServerChatPacket packet, Session session, List<String> ClickVerifiesDetect, Component Message) {
-        List<String> result = new ArrayList<>();
+    public static Map<String, String> clickVerifiesHandle(ServerChatPacket packet, Session session, List<String> ClickVerifiesDetect, Component Message) {
+        Map<String, String> result = new HashMap<>();
         boolean needClick = false;
         Component message;
 
@@ -41,21 +39,20 @@ public class VersionSupport754 {
         }
 
         if (needClick) {
-            session.send(new ClientChatPacket(Objects.requireNonNull(message.style().clickEvent()).value()));
-            result.add("1");
-            result.add(simpleMsg);
-            result.add(Objects.requireNonNull(message.style().clickEvent()).value());
+            String msg = Objects.requireNonNull(message.style().clickEvent()).value();
+            session.send(new ClientChatPacket(msg));
+            result.put("result", "true");
+            result.put("msg", msg);
             return result;
         }
 
         if (!message.children().isEmpty()) {
             for (Component extraMessage:message.children()) {
-                clickVerifiesHandle(null, session, ClickVerifiesDetect, extraMessage);
+                return clickVerifiesHandle(null, session, ClickVerifiesDetect, extraMessage);
             }
         }
 
-        result.add("0");
-        result.add(simpleMsg);
+        result.put("result", "false");
         return result;
     }
 }

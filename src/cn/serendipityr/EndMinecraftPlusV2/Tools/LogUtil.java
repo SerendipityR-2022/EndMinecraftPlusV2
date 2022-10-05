@@ -29,6 +29,6 @@ public class LogUtil {
     }
 
     public static void emptyLog() {
-        System.out.println("");
+        System.out.println();
     }
 }

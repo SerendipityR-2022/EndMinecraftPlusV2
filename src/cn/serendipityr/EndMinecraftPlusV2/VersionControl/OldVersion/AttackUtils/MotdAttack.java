@@ -84,9 +84,11 @@ public class MotdAttack extends IAttack {
 
             new Thread(() -> {
                 OtherUtils.doSleep(ConfigUtil.ConnectTimeout);
+
                 if (task.isAlive()) {
                     task.stop();
                 }
+
                 threads.remove(task);
             }).start();
         }

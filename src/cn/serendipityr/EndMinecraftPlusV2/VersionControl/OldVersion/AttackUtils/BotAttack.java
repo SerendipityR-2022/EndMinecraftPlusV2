@@ -105,9 +105,9 @@ public class BotAttack extends IAttack {
                                     OtherUtils.doSleep(ConfigUtil.ChatDelay);
                                     c.getSession().send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
                                 }
-
                                 LogUtil.doLog(0, "[" + clientName.get(c) + "] 注册信息已发送。", "BotAttack");
                             }
+
                             c.getSession().setFlag("login", true);
                         }
                     }
@@ -146,7 +146,7 @@ public class BotAttack extends IAttack {
                     Set<Client> cacheClients = clients;
 
                     for (Client c:cacheClients) {
-                        if (c.getSession().isConnected() && c.getSession().hasFlag("join")) {
+                        if (c.getSession().isConnected() && c.getSession().hasFlag("login")) {
                             MultiVersionPacket.sendTabPacket(c.getSession(), "/");
                         }
                     }
@@ -315,8 +315,7 @@ public class BotAttack extends IAttack {
                             }
                         }
                     } else if (ConfigUtil.ShowFails) {
-                        msg = e.getCause().getMessage();
-                        LogUtil.doLog(0,"[假人断开连接] [" + username + "] " + msg, "BotAttack");
+                        LogUtil.doLog(0,"[假人断开连接] [" + username + "] " + e.getCause(), "BotAttack");
                     }
 
                     failed++;
@@ -420,9 +419,17 @@ public class BotAttack extends IAttack {
 
         } else if (recvPacket instanceof ServerChatPacket) {
             ServerChatPacket chatPacket = (ServerChatPacket) recvPacket;
-            clickVerifiesHandle(chatPacket.getMessage(), session, username);
-
             Message message = chatPacket.getMessage();
+
+            clickVerifiesHandle(message, session, username);
+
+            if (!joinedPlayers.contains(session)) {
+                joinedPlayers.add(session);
+            }
+
+            if (!alivePlayers.contains(username)) {
+                alivePlayers.add(username);
+            }
 
             if (ConfigUtil.ShowServerMessages && !message.getFullText().equals("")) {
                 LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + message.getFullText(), "BotAttack");
@@ -456,14 +463,6 @@ public class BotAttack extends IAttack {
             LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + message.getStyle().getClickEvent().getValue(), "BotAttack");
             session.send(new ClientChatPacket(message.getStyle().getClickEvent().getValue()));
             clickVerifies++;
-        } else {
-            if (!joinedPlayers.contains(session)) {
-                joinedPlayers.add(session);
-            }
-
-            if (!alivePlayers.contains(username)) {
-                alivePlayers.add(username);
-            }
         }
 
         if (message.getExtra() != null && !message.getExtra().isEmpty()) {

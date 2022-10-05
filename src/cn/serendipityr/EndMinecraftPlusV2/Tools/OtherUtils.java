@@ -78,21 +78,6 @@ public class OtherUtils {
         return (float) (Math.random()*(max-min)+min);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T getCo(String date, T def) {
-        if (date.equals("")) {
-            return def;
-        }
-        return (T) date;
-    }
-
-    public static int getCo(String date, int def) {
-        if (date.equals("")) {
-            return def;
-        }
-        return Integer.parseInt(date);
-    }
-
     public static void loadLibrary(File file) {
         try {
             URLClassLoader cl = (URLClassLoader) ClassLoader.getSystemClassLoader();

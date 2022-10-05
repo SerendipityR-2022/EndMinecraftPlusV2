@@ -15,11 +15,11 @@ AttackSettings:
   # 4 - DoubleAttack - 影分身攻击(代理，仅原版单服可用)
   Method: 1
   Time: 3600
-  ConnectDelay: 250
-  ConnectTimeout: 8000
+  ConnectDelay: 15
+  ConnectTimeout: 5000
   # 实际连接数由代理质量和机器性能有关
   # 进行无代理Motd压测时不建议大于32
-  MaxConnections: 2000
+  MaxConnections: 2500
   # 旧版漏洞利用，大概率无效
   TabAttack: true
   AntiAttackMode: true
@@ -44,7 +44,7 @@ AdvancedSettings:
     LoadedMods: "mods"
   # MAC|Check欺骗
   MACChecker:
-    RandomMAC: true
+    RandomMAC: false
 
 BotSettings:
   # 可用占位符:
@@ -58,12 +58,12 @@ BotSettings:
   # 3 - ABC - 纯字母
   # 4 - 123 - 纯数字
   RandomFlag: 1
-  RandomMinLength: 4
-  RandomMaxLength: 6
+  RandomMinLength: 6
+  RandomMaxLength: 8
   # 尝试发送随机传送数据包
-  RandomTeleport: true
+  RandomTeleport: false
   RejoinCount: 5
-  RejoinDelay: 2000
+  RejoinDelay: 3500
   RejoinDetect:
     - "AntiAttack"
   ClickVerifiesDetect:

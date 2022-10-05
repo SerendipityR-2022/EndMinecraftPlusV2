@@ -11,19 +11,19 @@ import com.github.steveice10.packetlib.packet.Packet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
-import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class VersionSupport758 {
-    public static List<String> clickVerifiesHandle(Packet packet, Session session, List<String> ClickVerifiesDetect, Component Message) {
+    public static Map<String, String> clickVerifiesHandle(Packet packet, Session session, List<String> ClickVerifiesDetect, Component Message) {
         ClientboundChatPacket chatPacket = (ClientboundChatPacket) packet;
 
-        List<String> result = new ArrayList<>();
+        Map<String, String> result = new HashMap<>();
         boolean needClick = false;
         Component message;
 
@@ -45,10 +45,10 @@ public class VersionSupport758 {
         }
 
         if (needClick) {
-            session.send(new ServerboundChatPacket(Objects.requireNonNull(message.style().clickEvent()).value()));
-            result.add("1");
-            result.add(simpleMsg);
-            result.add(Objects.requireNonNull(message.style().clickEvent()).value());
+            String msg = Objects.requireNonNull(message.style().clickEvent()).value();
+            session.send(new ServerboundChatPacket(msg));
+            result.put("result", "true");
+            result.put("msg", msg);
             return result;
         }
 
@@ -58,8 +58,8 @@ public class VersionSupport758 {
             }
         }
 
-        result.add("0");
-        result.add(simpleMsg);
+        result.put("result", "false");
+        result.put("msg", simpleMsg);
         return result;
     }
 

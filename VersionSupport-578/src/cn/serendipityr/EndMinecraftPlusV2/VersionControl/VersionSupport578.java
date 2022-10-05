@@ -6,14 +6,17 @@ import com.github.steveice10.packetlib.ProxyInfo;
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VersionSupport578 {
     public TcpSessionFactory createTcpSessionFactory(ProxyInfo proxyInfo) {
         return new TcpSessionFactory(proxyInfo);
     }
 
-    public static boolean clickVerifiesHandle(Message message, Session session, List<String> ClickVerifiesDetect) {
+    public static Map<String, String> clickVerifiesHandle(Message message, Session session, List<String> ClickVerifiesDetect) {
+        Map<String, String> result = new HashMap<>();
         boolean needClick = false;
 
         if (message.getStyle().getClickEvent() != null) {
@@ -26,16 +29,20 @@ public class VersionSupport578 {
         }
 
         if (needClick) {
-            session.send(new ClientChatPacket(message.getStyle().getClickEvent().getValue()));
-            return true;
+            String msg = message.getStyle().getClickEvent().getValue();
+            session.send(new ClientChatPacket(msg));
+            result.put("result", "true");
+            result.put("msg", msg);
+            return result;
         }
 
         if (message.getExtra() != null && !message.getExtra().isEmpty()) {
             for (Message extraMessage:message.getExtra()) {
-                clickVerifiesHandle(extraMessage, session, ClickVerifiesDetect);
+                return clickVerifiesHandle(extraMessage, session, ClickVerifiesDetect);
             }
         }
 
-        return false;
+        result.put("result", "false");
+        return result;
     }
 }
