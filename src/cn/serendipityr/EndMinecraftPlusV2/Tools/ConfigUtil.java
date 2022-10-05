@@ -55,6 +55,7 @@ public class ConfigUtil {
     public static List<String> CACLoadedClass;
     public static File CACLoadedMods;
     public static Boolean RandomMAC;
+    public static Boolean ShowServerMessages;
 
     public void loadConfig() {
         try {
@@ -95,6 +96,7 @@ public class ConfigUtil {
             ChatSpam = config.getBoolean("BotSettings.ChatSpam");
             CustomChat = config.getStringList("BotSettings.CustomChat");
             ChatDelay = config.getLong("BotSettings.ChatDelay");
+            ShowServerMessages = config.getBoolean("BotSettings.ShowServerMessages");
             ProxyGetType = config.getInt("Proxy.GetType");
             ProxyType = config.getInt("Proxy.ProxyType");
             ProxyUpdateTime = config.getInt("Proxy.UpdateTime");

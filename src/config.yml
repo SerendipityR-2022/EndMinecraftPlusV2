@@ -3,7 +3,7 @@
 #    Forked by SerendipityR  #
 ##############################
 
-CfgVer: 4
+CfgVer: 5
 
 AttackSettings:
   Address: "example.com"
@@ -80,6 +80,8 @@ BotSettings:
     - "喵喵~ $rnd"
     - "喵~ $rnd"
   ChatDelay: 3000
+  # 显示来自服务器的聊天信息
+  ShowServerMessages: true
 
 Proxy:
   # 代理获取方式:

