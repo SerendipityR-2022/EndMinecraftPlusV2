@@ -49,7 +49,11 @@ AdvancedSettings:
   # 来自FDPClient的魔法道具~
   ServerCrasher:
     Enable: false
-    # 1 - Book (BSign/BEdit)
+    # 1 - Book (BSign/BEdit) [仅1.8.X可用]
+    # 2 - Log4j Exploit
+    # 3 - WorldEdit
+    # 4 - MultiverseCore
+    # 5 - PEX
     Mode: 1
     PacketDelay: 100
 

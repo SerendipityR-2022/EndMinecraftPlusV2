@@ -4,13 +4,11 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 
 public class ProxyUtil {
     public static List<String> proxies = new ArrayList<>();
-    public static HashMap<Object,Proxy> clientsProxy = new HashMap<>();
     public static List<Proxy> workingProxiesList = new ArrayList<>();
 
     public static void getProxies() {
