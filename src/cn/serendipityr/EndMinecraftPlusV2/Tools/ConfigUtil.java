@@ -56,6 +56,9 @@ public class ConfigUtil {
     public static File CACLoadedMods;
     public static Boolean RandomMAC;
     public static Boolean ShowServerMessages;
+    public static Boolean ServerCrasher;
+    public static Integer ServerCrasherMode;
+    public static Long ServerCrasherPacketDelay;
 
     public void loadConfig() {
         try {
@@ -146,6 +149,9 @@ public class ConfigUtil {
             }
 
             RandomMAC = config.getBoolean("AdvancedSettings.MACChecker.RandomMAC");
+            ServerCrasher = config.getBoolean("AdvancedSettings.ServerCrasher.Enable");
+            ServerCrasherMode = config.getInt("AdvancedSettings.ServerCrasher.Mode");
+            ServerCrasherPacketDelay = config.getLong("AdvancedSettings.ServerCrasher.PacketDelay");
 
             checkSRV();
 

@@ -3,7 +3,7 @@
 #    Forked by SerendipityR  #
 ##############################
 
-CfgVer: 5
+CfgVer: 6
 
 AttackSettings:
   Address: "example.com"
@@ -45,6 +45,13 @@ AdvancedSettings:
   # MAC|Check欺骗
   MACChecker:
     RandomMAC: false
+  # 发 包 崩 服
+  # 来自FDPClient的魔法道具~
+  ServerCrasher:
+    Enable: false
+    # 1 - Book (BSign/BEdit)
+    Mode: 1
+    PacketDelay: 100
 
 BotSettings:
   # 可用占位符:
