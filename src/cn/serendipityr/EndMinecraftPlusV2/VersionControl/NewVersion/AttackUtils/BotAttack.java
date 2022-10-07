@@ -81,18 +81,34 @@ public class BotAttack extends IAttack {
                 for (Session c:tempList) {
                     if (c.isConnected()) {
                         if (c.hasFlag("login")) {
-                            if (ConfigUtil.ChatSpam) {
-                                c.send(new ClientChatPacket(getRandMessage(clientName.get(c))));
-                                OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                            if (ConfigUtil.ChatSpam && !c.hasFlag("chatSpam")) {
+                                c.setFlag("chatSpam", true);
+
+                                new Thread(() -> {
+                                    while (c.isConnected()) {
+                                        try {
+                                            c.send(new ClientChatPacket(getRandMessage(clientName.get(c))));
+                                        } catch (Exception ignored) {}
+
+                                        OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                    }
+                                }).start();
                             }
 
-                            if (ConfigUtil.RandomTeleport) {
+                            if (ConfigUtil.RandomTeleport && !c.hasFlag("randomTeleport")) {
+                                c.setFlag("randomTeleport", true);
+
                                 new Thread(() -> {
-                                    ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c);
-                                    if (c.isConnected() && positionRotationPacket != null) {
-                                        MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
-                                        OtherUtils.doSleep(500);
-                                        MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                    while (c.isConnected()) {
+                                        ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c);
+
+                                        if (c.isConnected() && positionRotationPacket != null) {
+                                            MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                            OtherUtils.doSleep(500);
+                                            MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                        } else {
+                                            OtherUtils.doSleep(1000);
+                                        }
                                     }
                                 }).start();
                             }

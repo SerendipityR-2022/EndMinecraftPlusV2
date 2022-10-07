@@ -85,37 +85,51 @@ public class NewBotAttack extends IAttack {
                 for (Session c:tempList) {
                     if (c.isConnected()) {
                         if (c.hasFlag("login")) {
-                            if (ConfigUtil.ChatSpam) {
-                                if (ProtocolLibs.adaptAfter760) {
-                                    VersionSupport760.sendChatPacket(c, getRandMessage(clientName.get(c)));
-                                } else if (ProtocolLibs.adaptAfter759) {
-                                    VersionSupport759.sendChatPacket(c, getRandMessage(clientName.get(c)));
-                                } else if (ProtocolLibs.adaptAfter758) {
-                                    VersionSupport758.sendChatPacket(c, getRandMessage(clientName.get(c)));
-                                } else {
-                                    c.send(new ClientChatPacket(getRandMessage(clientName.get(c))));
-                                }
+                            if (ConfigUtil.ChatSpam && !c.hasFlag("chatSpam")) {
+                                c.setFlag("chatSpam", true);
 
-                                OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                while (c.isConnected()) {
+                                    try {
+                                        if (ProtocolLibs.adaptAfter760) {
+                                            VersionSupport760.sendChatPacket(c, getRandMessage(clientName.get(c)));
+                                        } else if (ProtocolLibs.adaptAfter759) {
+                                            VersionSupport759.sendChatPacket(c, getRandMessage(clientName.get(c)));
+                                        } else if (ProtocolLibs.adaptAfter758) {
+                                            VersionSupport758.sendChatPacket(c, getRandMessage(clientName.get(c)));
+                                        } else {
+                                            c.send(new ClientChatPacket(getRandMessage(clientName.get(c))));
+                                        }
+                                    } catch (Exception ignored) {}
+
+                                    OtherUtils.doSleep(ConfigUtil.ChatDelay);
+                                }
                             }
 
-                            if (ConfigUtil.RandomTeleport) {
+                            if (ConfigUtil.RandomTeleport && !c.hasFlag("randomTeleport")) {
+                                c.setFlag("randomTeleport", true);
+
                                 new Thread(() -> {
-                                    if (ProtocolLibs.adaptAfter758) {
-                                        ClientboundPlayerPositionPacket positionRotationPacket = newPositionPacket.get(c);
+                                    while (c.isConnected()) {
+                                        if (ProtocolLibs.adaptAfter758) {
+                                            ClientboundPlayerPositionPacket positionRotationPacket = newPositionPacket.get(c);
 
-                                        if (c.isConnected() && positionRotationPacket != null) {
-                                            VersionSupport758.sendPosPacket(c, positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
-                                            OtherUtils.doSleep(500);
-                                            VersionSupport758.sendPosPacket(c, positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
-                                        }
-                                    } else {
-                                        ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c);
+                                            if (c.isConnected() && positionRotationPacket != null) {
+                                                VersionSupport758.sendPosPacket(c, positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                                OtherUtils.doSleep(500);
+                                                VersionSupport758.sendPosPacket(c, positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                            } else {
+                                                OtherUtils.doSleep(1000);
+                                            }
+                                        } else {
+                                            ServerPlayerPositionRotationPacket positionRotationPacket = positionPacket.get(c);
 
-                                        if (c.isConnected() && positionRotationPacket != null) {
-                                            cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
-                                            OtherUtils.doSleep(500);
-                                            cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                            if (c.isConnected() && positionRotationPacket != null) {
+                                                cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX() + OtherUtils.getRandomInt(-10, 10), positionRotationPacket.getY() + OtherUtils.getRandomInt(2, 8), positionRotationPacket.getZ() + OtherUtils.getRandomInt(-10, 10), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                                OtherUtils.doSleep(500);
+                                                cn.serendipityr.EndMinecraftPlusV2.VersionControl.NewVersion.AttackUtils.MultiVersionPacket.sendPosPacket(c, positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), OtherUtils.getRandomFloat(0.00, 1.00), OtherUtils.getRandomFloat(0.00, 1.00));
+                                            } else {
+                                                OtherUtils.doSleep(1000);
+                                            }
                                         }
                                     }
                                 }).start();
