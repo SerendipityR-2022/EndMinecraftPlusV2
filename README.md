@@ -15,6 +15,7 @@ ___
 ### 自定义假人名称、自定义刷屏内容/指令、高级假人绕过(点击验证/重进验证)
 ### 可配置的Forge支持、猫反作弊绕过、高度自定义的配置项、发包崩服
 ### 优化内部逻辑、支持代理API更改、更加好看的输出界面~
+### [量的提升促进质的飞跃，性能开销相较EMP降低75%+]
 ___
 ## 常见问题：
 ### 1. java.lang.ClassCastException: class jdk.internal.loader.ClassLoaders$AppClassLoader cannot be cast to class java.net.URLClassLoader
