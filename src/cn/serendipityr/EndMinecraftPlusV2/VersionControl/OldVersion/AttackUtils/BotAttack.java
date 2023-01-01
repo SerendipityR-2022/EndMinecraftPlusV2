@@ -10,15 +10,15 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtoco
 import io.netty.util.internal.ConcurrentSet;
 import org.spacehq.mc.protocol.MinecraftProtocol;
 import org.spacehq.mc.protocol.data.game.ItemStack;
+import org.spacehq.mc.protocol.data.game.values.ClientRequest;
 import org.spacehq.mc.protocol.data.message.Message;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
+import org.spacehq.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerMovementPacket;
-import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
-import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
-import org.spacehq.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
-import org.spacehq.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
+import org.spacehq.mc.protocol.packet.ingame.server.*;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
+import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerUpdateHealthPacket;
 import org.spacehq.opennbt.NBTIO;
 import org.spacehq.opennbt.tag.builtin.CompoundTag;
 import org.spacehq.opennbt.tag.builtin.ListTag;
@@ -492,7 +492,6 @@ public class BotAttack extends IAttack {
                     positionPacket.put(session, packet);
                 }
             } catch (Exception ignored) {}
-
         } else if (recvPacket instanceof ServerChatPacket) {
             ServerChatPacket chatPacket = (ServerChatPacket) recvPacket;
             Message message = chatPacket.getMessage();
@@ -515,6 +514,12 @@ public class BotAttack extends IAttack {
 
             if (!alivePlayers.contains(session)) {
                 alivePlayers.add(session);
+            }
+        } else if (recvPacket instanceof ServerUpdateHealthPacket) {
+            if (((ServerUpdateHealthPacket) recvPacket).getHealth() <= 0) {
+                ClientRequestPacket clientRequestPacket = new ClientRequestPacket(ClientRequest.RESPAWN);
+
+                session.send(clientRequestPacket);
             }
         }
     }
