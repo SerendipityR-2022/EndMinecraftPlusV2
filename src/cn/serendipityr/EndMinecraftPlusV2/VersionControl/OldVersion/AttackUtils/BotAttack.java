@@ -7,16 +7,19 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ACProtocol.A
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ACProtocol.AntiCheat3;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.CatAntiCheat.CatAntiCheat;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.OldVersion.ForgeProtocol.MCForge;
+import cn.serendipityr.EndMinecraftPlusV2.VersionControl.VersionSupport107;
 import io.netty.util.internal.ConcurrentSet;
 import org.spacehq.mc.protocol.MinecraftProtocol;
 import org.spacehq.mc.protocol.data.game.ItemStack;
 import org.spacehq.mc.protocol.data.game.values.ClientRequest;
 import org.spacehq.mc.protocol.data.message.Message;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
+import org.spacehq.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerMovementPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.*;
+import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerUpdateHealthPacket;
 import org.spacehq.opennbt.NBTIO;
@@ -27,6 +30,9 @@ import org.spacehq.opennbt.tag.builtin.Tag;
 import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.Session;
 import org.spacehq.packetlib.event.session.*;
+import org.spacehq.packetlib.io.NetInput;
+import org.spacehq.packetlib.io.buffer.ByteBufferNetInput;
+import org.spacehq.packetlib.io.stream.StreamNetInput;
 import org.spacehq.packetlib.io.stream.StreamNetOutput;
 import org.spacehq.packetlib.packet.Packet;
 import org.spacehq.packetlib.tcp.TcpSessionFactory;
@@ -38,6 +44,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -506,8 +513,15 @@ public class BotAttack extends IAttack {
                 LogUtil.doLog(0, "[服务端返回信息] [" + username + "] " + message.getFullText(), "BotAttack");
             }
         } else if (recvPacket instanceof ServerKeepAlivePacket) {
-            // ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
-            // session.send(keepAlivePacket);
+            if (MCForge.getProtocolVersion() >= 107) {
+                VersionSupport107.sendKeepAlivePacket(session, (ServerKeepAlivePacket) recvPacket);
+            } else {
+                ClientKeepAlivePacket keepAlivePacket = new ClientKeepAlivePacket(((ServerKeepAlivePacket) recvPacket).getPingId());
+                session.send(keepAlivePacket);
+            }
+
+            // LogUtil.doLog(0, "[" + username + "] 已发送KeepAlive数据包。", "BotAttack");
+
             if (!joinedPlayers.contains(session)) {
                 joinedPlayers.add(session);
             }
@@ -515,11 +529,17 @@ public class BotAttack extends IAttack {
             if (!alivePlayers.contains(session)) {
                 alivePlayers.add(session);
             }
-        } else if (recvPacket instanceof ServerUpdateHealthPacket) {
+        } else if (recvPacket.getClass().getSimpleName().equals("ServerPlayerHealthPacket")) {
+            if (recvPacket instanceof ServerPlayerHealthPacket && ((ServerPlayerHealthPacket) recvPacket).getHealth() <= 0) {
+                VersionSupport107.sendRespawnPacket(session);
+
+                LogUtil.doLog(0, "[" + username + "] " + "假人于服务器中死亡，已重生。", "BotAttack");
+            }
+        } else if (recvPacket.getClass().getSimpleName().equals("ServerUpdateHealthPacket")) {
             if (((ServerUpdateHealthPacket) recvPacket).getHealth() <= 0) {
                 ClientRequestPacket clientRequestPacket = new ClientRequestPacket(ClientRequest.RESPAWN);
-
                 session.send(clientRequestPacket);
+                LogUtil.doLog(0, "[" + username + "] " + "假人于服务器中死亡，已重生。", "BotAttack");
             }
         }
     }

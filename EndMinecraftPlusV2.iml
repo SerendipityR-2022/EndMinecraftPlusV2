@@ -93,5 +93,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="VersionSupport-107" />
   </component>
 </module>

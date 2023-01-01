@@ -8,7 +8,7 @@ import cn.serendipityr.EndMinecraftPlusV2.VersionControl.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionControl.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "1.4.5";
+    public static String ver = "1.4.6";
     public static Integer CfgVer = 6;
     public static Boolean isLinux = false;
 
