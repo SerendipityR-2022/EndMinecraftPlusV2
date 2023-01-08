@@ -3,11 +3,14 @@ package cn.serendipityr.EndMinecraftPlusV2.Tools;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 
 public class ProxyUtil {
+    public static Date runTime;
     public static List<String> proxies = new ArrayList<>();
     public static List<Proxy> workingProxiesList = new ArrayList<>();
 
@@ -47,7 +50,10 @@ public class ProxyUtil {
                 Matcher matcher = OtherUtils.matches(ips, "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,5}");
                 while (matcher.find()) {
                     String ip = matcher.group();
-                    newProxies.add(ip);
+
+                    if (!newProxies.contains(ip)) {
+                        newProxies.add(ip);
+                    }
                 }
             }
 
@@ -62,7 +68,9 @@ public class ProxyUtil {
                 Matcher matcher = OtherUtils.matches(ips, "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,5}");
                 while (matcher.find()) {
                     String ip = matcher.group();
-                    proxies.add(ip);
+                    if (!proxies.contains(ip)) {
+                        proxies.add(ip);
+                    }
                 }
             }
         }
@@ -87,7 +95,9 @@ public class ProxyUtil {
                 }
 
                 while ((tempString = reader.readLine()) != null) {
-                    newProxies.add(tempString);
+                    if (!newProxies.contains(tempString)) {
+                        newProxies.add(tempString);
+                    }
                 }
 
                 proxies = newProxies;
@@ -97,7 +107,9 @@ public class ProxyUtil {
                 }
 
                 while ((tempString = reader.readLine()) != null) {
-                    proxies.add(tempString);
+                    if (!proxies.contains(tempString)) {
+                        proxies.add(tempString);
+                    }
                 }
             }
 
@@ -132,7 +144,12 @@ public class ProxyUtil {
     }
 
     public static void saveWorkingProxy(Proxy proxy) {
-        File workingProxies = new File("working-proxies.txt");
+        if (runTime == null) {
+            runTime = new Date();
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
+        File workingProxies = new File("working-proxies_" + simpleDateFormat.format(runTime) + ".txt");
         InetSocketAddress inetSocketAddress = (InetSocketAddress) proxy.address();
 
         List<Proxy> tempList = workingProxiesList;
