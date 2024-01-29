@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AdvanceModule/AdvanceModule.iml" filepath="$PROJECT_DIR$/AdvanceModule/AdvanceModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Main/Main.iml" filepath="$PROJECT_DIR$/Main/Main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Tools/Tools.iml" filepath="$PROJECT_DIR$/Tools/Tools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionFactory/VersionFactory.iml" filepath="$PROJECT_DIR$/VersionFactory/VersionFactory.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_12_2/VersionSupport-P1_12_2.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_12_2/VersionSupport-P1_12_2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_13_X/VersionSupport-P1_13_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_13_X/VersionSupport-P1_13_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_14_X/VersionSupport-P1_14_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_14_X/VersionSupport-P1_14_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_15_X/VersionSupport-P1_15_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_15_X/VersionSupport-P1_15_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_16_X/VersionSupport-P1_16_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_16_X/VersionSupport-P1_16_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_17_X/VersionSupport-P1_17_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_17_X/VersionSupport-P1_17_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_18_X/VersionSupport-P1_18_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_18_X/VersionSupport-P1_18_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_19/VersionSupport-P1_19.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_19/VersionSupport-P1_19.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_19_1_1_19_2/VersionSupport-P1_19_1_1_19_2.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_19_1_1_19_2/VersionSupport-P1_19_1_1_19_2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_19_3_1_20_1/VersionSupport-P1_19_3_1_20_1.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_19_3_1_20_1/VersionSupport-P1_19_3_1_20_1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_20_X/VersionSupport-P1_20_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_20_X/VersionSupport-P1_20_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_7_X/VersionSupport-P1_7_X/VersionSupport-P1_7_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_7_X/VersionSupport-P1_7_X/VersionSupport-P1_7_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_8_X/VersionSupport-P1_8_X.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_8_X/VersionSupport-P1_8_X.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VersionSupport-P1_9_X-1_12_1/VersionSupport-P1_9_X-1_12_1.iml" filepath="$PROJECT_DIR$/VersionSupport-P1_9_X-1_12_1/VersionSupport-P1_9_X-1_12_1.iml" />
+    </modules>
+  </component>
+</project>

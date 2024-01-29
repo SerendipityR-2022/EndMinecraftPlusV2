@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="Tools" />
+    <orderEntry type="module" module-name="VersionFactory" />
+    <orderEntry type="module" module-name="VersionSupport-P1_8_X" />
+    <orderEntry type="module" module-name="VersionSupport-P1_7_X" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../libs/jna-5.12.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../libs/bukkitYaml-0.1-pre-jar-with-dependencies.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="VersionSupport-P1_9_X-1_12_1" />
+    <orderEntry type="module" module-name="VersionSupport-P1_12_2" />
+    <orderEntry type="module" module-name="VersionSupport-P1_13_X" />
+    <orderEntry type="module" module-name="VersionSupport-P1_14_X" />
+    <orderEntry type="module" module-name="VersionSupport-P1_15_X" />
+    <orderEntry type="module" module-name="VersionSupport-P1_16_X" />
+    <orderEntry type="module" module-name="VersionSupport-P1_17_X" />
+    <orderEntry type="module" module-name="VersionSupport-P1_18_X" />
+    <orderEntry type="module" module-name="VersionSupport-P1_19" />
+    <orderEntry type="module" module-name="VersionSupport-P1_19_1_1_19_2" />
+    <orderEntry type="module" module-name="VersionSupport-P1_19_3_1_20_1" />
+    <orderEntry type="module" module-name="VersionSupport-P1_20_X" />
+  </component>
+</module>

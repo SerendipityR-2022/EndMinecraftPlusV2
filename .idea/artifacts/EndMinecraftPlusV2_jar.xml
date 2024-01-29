@@ -1,0 +1,27 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="EndMinecraftPlusV2:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/EndMinecraftPlusV2_jar</output-path>
+    <root id="archive" name="EndMinecraftPlusV2.jar">
+      <element id="module-output" name="AdvanceModule" />
+      <element id="module-output" name="Tools" />
+      <element id="module-output" name="VersionSupport-P1_8_X" />
+      <element id="module-output" name="VersionFactory" />
+      <element id="module-output" name="Main" />
+      <element id="module-output" name="VersionSupport-P1_7_X" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/bukkitYaml-0.1-pre-jar-with-dependencies.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jna-5.12.1.jar" path-in-jar="/" />
+      <element id="module-output" name="VersionSupport-P1_9_X-1_12_1" />
+      <element id="module-output" name="VersionSupport-P1_12_2" />
+      <element id="module-output" name="VersionSupport-P1_13_X" />
+      <element id="module-output" name="VersionSupport-P1_14_X" />
+      <element id="module-output" name="VersionSupport-P1_15_X" />
+      <element id="module-output" name="VersionSupport-P1_16_X" />
+      <element id="module-output" name="VersionSupport-P1_17_X" />
+      <element id="module-output" name="VersionSupport-P1_18_X" />
+      <element id="module-output" name="VersionSupport-P1_19" />
+      <element id="module-output" name="VersionSupport-P1_19_1_1_19_2" />
+      <element id="module-output" name="VersionSupport-P1_19_3_1_20_1" />
+      <element id="module-output" name="VersionSupport-P1_20_X" />
+    </root>
+  </artifact>
+</component>
