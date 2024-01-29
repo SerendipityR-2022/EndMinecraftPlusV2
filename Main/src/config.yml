@@ -84,6 +84,7 @@ BotSettings:
   # 可用占位符:
   # $rnd - 随机字符
   # $pwd - 随机生成密码
+  # $userName - 对应用户名
   BotName: "ImOldSix_$rnd"
   BotCount: 1000
   # 随机字符规则 (仅影响BotName):
@@ -112,7 +113,6 @@ BotSettings:
   # 若聊天信息中检测到以下字段，则尝试进行点击验证
   ClickVerifiesDetect:
     - "点击验证"
-  # 支持占位符: $userName $rnd $pwd
   RegisterCommands:
     - "/register $pwd $pwd"
     - "/login $pwd"
