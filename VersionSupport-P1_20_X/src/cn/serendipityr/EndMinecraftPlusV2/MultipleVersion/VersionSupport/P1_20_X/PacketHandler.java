@@ -20,6 +20,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundLo
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundSystemChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.entity.player.ClientboundPlayerPositionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.entity.player.ClientboundSetHealthPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundChatCommandPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundClientCommandPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundCommandSuggestionPacket;
@@ -33,9 +34,7 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Packet.PacketHandler {
@@ -157,8 +156,13 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     @Override
     public void sendChatPacket(Object client, String text) {
         TcpClientSession session = (TcpClientSession) client;
-        ServerboundChatPacket chatPacket = new ServerboundChatPacket(text, System.currentTimeMillis(), 0, new byte[0], 0, null);
-        session.send(chatPacket);
+        if (text.startsWith("/")) {
+            ServerboundChatCommandPacket commandPacket = new ServerboundChatCommandPacket(text.split("/")[1], System.currentTimeMillis(), 0L, new ArrayList<>(), 0, new BitSet());
+            session.send(commandPacket);
+        } else {
+            ServerboundChatPacket chatPacket = new ServerboundChatPacket(text, System.currentTimeMillis(), 0L, null, 0, new BitSet());
+            session.send(chatPacket);
+        }
     }
 
     @Override
