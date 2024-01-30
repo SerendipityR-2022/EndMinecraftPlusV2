@@ -165,6 +165,9 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     public void sendPositionPacketFromPacket(Object client, Object recvPacket, boolean random) {
         Session session = ((Client) client).getSession();
         ServerPlayerPositionRotationPacket packet = (ServerPlayerPositionRotationPacket) recvPacket;
+        if (packet == null) {
+            return;
+        }
         double x = packet.getX() + (random ? OtherUtils.getRandomInt(-10, 10) : 0);
         double y = packet.getY() + (random ? OtherUtils.getRandomInt(-10, 10) : 0);
         double z = packet.getZ() + (random ? OtherUtils.getRandomInt(-10, 10) : 0);

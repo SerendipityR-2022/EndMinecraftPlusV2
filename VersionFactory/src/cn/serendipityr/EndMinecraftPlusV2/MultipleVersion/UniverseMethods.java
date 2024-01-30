@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class UniverseMethods {
@@ -46,7 +45,7 @@ public class UniverseMethods {
 
     public static Proxy getProxy(Proxy.Type proxyType) {
         int size = ProxyUtil.proxies.size();
-        String p = new ArrayList<>(ProxyUtil.proxies.keySet()).get(BotManager.clientList.size() % size);
+        String p = ProxyUtil.proxies.get(BotManager.clientList.size() % size);
         String[] _p = p.split(":");
         return new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
     }

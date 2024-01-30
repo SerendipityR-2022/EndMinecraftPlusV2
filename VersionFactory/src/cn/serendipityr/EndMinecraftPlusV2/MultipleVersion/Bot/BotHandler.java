@@ -19,7 +19,8 @@ public interface BotHandler {
 
     boolean hasClientFlag(Object client, String flag);
 
-    void setClientFlag(Object client, String flag);
+    void setClientFlag(Object client, String flag, Object value);
+    Object getClientFlag(Object client, String flag);
 
     void setClientTimeout(Object client, long timeout);
 }

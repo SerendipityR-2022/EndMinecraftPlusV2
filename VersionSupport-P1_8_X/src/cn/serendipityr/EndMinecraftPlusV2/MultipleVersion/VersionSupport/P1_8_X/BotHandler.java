@@ -160,9 +160,15 @@ public class BotHandler implements cn.serendipityr.EndMinecraftPlusV2.MultipleVe
     }
 
     @Override
-    public void setClientFlag(Object client, String flag) {
+    public void setClientFlag(Object client, String flag, Object value) {
         Client c = (Client) client;
-        c.getSession().setFlag(flag, "");
+        c.getSession().setFlag(flag, value);
+    }
+
+    @Override
+    public Object getClientFlag(Object client, String flag) {
+        Client c = (Client) client;
+        return c.getSession().getFlag(flag);
     }
 
     @Override

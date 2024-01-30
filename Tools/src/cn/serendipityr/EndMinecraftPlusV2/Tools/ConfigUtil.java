@@ -51,6 +51,7 @@ public class ConfigUtil {
     public static List<String> ClickVerifiesDetect;
     public static List<String> CustomChat;
     public static List<String> BotActions;
+    public static Boolean BotActionDetails;
     public static Integer ProxyGetType;
     public static Integer ProxyType;
     public static Integer ProxyUpdateTime;
@@ -111,6 +112,7 @@ public class ConfigUtil {
             RejoinDelay = config.getLong("BotSettings.RejoinDelay");
             ClickVerifiesDetect = config.getStringList("BotSettings.ClickVerifiesDetect");
             CustomChat = config.getStringList("BotSettings.CustomChat");
+            BotActionDetails = config.getBoolean("BotSettings.DetailMsg");
             ShowServerMessages = config.getBoolean("BotSettings.ShowServerMessages");
             BotActions = config.getStringList("BotSettings.Actions");
             ProxyGetType = config.getInt("Proxy.GetType");

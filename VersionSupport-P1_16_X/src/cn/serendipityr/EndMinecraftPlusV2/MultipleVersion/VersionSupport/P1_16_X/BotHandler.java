@@ -29,9 +29,6 @@ public class BotHandler implements cn.serendipityr.EndMinecraftPlusV2.MultipleVe
     public void connect(Object c, Proxy proxy) {
         Client client = (Client) c;
         String userName = BotManager.clientList.get(c);
-        if (ConfigUtil.ForgeSupport) {
-            LogUtil.doLog(0, "选定的协议库版本无法启用Forge支持。", "ForgeSupport");
-        }
 
         client.getSession().addListener(new SessionListener() {
             public void packetReceived(PacketReceivedEvent e) {
@@ -177,9 +174,15 @@ public class BotHandler implements cn.serendipityr.EndMinecraftPlusV2.MultipleVe
     }
 
     @Override
-    public void setClientFlag(Object client, String flag) {
+    public void setClientFlag(Object client, String flag, Object value) {
         Client c = (Client) client;
-        c.getSession().setFlag(flag, "");
+        c.getSession().setFlag(flag, value);
+    }
+
+    @Override
+    public Object getClientFlag(Object client, String flag) {
+        Client c = (Client) client;
+        return c.getSession().getFlag(flag);
     }
 
     @Override

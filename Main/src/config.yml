@@ -3,7 +3,7 @@
 #   Designed by SerendipityR  #
 ###############################
 
-CfgVer: 7
+CfgVer: 8
 
 AttackSettings:
   Address: "example.com"
@@ -122,25 +122,27 @@ BotSettings:
     - "喵喵喵~ $rnd"
     - "喵喵~ $rnd"
     - "喵~ $rnd"
+  # 输出详细信息
+  DetailMsg: false
   # 显示来自服务器的聊天信息
   ShowServerMessages: true
   # 行动流程
   # async - 异步执行任务
-  # wait - 等待:<时间(ms)>
-  # chatSpam - 随机发送聊天信息:<次数>_<间隔(ms)>
-  # randomTeleport - 随机传送:<次数>_<间隔(ms)>
-  # backTeleport - 回到重生点
-  # register&Login - 执行注册/登录:<flag>_<是否使用已生成密码>_<自定义密码>
-  # crashPacket - 发送崩服数据包:<数量>
-  # tabAttack - 执行Tab补全:<数量>_<间隔(ms)>
+  # wait - 等待:<时间(ms)>_<flag>
+  # chatSpam - 随机发送聊天信息:<次数>_<间隔(ms)>_<flag>
+  # randomTeleport - 随机传送:<次数>_<间隔(ms)>_<flag>
+  # backTeleport - 回到重生点_<flag>
+  # register&Login - 执行注册/登录:<是否使用已生成密码>_<自定义密码> - Flag:login
+  # crashPacket - 发送崩服数据包:<数量>_<flag>
+  # tabAttack - 执行Tab补全:<数量>_<间隔(ms)>_<flag>
   Actions:
-    - "register&Login:login_true_genshinImpact"
-    - "async|chatSpam:10_3000"
-    - "async|randomTeleport:25_100"
-    - "wait:3000"
-    - "async|backTeleport"
-    - "async|crashPacket:75"
-    - "async|tabAttack:25_75"
+    - "register&Login:true_genshinImpact"
+    - "async|chatSpam:10_3000_login"
+    - "async|randomTeleport:25_100_login"
+    - "wait:3000_login"
+    - "async|backTeleport:login"
+    - "async|crashPacket:75_login"
+    - "async|tabAttack:25_75_login"
 
 Proxy:
   # 代理获取方式:

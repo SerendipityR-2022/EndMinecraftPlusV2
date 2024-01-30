@@ -81,6 +81,10 @@ public class AttackManager {
                     packetHandler = new cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.VersionSupport.P1_20_X.PacketHandler();
                 }
 
+                if (ProtocolLibs.currentVersion > 404 && ConfigUtil.ForgeSupport) {
+                    LogUtil.doLog(0, "选定的协议库版本无法启用Forge支持。", "ForgeSupport");
+                }
+
                 BotManager botManager = new BotManager(botHandler, packetHandler);
 
                 if (ConfigUtil.AttackMethod.equals(5)) {
