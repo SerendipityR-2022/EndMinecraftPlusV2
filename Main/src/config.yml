@@ -129,13 +129,13 @@ BotSettings:
   ShowServerMessages: true
   # 行动流程
   # async - 异步执行任务
-  # wait - 等待:<时间(ms)>_<flag>_<是否判断flag>
-  # chatSpam - 随机发送聊天信息:<次数>_<间隔(ms)>_<flag>
-  # randomTeleport - 随机传送:<次数>_<间隔(ms)>_<flag>
-  # backTeleport - 回到重生点_<flag>
+  # wait - 等待:<时间(ms)>_<flag/none>
+  # chatSpam - 随机发送聊天信息:<次数>_<间隔(ms)>_<flag/none>
+  # randomTeleport - 随机传送:<次数>_<间隔(ms)>_<flag/none>
+  # backTeleport - 回到重生点_<flag/none>
   # register&Login - 执行注册/登录:<是否使用已生成密码>_<自定义密码> - Flag:login
-  # crashPacket - 发送崩服数据包:<数量>_<flag>
-  # tabAttack - 执行Tab补全:<数量>_<间隔(ms)>_<flag>
+  # crashPacket - 发送崩服数据包:<数量>_<flag/none>
+  # tabAttack - 执行Tab补全:<数量>_<间隔(ms)>_<flag/none>
   Actions:
     - "wait:3000_none"
     - "register&Login:true_genshinImpact"
