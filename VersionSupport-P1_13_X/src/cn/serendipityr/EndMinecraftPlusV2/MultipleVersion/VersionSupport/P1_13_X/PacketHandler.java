@@ -19,6 +19,7 @@ import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerChangeHeldItemPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerMovementPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
+import org.spacehq.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
@@ -102,6 +103,8 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     public void handleServerPlayerPositionRotationPacket(Object client, Object recvPacket, String username) {
         Session session = ((Client) client).getSession();
         ServerPlayerPositionRotationPacket packet = (ServerPlayerPositionRotationPacket) recvPacket;
+        ClientTeleportConfirmPacket teleportConfirmPacket = new ClientTeleportConfirmPacket(packet.getTeleportId());
+        session.send(teleportConfirmPacket);
         sendPositionRotationPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
         sendClientPlayerMovementPacket(session, true);
     }

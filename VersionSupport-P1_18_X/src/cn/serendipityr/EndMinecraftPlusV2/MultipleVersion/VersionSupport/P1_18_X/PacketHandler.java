@@ -18,6 +18,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundLo
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.entity.player.ClientboundPlayerPositionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.entity.player.ClientboundSetHealthPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.*;
+import com.github.steveice10.mc.protocol.packet.ingame.serverbound.level.ServerboundAcceptTeleportationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.player.ServerboundMovePlayerPosRotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.player.ServerboundMovePlayerStatusOnlyPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
@@ -97,6 +98,8 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     public void handleServerPlayerPositionRotationPacket(Object client, Object recvPacket, String username) {
         TcpClientSession session = (TcpClientSession) client;
         ClientboundPlayerPositionPacket packet = (ClientboundPlayerPositionPacket) recvPacket;
+        ServerboundAcceptTeleportationPacket acceptTeleportationPacket = new ServerboundAcceptTeleportationPacket(packet.getTeleportId());
+        ((TcpClientSession) client).send(acceptTeleportationPacket);
         sendPositionRotationPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
         sendClientPlayerMovementPacket(session, true);
     }
