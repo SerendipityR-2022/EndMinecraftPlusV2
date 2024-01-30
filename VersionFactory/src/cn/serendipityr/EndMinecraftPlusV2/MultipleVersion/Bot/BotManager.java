@@ -235,7 +235,7 @@ public class BotManager {
                 int chatCount = Integer.parseInt(spamArgs[0]);
                 long chatDelay = Long.parseLong(spamArgs[1]);
                 String chatFlag = spamArgs[2];
-                if (botHandler.hasClientFlag(client, chatFlag)) {
+                if ("none".equals(chatFlag) || botHandler.hasClientFlag(client, chatFlag)) {
                     if (ConfigUtil.BotActionDetails) {
                         LogUtil.doLog(0, "[" + userName + "] [行动] 尝试向服务器发送消息: " + chatCount + "次", "BotAttack");
                     }
@@ -250,7 +250,7 @@ public class BotManager {
                 int rndTpCount = Integer.parseInt(rndTpArgs[0]);
                 long rndTpDelay = Integer.parseInt(rndTpArgs[1]);
                 String rndTpFlag = rndTpArgs[2];
-                if (botHandler.hasClientFlag(client, rndTpFlag) && positionList.containsKey(client)) {
+                if ("none".equals(rndTpFlag) || botHandler.hasClientFlag(client, rndTpFlag) && positionList.containsKey(client)) {
                     if (ConfigUtil.BotActionDetails) {
                         LogUtil.doLog(0, "[" + userName + "] [行动] 尝试进行随机传送: " + rndTpCount + "次", "BotAttack");
                     }
@@ -263,7 +263,7 @@ public class BotManager {
             case "backTeleport":
                 String[] bTpArgs = _action[1].split("_");
                 String bTpFlag = bTpArgs[0];
-                if (botHandler.hasClientFlag(client, bTpFlag)) {
+                if ("none".equals(bTpFlag) || botHandler.hasClientFlag(client, bTpFlag)) {
                     if (positionList.containsKey(client)) {
                         if (ConfigUtil.BotActionDetails) {
                             LogUtil.doLog(0, "[" + userName + "] [行动] 尝试回到初始位置。", "BotAttack");
@@ -290,7 +290,7 @@ public class BotManager {
                 String[] crashArgs = _action[1].split("_");
                 int packetCount = Integer.parseInt(crashArgs[0]);
                 String crashFlag = crashArgs[1];
-                if (botHandler.hasClientFlag(client, crashFlag)) {
+                if ("none".equals(crashFlag) || botHandler.hasClientFlag(client, crashFlag)) {
                     if (ConfigUtil.BotActionDetails) {
                         LogUtil.doLog(0, "[" + userName + "] [行动] 尝试发送崩服数据包: " + packetCount + "个", "BotAttack");
                     }
@@ -302,7 +302,7 @@ public class BotManager {
                 int tabCount = Integer.parseInt(tabArgs[0]);
                 long tabDelay = Long.parseLong(tabArgs[1]);
                 String tabFlag = tabArgs[2];
-                if (botHandler.hasClientFlag(client, tabFlag)) {
+                if ("none".equals(tabFlag) || botHandler.hasClientFlag(client, tabFlag)) {
                     if (ConfigUtil.BotActionDetails) {
                         LogUtil.doLog(0, "[" + userName + "] [行动] 尝试发送命令补全数据包: " + tabCount + "个", "BotAttack");
                     }
