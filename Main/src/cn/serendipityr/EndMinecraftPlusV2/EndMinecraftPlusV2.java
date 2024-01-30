@@ -8,8 +8,8 @@ import cn.serendipityr.EndMinecraftPlusV2.AttackManager.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionManager.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "2.0.1";
-    public static Integer CfgVer = 8;
+    public static String ver = "2.0.2";
+    public static Integer CfgVer = 9;
 
     public static void main(String[] args) {
         System.out.println("=======================-Designed by SerendipityR-=======================");

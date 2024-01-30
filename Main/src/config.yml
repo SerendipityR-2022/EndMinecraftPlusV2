@@ -3,7 +3,7 @@
 #   Designed by SerendipityR  #
 ###############################
 
-CfgVer: 8
+CfgVer: 9
 
 AttackSettings:
   Address: "example.com"
@@ -17,7 +17,8 @@ AttackSettings:
   Method: 1
   Time: 3600
   ConnectDelay: 15
-  ConnectTimeout: 5000
+  # 连接超时时间(s)
+  ConnectTimeout: 5
   # 实际连接数由代理质量和机器性能有关
   # 进行无代理Motd压测时不建议大于32
   MaxConnections: 2500
@@ -128,7 +129,7 @@ BotSettings:
   ShowServerMessages: true
   # 行动流程
   # async - 异步执行任务
-  # wait - 等待:<时间(ms)>_<flag>
+  # wait - 等待:<时间(ms)>_<flag>_<是否判断flag>
   # chatSpam - 随机发送聊天信息:<次数>_<间隔(ms)>_<flag>
   # randomTeleport - 随机传送:<次数>_<间隔(ms)>_<flag>
   # backTeleport - 回到重生点_<flag>
@@ -136,6 +137,7 @@ BotSettings:
   # crashPacket - 发送崩服数据包:<数量>_<flag>
   # tabAttack - 执行Tab补全:<数量>_<间隔(ms)>_<flag>
   Actions:
+    - "wait:3000_none"
     - "register&Login:true_genshinImpact"
     - "async|chatSpam:10_3000_login"
     - "async|randomTeleport:25_100_login"

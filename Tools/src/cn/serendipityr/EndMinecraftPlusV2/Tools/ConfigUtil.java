@@ -26,7 +26,7 @@ public class ConfigUtil {
     public static Integer AttackMethod;
     public static Integer AttackTime;
     public static Long ConnectDelay;
-    public static Long ConnectTimeout;
+    public static Integer ConnectTimeout;
     public static Integer MaxConnections;
     public static Boolean AntiAttackMode;
     public static String DoubleExploitPlayer;
@@ -88,7 +88,7 @@ public class ConfigUtil {
             AttackMethod = config.getInt("AttackSettings.Method");
             AttackTime = config.getInt("AttackSettings.Time");
             ConnectDelay = config.getLong("AttackSettings.ConnectDelay");
-            ConnectTimeout = config.getLong("AttackSettings.ConnectTimeout");
+            ConnectTimeout = config.getInt("AttackSettings.ConnectTimeout");
             MaxConnections = config.getInt("AttackSettings.MaxConnections");
             AntiAttackMode = config.getBoolean("AttackSettings.AntiAttackMode");
             DoubleExploitPlayer = config.getString("AttackSettings.DoubleExploitPlayer");

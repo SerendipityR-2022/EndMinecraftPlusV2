@@ -176,9 +176,10 @@ public class BotHandler implements cn.serendipityr.EndMinecraftPlusV2.MultipleVe
     }
 
     @Override
-    public void setClientTimeout(Object client, long timeout) {
+    public void setClientTimeout(Object client, int timeout) {
         Client c = (Client) client;
-        c.getSession().setReadTimeout(Math.toIntExact(timeout));
-        c.getSession().setWriteTimeout(Math.toIntExact(timeout));
+        c.getSession().setReadTimeout(timeout);
+        c.getSession().setWriteTimeout(timeout);
+        c.getSession().setConnectTimeout(timeout);
     }
 }

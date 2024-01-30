@@ -22,5 +22,5 @@ public interface BotHandler {
     void setClientFlag(Object client, String flag, Object value);
     Object getClientFlag(Object client, String flag);
 
-    void setClientTimeout(Object client, long timeout);
+    void setClientTimeout(Object client, int timeout);
 }

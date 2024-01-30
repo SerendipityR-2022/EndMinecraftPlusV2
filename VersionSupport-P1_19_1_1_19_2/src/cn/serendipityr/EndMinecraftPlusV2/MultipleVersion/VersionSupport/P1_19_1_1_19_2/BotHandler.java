@@ -191,10 +191,11 @@ public class BotHandler implements cn.serendipityr.EndMinecraftPlusV2.MultipleVe
     }
 
     @Override
-    public void setClientTimeout(Object client, long timeout) {
+    public void setClientTimeout(Object client, int timeout) {
         TcpClientSession c = (TcpClientSession) client;
-        c.setReadTimeout(Math.toIntExact(timeout));
-        c.setWriteTimeout(Math.toIntExact(timeout));
+        c.setReadTimeout(timeout);
+        c.setWriteTimeout(timeout);
+        c.setConnectTimeout(timeout);
     }
 
     private static ProxyInfo.Type getProxyType(int type) {

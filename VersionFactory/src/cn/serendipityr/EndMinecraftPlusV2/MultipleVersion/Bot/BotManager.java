@@ -223,7 +223,7 @@ public class BotManager {
                 String[] waitArgs = _action[1].split("_");
                 long waitTime = Long.parseLong(waitArgs[0]);
                 String waitFlag = waitArgs[1];
-                if (botHandler.hasClientFlag(client, waitFlag)) {
+                if ("none".equals(waitFlag) || botHandler.hasClientFlag(client, waitFlag)) {
                     if (ConfigUtil.BotActionDetails) {
                         LogUtil.doLog(0, "[" + userName + "] [行动] 等待: " + waitTime + "毫秒", "BotAttack");
                     }
