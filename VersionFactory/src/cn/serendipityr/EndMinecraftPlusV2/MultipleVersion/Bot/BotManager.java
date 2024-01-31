@@ -75,7 +75,7 @@ public class BotManager {
                     case "register&Login":
                         String pwd = _action[1];
                         LogUtil.doLog(0, "[DEBUG] [行动] 尝试执行注册/登录: " + pwd, "BotAttack");
-                        doRegisterLogin(client, userName, 0, pwd);
+                        doRegisterLogin(client, userName, 2000, pwd);
                         break;
                     case "crashPacket":
                         int count_ = Integer.parseInt(_action[1]);
@@ -149,6 +149,9 @@ public class BotManager {
         public void run() {
             // 获取对应代理（一号一个）
             Proxy.Type proxyType = UniverseMethods.getProxyType(ConfigUtil.ProxyType);
+            if (ProxyUtil.proxies.size() == 0) {
+                return;
+            }
             Proxy proxy = UniverseMethods.getProxy(proxyType);
 
             // 获取Bot名称
@@ -282,7 +285,7 @@ public class BotManager {
                     if (ConfigUtil.BotActionDetails) {
                         LogUtil.doLog(0, "[" + userName + "] [行动] 尝试执行注册/登录: " + pwd, "BotAttack");
                     }
-                    doRegisterLogin(client, userName, 0, pwd);
+                    doRegisterLogin(client, userName, 2000, pwd);
                 }
                 break;
             case "crashPacket":

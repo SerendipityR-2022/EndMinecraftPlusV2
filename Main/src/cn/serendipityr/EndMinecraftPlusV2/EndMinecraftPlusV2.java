@@ -1,11 +1,9 @@
 package cn.serendipityr.EndMinecraftPlusV2;
 
+import cn.serendipityr.EndMinecraftPlusV2.AttackManager.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
-import cn.serendipityr.EndMinecraftPlusV2.Tools.ProxyUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
-import cn.serendipityr.EndMinecraftPlusV2.AttackManager.AttackManager;
-import cn.serendipityr.EndMinecraftPlusV2.VersionManager.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
     public static String ver = "2.0.3";

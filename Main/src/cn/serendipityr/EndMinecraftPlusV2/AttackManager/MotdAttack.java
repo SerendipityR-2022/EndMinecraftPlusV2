@@ -1,10 +1,7 @@
 package cn.serendipityr.EndMinecraftPlusV2.AttackManager;
 
 import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.UniverseMethods;
-import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
-import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
-import cn.serendipityr.EndMinecraftPlusV2.Tools.OtherUtils;
-import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
+import cn.serendipityr.EndMinecraftPlusV2.Tools.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -72,6 +69,9 @@ public class MotdAttack {
         public void run() {
             try {
                 // 使用或不使用代理初始化 socket
+                if (ProxyUtil.proxies.size() == 0) {
+                    return;
+                }
                 Proxy proxy = hasProxy ? UniverseMethods.getProxy(UniverseMethods.getProxyType(ConfigUtil.ProxyType)) : Proxy.NO_PROXY;
                 Socket socket = new Socket(proxy);
 
