@@ -64,7 +64,6 @@ public class BotManager {
                         if (positionList.containsKey(client)) {
                             LogUtil.doLog(0, "[DEBUG] [行动] 尝试进行随机传送: " + count + "次", "BotAttack");
                             packetHandler.sendPositionPacketFromPacket(client, positionList.get(client), true);
-
                         }
                         break;
                     case "backTeleport":

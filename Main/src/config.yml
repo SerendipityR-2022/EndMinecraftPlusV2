@@ -104,8 +104,7 @@ BotSettings:
     KeepAlive: false
     # 是否响应服务器位置数据包
     # 如果你发现假人断开连接的原因与"位置异常"相关，请尝试切换此项。
-    Move: ture
-
+    Move: true
   # 重新加入前模拟刷新服务器列表
   GetMotdBeforeRejoin: true
   GetMotdCount: 5

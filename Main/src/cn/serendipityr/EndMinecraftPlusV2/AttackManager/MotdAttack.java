@@ -75,10 +75,8 @@ public class MotdAttack {
                 Proxy proxy = hasProxy ? UniverseMethods.getProxy(UniverseMethods.getProxyType(ConfigUtil.ProxyType)) : Proxy.NO_PROXY;
                 Socket socket = new Socket(proxy);
 
-                LogUtil.doLog(0, "", "DEBUG");
-
                 // 连接到服务器
-                socket.connect(new InetSocketAddress(ConfigUtil.AttackAddress, ConfigUtil.AttackPort));
+                socket.connect(new InetSocketAddress(ConfigUtil.AttackAddress, ConfigUtil.AttackPort), ConfigUtil.ConnectTimeout * 1000);
                 try (OutputStream out = socket.getOutputStream();
                      InputStream in = socket.getInputStream()) {
 

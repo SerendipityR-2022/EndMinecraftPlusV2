@@ -24,7 +24,6 @@ public class EndMinecraftPlusV2 {
         }
         LogUtil.emptyLog();
         prepareConfig();
-        prepareProxy();
         startAttack();
     }
 
@@ -34,14 +33,6 @@ public class EndMinecraftPlusV2 {
 
         if (result == 0) {
             Exit();
-        }
-    }
-
-    public static void prepareProxy() {
-        if (!ConfigUtil.AttackMethod.equals(2)) {
-            LogUtil.doLog(0, "正在获取代理...", "ProxyUtil");
-            ProxyUtil.getProxies();
-            ProxyUtil.runUpdateProxiesTask(ConfigUtil.ProxyUpdateTime);
         }
     }
 

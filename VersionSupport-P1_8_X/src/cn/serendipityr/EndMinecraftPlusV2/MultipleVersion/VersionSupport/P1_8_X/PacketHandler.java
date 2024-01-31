@@ -19,7 +19,6 @@ import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientChangeHeldItemPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerMovementPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
-import org.spacehq.mc.protocol.packet.ingame.client.window.ClientConfirmTransactionPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;

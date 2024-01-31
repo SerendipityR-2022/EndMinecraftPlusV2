@@ -14,6 +14,14 @@ public class ProxyUtil {
     public static List<String> proxies = new CopyOnWriteArrayList<>();
     public static List<Proxy> workingProxiesList = new CopyOnWriteArrayList<>();
 
+    public static void prepareProxy() {
+        if (!ConfigUtil.AttackMethod.equals(2)) {
+            LogUtil.doLog(0, "正在获取代理...", "ProxyUtil");
+            ProxyUtil.getProxies();
+            ProxyUtil.runUpdateProxiesTask(ConfigUtil.ProxyUpdateTime);
+        }
+    }
+
     public static void getProxies() {
         String getMethod;
 

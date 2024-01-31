@@ -4,6 +4,7 @@ import cn.serendipityr.EndMinecraftPlusV2.EndMinecraftPlusV2;
 import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Bot.BotHandler;
 import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Bot.BotManager;
 import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Packet.PacketHandler;
+import cn.serendipityr.EndMinecraftPlusV2.Tools.ProxyUtil;
 import cn.serendipityr.EndMinecraftPlusV2.VersionManager.ProtocolLibs;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.DataUtil;
@@ -93,6 +94,7 @@ public class AttackManager {
                 if (ConfigUtil.AttackMethod.equals(5)) {
                     botManager.test();
                 } else {
+                    ProxyUtil.prepareProxy();
                     botManager.startTask(isDoubleAttack, ProtocolLibs.getProtocolVersion());
                 }
                 break;
@@ -102,6 +104,7 @@ public class AttackManager {
                 break;
             case 3:
                 // MotdAttack(P)
+                ProxyUtil.prepareProxy();
                 MotdAttack.doAttack(true);
                 break;
             default:
