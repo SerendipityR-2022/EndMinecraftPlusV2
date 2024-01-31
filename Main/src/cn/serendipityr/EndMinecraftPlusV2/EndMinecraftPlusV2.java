@@ -6,8 +6,8 @@ import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.SetTitle;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "2.0.3";
-    public static Integer CfgVer = 10;
+    public static String ver = "2.0.4";
+    public static Integer CfgVer = 11;
 
     public static void main(String[] args) {
         System.out.println("=======================-Designed by SerendipityR-=======================");

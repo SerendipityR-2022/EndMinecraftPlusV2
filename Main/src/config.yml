@@ -3,7 +3,7 @@
 #   Designed by SerendipityR  #
 ###############################
 
-CfgVer: 10
+CfgVer: 11
 
 AttackSettings:
   Address: "example.com"
@@ -117,6 +117,10 @@ BotSettings:
     - "AntiAttack"
   # 若踢出信息为空，则无条件执行重连
   EmptyMsgRejoin: true
+  # 检测可交互聊天信息包含的命令
+  # 针对特定服务器，利用全服喊话跳出登录大厅
+  ServerShoutDetect:
+    - "tpserver"
   # 若聊天信息中检测到以下字段，则尝试进行点击验证
   ClickVerifiesDetect:
     - "点击验证"

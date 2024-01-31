@@ -6,6 +6,7 @@ import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 
 public class PacketManager {
     public static int clickVerifies = 0;
+    public static String serverShoutCmd = null;
 
     public static void handlePacket(PacketHandler packetHandler, Object client, Object packet, String username) {
         if (packetHandler.checkServerPluginMessagePacket(packet)) {
@@ -44,22 +45,32 @@ public class PacketManager {
     }
 
     public static void clickVerifiesHandle(PacketHandler packetHandler, Object client, Object message, String username) {
-        boolean needClick = false;
-
         if (packetHandler.hasMessageClickEvent(message)) {
+            boolean needClick = false;
+
+            String msg = packetHandler.getMessageText(message);
+            String value = packetHandler.getClickValue(message);
+
             for (String clickVerifiesDetect : ConfigUtil.ClickVerifiesDetect) {
-                if (packetHandler.getMessageText(message).contains(clickVerifiesDetect)) {
+                if (msg.contains(clickVerifiesDetect)) {
                     needClick = true;
                     break;
                 }
             }
-        }
 
-        if (needClick) {
-            String value = packetHandler.getClickValue(message);
-            LogUtil.doLog(0, "[服务端返回验证信息] [" + username + "] " + value, "BotAttack");
-            packetHandler.sendChatPacket(client, value);
-            clickVerifies++;
+            for (String teleportMsg : ConfigUtil.ServerShoutDetect) {
+                if (value.contains(teleportMsg)) {
+                    serverShoutCmd = value;
+                    needClick = true;
+                    break;
+                }
+            }
+
+            if (needClick) {
+                LogUtil.doLog(0, "[服务端返回可交互信息] [" + username + "] " + value, "BotAttack");
+                packetHandler.sendChatPacket(client, value);
+                clickVerifies++;
+            }
         }
 
         if (packetHandler.hasMessageExtra(message)) {

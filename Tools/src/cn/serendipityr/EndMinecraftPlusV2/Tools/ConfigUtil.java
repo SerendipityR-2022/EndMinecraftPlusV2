@@ -48,6 +48,7 @@ public class ConfigUtil {
     public static Integer RejoinCount;
     public static List<String> RejoinDetect;
     public static Boolean EmptyMsgRejoin;
+    public static List<String> ServerShoutDetect;
     public static Long RejoinDelay;
     public static List<String> ClickVerifiesDetect;
     public static List<String> CustomChat;
@@ -111,6 +112,7 @@ public class ConfigUtil {
             RejoinCount = config.getInt("BotSettings.RejoinCount");
             RejoinDetect = config.getStringList("BotSettings.RejoinDetect");
             EmptyMsgRejoin = config.getBoolean("BotSettings.EmptyMsgRejoin");
+            ServerShoutDetect = config.getStringList("BotSettings.ServerShoutDetect");
             RejoinDelay = config.getLong("BotSettings.RejoinDelay");
             ClickVerifiesDetect = config.getStringList("BotSettings.ClickVerifiesDetect");
             CustomChat = config.getStringList("BotSettings.CustomChat");
@@ -215,8 +217,9 @@ public class ConfigUtil {
                         break;
                 }
 
-                if (configFile.delete()) {
-                    tempConfigFile.renameTo(configFile);
+                if (!configFile.delete() || !tempConfigFile.renameTo(configFile)) {
+                    LogUtil.doLog(1, "尝试进行配置文件转码时出现错误。", null);
+                    return 0;
                 }
 
                 LogUtil.doLog(0, "任务完成。转换前编码: " + currentCharset + " | 转换后编码: " + getFileCharset(configFile) , "CFGUtil");

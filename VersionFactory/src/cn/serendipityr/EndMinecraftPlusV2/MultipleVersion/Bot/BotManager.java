@@ -381,13 +381,18 @@ public class BotManager {
         botHandler.setClientFlag(client, "login", "");
         new Thread(() -> {
             for (String text : ConfigUtil.RegisterCommands) {
-                OtherUtils.doSleep(delay);
                 String cmd = text;
                 cmd = cmd.replace("$pwd", password);
                 cmd = cmd.replace("$userName", userName);
                 cmd = cmd.replace("$rnd", OtherUtils.getRandomString(4, 6));
                 LogUtil.doLog(0, "[" + userName + "] 注册信息已发送。", "BotAttack");
                 packetHandler.sendChatPacket(client, cmd);
+                OtherUtils.doSleep(delay);
+            }
+
+            if (PacketManager.serverShoutCmd != null) {
+                LogUtil.doLog(0, "[" + userName + "] 正在尝试跳出登录大厅: " + PacketManager.serverShoutCmd, "BotAttack");
+                packetHandler.sendChatPacket(client, PacketManager.serverShoutCmd);
             }
         }).start();
     }
