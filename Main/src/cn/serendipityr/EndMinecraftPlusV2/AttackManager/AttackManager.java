@@ -20,6 +20,9 @@ public class AttackManager {
             case 1:
             case 4:
             case 5:
+                LogUtil.doLog(0, "正在载入Minecraft协议库...", "ProtocolLib");
+                ProtocolLibs.loadProtocolLib();
+
                 // BotDebug & BotAttack
                 BotHandler botHandler;
                 PacketHandler packetHandler;

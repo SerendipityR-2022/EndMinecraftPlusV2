@@ -111,8 +111,6 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     @Override
     public void handleServerPlayerPositionRotationPacket(Object client, Object recvPacket, String username) {
         Session session = ((Client) client).getSession();
-        ServerPlayerPositionRotationPacket packet = (ServerPlayerPositionRotationPacket) recvPacket;
-        sendPositionRotationPacket(session, packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getYaw());
         sendClientPlayerMovementPacket(session, true);
     }
 
@@ -139,9 +137,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     public void handleServerKeepAlivePacket(Object client, Object recvPacket, String username) {
         Session session = ((Client) client).getSession();
         ServerKeepAlivePacket serverKeepAlivePacket = (ServerKeepAlivePacket) recvPacket;
-        if (ConfigUtil.KeepAlive) {
-            sendClientKeepAlivePacket(session, serverKeepAlivePacket.getPingId());
-        }
+        sendClientKeepAlivePacket(session, serverKeepAlivePacket.getPingId());
     }
 
     @Override

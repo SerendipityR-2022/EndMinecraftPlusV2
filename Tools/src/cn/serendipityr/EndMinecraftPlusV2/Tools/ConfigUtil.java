@@ -39,6 +39,7 @@ public class ConfigUtil {
     public static Integer RandomMinLength;
     public static Integer RandomMaxLength;
     public static Boolean KeepAlive;
+    public static Boolean PacketHandlerMove;
     public static Integer BotCount;
     public static List<String> RegisterCommands;
     public static Boolean GetMotdBeforeRejoin;
@@ -101,7 +102,8 @@ public class ConfigUtil {
             RandomFlag = config.getInt("BotSettings.RandomFlag");
             RandomMinLength = config.getInt("BotSettings.RandomMinLength");
             RandomMaxLength = config.getInt("BotSettings.RandomMaxLength");
-            KeepAlive = config.getBoolean("BotSettings.KeepAlive");
+            KeepAlive = config.getBoolean("BotSettings.PacketHandler.KeepAlive");
+            PacketHandlerMove = config.getBoolean("BotSettings.PacketHandler.Move");
             RegisterCommands = config.getStringList("BotSettings.RegisterCommands");
             GetMotdBeforeRejoin = config.getBoolean("BotSettings.GetMotdBeforeRejoin");
             GetMotdCount = config.getInt("BotSettings.GetMotdCount");

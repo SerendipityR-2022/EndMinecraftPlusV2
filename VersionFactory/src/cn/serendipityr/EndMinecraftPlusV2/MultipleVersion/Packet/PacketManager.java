@@ -20,7 +20,9 @@ public class PacketManager {
             packetHandler.handleServerJoinGamePacket(client, packet, username);
         } else if (packetHandler.checkServerKeepAlivePacket(packet)) {
             // 心跳包
-            packetHandler.handleServerKeepAlivePacket(client, packet, username);
+            if (ConfigUtil.KeepAlive) {
+                packetHandler.handleServerKeepAlivePacket(client, packet, username);
+            }
         } else if (packetHandler.checkServerChatPacket(packet)) {
             // 聊天信息包
             packetHandler.handleServerChatPacket(client, packet, username);
@@ -32,7 +34,9 @@ public class PacketManager {
             packetHandler.handleServerPlayerHealthPacket(client, packet, username);
         } else if (packetHandler.checkServerPlayerPositionRotationPacket(packet)) {
             // 移动数据包
-            packetHandler.handleServerPlayerPositionRotationPacket(client, packet, username);
+            if (ConfigUtil.PacketHandlerMove) {
+                packetHandler.handleServerPlayerPositionRotationPacket(client, packet, username);
+            }
             BotManager.positionList.put(client, packet);
         } else {
             // packetHandler.handleOtherPacket(packet);

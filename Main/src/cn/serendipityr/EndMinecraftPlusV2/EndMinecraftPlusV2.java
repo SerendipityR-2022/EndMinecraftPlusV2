@@ -8,8 +8,8 @@ import cn.serendipityr.EndMinecraftPlusV2.AttackManager.AttackManager;
 import cn.serendipityr.EndMinecraftPlusV2.VersionManager.ProtocolLibs;
 
 public class EndMinecraftPlusV2 {
-    public static String ver = "2.0.2";
-    public static Integer CfgVer = 9;
+    public static String ver = "2.0.3";
+    public static Integer CfgVer = 10;
 
     public static void main(String[] args) {
         System.out.println("=======================-Designed by SerendipityR-=======================");
@@ -46,8 +46,6 @@ public class EndMinecraftPlusV2 {
     }
 
     public static void startAttack() {
-        LogUtil.doLog(0, "正在载入Minecraft协议库...", "ProtocolLib");
-        ProtocolLibs.loadProtocolLib();
         AttackManager.doAttack();
     }
 

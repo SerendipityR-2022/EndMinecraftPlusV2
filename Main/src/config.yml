@@ -3,7 +3,7 @@
 #   Designed by SerendipityR  #
 ###############################
 
-CfgVer: 9
+CfgVer: 10
 
 AttackSettings:
   Address: "example.com"
@@ -14,6 +14,7 @@ AttackSettings:
   # 3 - MotdAttackP - MOTD压测(代理)
   # 4 - DoubleAttack - 影分身攻击(代理，仅原版单服可用)
   # 5 - BotDebug - 假人调试模式(无代理)
+  # [!] 请注意，无代理状态下，你的IP地址将暴露于攻击目标的后台日志中，请合理使用。
   Method: 1
   Time: 3600
   ConnectDelay: 15
@@ -37,15 +38,15 @@ AttackSettings:
     # register&Login - 执行注册/登录:<密码>
     # crashPacket - 发送崩服数据包:<数量>
     Actions:
+      - "wait:2000"
+      - "register&Login:genshinImpact"
       - "wait:1000"
       - "chat:原神，启动!"
-      - "randomTeleport:1"
-      - "wait:1000"
-      - "backTeleport"
-      - "register&Login:genshinImpact"
-      - "crashPacket:20"
-      - "wait:1000"
-      - "crashPacket:20"
+      #- "randomTeleport:1"
+      #- "wait:1000"
+      #- "backTeleport"
+      #- "wait:1000"
+      #- "crashPacket:20"
   ShowFails: false
 
 AdvancedSettings:
@@ -96,9 +97,15 @@ BotSettings:
   RandomFlag: 1
   RandomMinLength: 6
   RandomMaxLength: 8
-  # 是否回复KeepAlive数据包
-  # 如果你发现假人断开连接的原因与"Timeout"相关，请尝试切换此项。
-  KeepAlive: false
+  # 在此处控制数据包响应单元
+  PacketHandler:
+    # 是否回复KeepAlive数据包
+    # 如果你发现假人断开连接的原因与"Timeout"相关，请尝试切换此项。
+    KeepAlive: false
+    # 是否响应服务器位置数据包
+    # 如果你发现假人断开连接的原因与"位置异常"相关，请尝试切换此项。
+    Move: ture
+
   # 重新加入前模拟刷新服务器列表
   GetMotdBeforeRejoin: true
   GetMotdCount: 5
