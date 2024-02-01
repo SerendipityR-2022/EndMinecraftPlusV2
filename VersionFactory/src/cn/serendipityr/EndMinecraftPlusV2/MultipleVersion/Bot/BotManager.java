@@ -6,6 +6,7 @@ import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.UniverseMethods;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.*;
 
 import java.net.Proxy;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -47,6 +48,10 @@ public class BotManager {
 
         if (ConfigUtil.DebugPlayerActivities) {
             for (String action : ConfigUtil.DebugPlayerActions) {
+                if (!botHandler.checkClientStatus(client)) {
+                    break;
+                }
+
                 String[] _action = action.split(":");
                 switch (_action[0]) {
                     case "wait":
@@ -81,6 +86,23 @@ public class BotManager {
                         int count_ = Integer.parseInt(_action[1]);
                         LogUtil.doLog(0, "[DEBUG] [行动] 尝试发送崩服数据包: " + count_ + "个", "BotAttack");
                         sendCrashPacket(client, count_);
+                        break;
+                    case "moveToLocation":
+                        String[] moveArgs = _action[1].split("_");
+                        Double[] loc = new Double[]{Double.valueOf(moveArgs[0]), Double.valueOf(moveArgs[1]), Double.valueOf(moveArgs[2])};
+                        LogUtil.doLog(0, "[DEBUG] [行动] 尝试移动到指定位置: " + Arrays.toString(loc), "BotAttack");
+                        moveToLocation(client, loc);
+                        break;
+                    case "goToLobby":
+                        Object npc = getNpc();
+                        Double[] npcLoc = packetHandler.getSpawnPlayerLocation(npc);
+                        if (npcLoc == null) {
+                            return;
+                        }
+                        LogUtil.doLog(0, "[DEBUG] [行动] 尝试移动到NPC所处位置: " + Arrays.toString(npcLoc), "BotAttack");
+                        moveToLocation(client, npcLoc);
+                        LogUtil.doLog(0, "[DEBUG] [行动] 尝试与NPC交互: " + Arrays.toString(npcLoc), "BotAttack");
+                        packetHandler.sendPlayerInteractEntityPacket(client, packetHandler.getSpawnPlayerEntityId(npc), new float[]{npcLoc[0].floatValue(), npcLoc[1].floatValue(), npcLoc[2].floatValue()});
                         break;
                     default:
                         LogUtil.doLog(0, "[DEBUG] [行动] 无法识别的action语句: " + action, "BotAttack");
@@ -204,6 +226,11 @@ public class BotManager {
 
             botHandler.setClientFlag(client, "activity", true);
             for (String action : ConfigUtil.BotActions) {
+                if (!botHandler.checkClientStatus(client)) {
+                    botHandler.setClientFlag(client, "activity", false);
+                    break;
+                }
+
                 boolean async = "async".equals(action.split("\\|")[0]);
 
                 String[] _action;
@@ -313,6 +340,36 @@ public class BotManager {
                         OtherUtils.doSleep(tabDelay);
                     }
                 }
+                break;
+            case "moveToLocation":
+                String[] moveArgs = _action[1].split("_");
+                boolean doOnce = Boolean.parseBoolean(moveArgs[0]);
+                if (doOnce && botHandler.hasClientFlag(client, "moved")) {
+                    return;
+                } else if (doOnce) {
+                    botHandler.setClientFlag(client, "moved", true);
+                }
+                Double[] loc = new Double[]{Double.valueOf(moveArgs[1]), Double.valueOf(moveArgs[2]), Double.valueOf(moveArgs[3])};
+                if (ConfigUtil.BotActionDetails) {
+                    LogUtil.doLog(0, "[" + userName + "] [行动] 尝试移动到指定位置: " + Arrays.toString(loc), "BotAttack");
+                }
+                moveToLocation(client, loc);
+                break;
+            case "goToLobby":
+                // 必须禁用默认处理方式
+                Object npc = getNpc();
+                Double[] npcLoc = packetHandler.getSpawnPlayerLocation(npc);
+                if (npcLoc == null) {
+                    return;
+                }
+                if (ConfigUtil.BotActionDetails) {
+                    LogUtil.doLog(0, "[" + userName + "] [行动] 尝试移动到NPC所处位置: " + Arrays.toString(npcLoc), "BotAttack");
+                }
+                moveToLocation(client, npcLoc);
+                if (ConfigUtil.BotActionDetails) {
+                    LogUtil.doLog(0, "[" + userName + "] [行动] 尝试与NPC交互: " + Arrays.toString(npcLoc), "BotAttack");
+                }
+                packetHandler.sendPlayerInteractEntityPacket(client, packetHandler.getSpawnPlayerEntityId(npc), new float[]{npcLoc[0].floatValue(), npcLoc[1].floatValue(), npcLoc[2].floatValue()});
                 break;
             default:
                 LogUtil.doLog(0, "[" + userName + "] [行动] 无法识别的action语句: " + action, "BotAttack");
@@ -437,5 +494,28 @@ public class BotManager {
                 LogUtil.doLog(1, "ServerCrasher Mode设置有误，请检查配置文件。", null);
                 break;
         }
+    }
+
+    public static void moveToLocation(Object client, Double[] loc) {
+        // 必须禁用默认处理方式
+        boolean moveHandler = ConfigUtil.PacketHandlerMove;
+
+        ConfigUtil.PacketHandlerMove = false;
+        if (!BotManager.positionList.containsKey(client)) {
+            LogUtil.doLog(0, "[行动] 尝试移动到指定位置时发生错误! 无法确定原点位置。", "BotAttack");
+            return;
+        }
+
+        packetHandler.moveToLocation(client, loc, 0.2);
+        ConfigUtil.PacketHandlerMove = moveHandler;
+    }
+
+    public static Object getNpc() {
+        if (PacketManager.npcDetect.isEmpty()) {
+            LogUtil.doLog(0, "[行动] 尝试获取NPC信息时发生错误! 目标不存在。", "BotAttack");
+            return null;
+        }
+
+        return PacketManager.npcDetect.get(0);
     }
 }

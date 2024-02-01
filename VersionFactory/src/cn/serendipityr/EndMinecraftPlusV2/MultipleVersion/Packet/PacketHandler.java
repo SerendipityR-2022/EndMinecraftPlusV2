@@ -1,5 +1,7 @@
 package cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Packet;
 
+import java.util.List;
+
 public interface PacketHandler {
     boolean checkServerPluginMessagePacket(Object packet);
 
@@ -24,6 +26,37 @@ public interface PacketHandler {
     boolean checkServerPlayerHealthPacket(Object packet);
 
     void handleServerPlayerHealthPacket(Object client, Object packet, String username);
+
+    boolean checkServerSpawnPlayerPacket(Object packet);
+    boolean checkSpawnPlayerName(Object packet, String checkName);
+    Double[] getSpawnPlayerLocation(Object packet);
+    int getSpawnPlayerEntityId(Object packet);
+
+    void moveToLocation(Object client, Double[] targetLocation, double moveSpeed);
+
+    boolean checkServerOpenWindowPacket(Object packet);
+
+    int getWindowIDFromServerOpenWindowPacket(Object packet);
+
+    int getWindowSlotsFromPacket(Object packet);
+
+    String getWindowNameFromPacket(Object packet);
+
+    boolean checkServerWindowItemsPacket(Object packet);
+
+    int getWindowIDFromWindowItemsPacket(Object packet);
+
+    Object[] getItemStackFromWindowItemsPacket(Object packet);
+
+    String getItemName(Object itemStack);
+
+    List<String> getItemLore(Object itemStack);
+
+    void sendPlayerInteractEntityPacket(Object client, int entityId, float[] location);
+
+    void sendLeftClickWindowItemPacket(Object client, int windowId, int slot, Object itemStack);
+
+    void sendRightClickWindowItemPacket(Object client, int windowId, int slot, Object itemStack);
 
     void handleOtherPacket(Object packet);
 

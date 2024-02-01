@@ -49,6 +49,8 @@ public class ConfigUtil {
     public static List<String> RejoinDetect;
     public static Boolean EmptyMsgRejoin;
     public static List<String> ServerShoutDetect;
+    public static List<String> JoinNPCDetect;
+    public static List<String> JoinLobbyItem;
     public static Long RejoinDelay;
     public static List<String> ClickVerifiesDetect;
     public static List<String> CustomChat;
@@ -113,6 +115,8 @@ public class ConfigUtil {
             RejoinDetect = config.getStringList("BotSettings.RejoinDetect");
             EmptyMsgRejoin = config.getBoolean("BotSettings.EmptyMsgRejoin");
             ServerShoutDetect = config.getStringList("BotSettings.ServerShoutDetect");
+            JoinNPCDetect = config.getStringList("BotSettings.JoinNPCDetect");
+            JoinLobbyItem = config.getStringList("BotSettings.JoinLobbyItem");
             RejoinDelay = config.getLong("BotSettings.RejoinDelay");
             ClickVerifiesDetect = config.getStringList("BotSettings.ClickVerifiesDetect");
             CustomChat = config.getStringList("BotSettings.CustomChat");

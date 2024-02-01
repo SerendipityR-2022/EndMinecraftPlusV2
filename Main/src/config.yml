@@ -3,7 +3,7 @@
 #   Designed by SerendipityR  #
 ###############################
 
-CfgVer: 11
+CfgVer: 12
 
 AttackSettings:
   Address: "example.com"
@@ -37,11 +37,16 @@ AttackSettings:
     # backTeleport - 回到重生点
     # register&Login - 执行注册/登录:<密码>
     # crashPacket - 发送崩服数据包:<数量>
+    # goToLobby - 尝试寻找并与加入大厅NPC交互
+    # moveToLocation - 向目标位置移动:<X>_<Y>_<Z>
     Actions:
       - "wait:2000"
       - "register&Login:genshinImpact"
       - "wait:1000"
       - "chat:原神，启动!"
+      #- "moveToLocation:13_75_0"
+      - "goToLobby"
+      - "wait:30000"
       #- "randomTeleport:1"
       #- "wait:1000"
       #- "backTeleport"
@@ -121,6 +126,14 @@ BotSettings:
   # 针对特定服务器，利用全服喊话跳出登录大厅
   ServerShoutDetect:
     - "tpserver"
+  # 检测出生点附近的NPC名称
+  # 实现通过NPC加入服务器大厅
+  JoinNPCDetect:
+    - "点击加入"
+  # 与NPC交互后可能返回交互界面
+  # 若界面内存在匹配的物品，则尝试模拟物品点击
+  JoinLobbyItem:
+    - "LEFT:点击加入"
   # 若聊天信息中检测到以下字段，则尝试进行点击验证
   ClickVerifiesDetect:
     - "点击验证"
@@ -146,15 +159,19 @@ BotSettings:
   # register&Login - 执行注册/登录:<是否使用已生成密码>_<自定义密码> - Flag:login
   # crashPacket - 发送崩服数据包:<数量>_<flag/none>
   # tabAttack - 执行Tab补全:<数量>_<间隔(ms)>_<flag/none>
+  # moveToLocation - 向目标位置移动:<只执行一次>_<X>_<Y>_<Z>_<flag/none>
+  # goToLobby - 尝试寻找并与加入大厅NPC交互:<flag/none> (只执行一次)
   Actions:
     - "wait:3000_none"
     - "register&Login:true_genshinImpact"
     - "async|chatSpam:10_3000_login"
-    - "async|randomTeleport:25_100_login"
+    #- "async|randomTeleport:25_100_login"
     - "wait:3000_login"
-    - "async|backTeleport:login"
-    - "async|crashPacket:75_login"
-    - "async|tabAttack:25_75_login"
+    #- "async|backTeleport:login"
+    #- "async|crashPacket:75_login"
+    #- "async|tabAttack:25_75_login"
+    - "goToLobby:login"
+    #- "async|moveToLocation:true_13_75_0_login"
 
 Proxy:
   # 代理获取方式:

@@ -2,38 +2,48 @@ package cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.VersionSupport.P1_17_
 
 import cn.serendipityr.EndMinecraftPlusV2.AdvanceModule.ACProtocol.AnotherStarAntiCheat;
 import cn.serendipityr.EndMinecraftPlusV2.AdvanceModule.ACProtocol.AntiCheat3;
+import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Bot.BotManager;
 import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Packet.PacketManager;
 import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.UniverseMethods;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.OtherUtils;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.player.HandPreference;
+import com.github.steveice10.mc.protocol.data.game.entity.player.InteractAction;
 import com.github.steveice10.mc.protocol.data.game.setting.ChatVisibility;
 import com.github.steveice10.mc.protocol.data.game.setting.SkinPart;
+import com.github.steveice10.mc.protocol.data.game.window.ClickItemParam;
+import com.github.steveice10.mc.protocol.data.game.window.WindowAction;
 import com.github.steveice10.mc.protocol.packet.ingame.client.*;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerChangeHeldItemPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerMovementPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.*;
+import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
+import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
+import com.github.steveice10.opennbt.tag.builtin.ListTag;
+import com.github.steveice10.opennbt.tag.builtin.StringTag;
+import com.github.steveice10.opennbt.tag.builtin.Tag;
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.tcp.TcpClientSession;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Packet.PacketHandler {
+    private double selfX = 0;
+    private double selfY = 0;
+    private double selfZ = 0;
+
     @Override
     public boolean checkServerPluginMessagePacket(Object packet) {
         return packet instanceof ServerPluginMessagePacket;
@@ -97,10 +107,16 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     @Override
     public void handleServerPlayerPositionRotationPacket(Object client, Object recvPacket, String username) {
         TcpClientSession session = (TcpClientSession) client;
-        ServerPlayerPositionRotationPacket packet = (ServerPlayerPositionRotationPacket) recvPacket;
-        ClientTeleportConfirmPacket teleportConfirmPacket = new ClientTeleportConfirmPacket(packet.getTeleportId());
-        session.send(teleportConfirmPacket);
-        sendClientPlayerMovementPacket(session, true);
+        ServerPlayerPositionRotationPacket positionRotationPacket = (ServerPlayerPositionRotationPacket) recvPacket;
+        selfX = positionRotationPacket.getX();
+        selfY = positionRotationPacket.getY();
+        selfZ = positionRotationPacket.getZ();
+        if (ConfigUtil.PacketHandlerMove) {
+            sendClientPlayerMovementPacket(session, true);
+            ClientTeleportConfirmPacket teleportConfirmPacket = new ClientTeleportConfirmPacket(positionRotationPacket.getTeleportId());
+            session.send(teleportConfirmPacket);
+            sendClientPlayerMovementPacket(session, true);
+        }
     }
 
     @Override
@@ -143,6 +159,179 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
             sendRespawnPacket(session);
             LogUtil.doLog(0, "[" + username + "] " + "假人于服务器中死亡，已重生。", "BotAttack");
         }
+    }
+
+    @Override
+    public boolean checkServerSpawnPlayerPacket(Object packet) {
+        return packet instanceof ServerPlayerListEntryPacket;
+    }
+
+    @Override
+    public boolean checkSpawnPlayerName(Object packet, String checkName) {
+        return false;
+    }
+
+    @Override
+    public Double[] getSpawnPlayerLocation(Object packet) {
+        ServerSpawnPlayerPacket playerPacket = (ServerSpawnPlayerPacket) packet;
+        return new Double[]{playerPacket.getX(), playerPacket.getY(), playerPacket.getZ()};
+    }
+
+    @Override
+    public int getSpawnPlayerEntityId(Object packet) {
+        ServerSpawnPlayerPacket playerPacket = (ServerSpawnPlayerPacket) packet;
+        return playerPacket.getEntityId();
+    }
+
+
+    @Override
+    public void moveToLocation(Object client, Double[] targetLocation, double moveSpeed) {
+        TcpClientSession session = (TcpClientSession) client;
+
+        // 设置初始目标位置
+        double targetX = targetLocation[0];
+        double targetY = targetLocation[1];
+        double targetZ = targetLocation[2];
+
+        if (!BotManager.positionList.containsKey(client)) {
+            return;
+        }
+
+        boolean movedLastTime = true; // 标记上次是否移动成功
+        boolean moveYFirst = true; // 标记是否首先移动Y轴
+
+        // 持续移动直到接近目标位置
+        while (true) {
+            double previousX = selfX;
+            double previousY = selfY;
+            double previousZ = selfZ;
+
+            double distanceX = selfX - targetX;
+            double distanceY = selfY - targetY;
+            double distanceZ = selfZ - targetZ;
+            double totalDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
+
+            // 检查是否已经足够接近目标
+            if (totalDistance <= moveSpeed) {
+                break;  // 已经接近目标，退出循环
+            }
+
+            if ((Math.abs(distanceY) > Math.abs(distanceX) && moveYFirst) || !movedLastTime) {
+                // 优先移动Y轴，或者上次移动失败时尝试移动Y轴
+                double stepRatioY = Math.min(moveSpeed / Math.abs(distanceY), 1.0);
+                selfY -= distanceY * stepRatioY;
+                moveYFirst = !moveYFirst; // 下次尝试另一个方向
+            } else {
+                // 移动X轴和Z轴
+                double stepRatioXZ = Math.min(moveSpeed / Math.sqrt(distanceX * distanceX + distanceZ * distanceZ), 1.0);
+                selfX -= distanceX * stepRatioXZ;
+                selfZ -= distanceZ * stepRatioXZ;
+                moveYFirst = !moveYFirst; // 下次尝试另一个方向
+            }
+
+            ClientPlayerPositionPacket playerPositionPacket = new ClientPlayerPositionPacket(true, selfX, selfY, selfZ);
+            session.send(playerPositionPacket);
+
+            OtherUtils.doSleep(100); // 暂停以等待服务器响应
+
+            // 检查是否成功移动
+            movedLastTime = (previousX != selfX || previousY != selfY || previousZ != selfZ);
+        }
+    }
+
+    @Override
+    public boolean checkServerOpenWindowPacket(Object packet) {
+        return packet instanceof ServerOpenWindowPacket;
+    }
+
+    @Override
+    public int getWindowIDFromServerOpenWindowPacket(Object packet) {
+        ServerOpenWindowPacket windowPacket = (ServerOpenWindowPacket) packet;
+        return windowPacket.getWindowId();
+    }
+
+    @Override
+    public int getWindowSlotsFromPacket(Object packet) {
+        return -1;
+    }
+
+    @Override
+    public String getWindowNameFromPacket(Object packet) {
+        ServerOpenWindowPacket windowPacket = (ServerOpenWindowPacket) packet;
+        return windowPacket.getName();
+    }
+
+    @Override
+    public boolean checkServerWindowItemsPacket(Object packet) {
+        return packet instanceof ServerWindowItemsPacket;
+    }
+
+    @Override
+    public int getWindowIDFromWindowItemsPacket(Object packet) {
+        ServerWindowItemsPacket windowItemsPacket = (ServerWindowItemsPacket) packet;
+        return windowItemsPacket.getWindowId();
+    }
+
+    @Override
+    public Object[] getItemStackFromWindowItemsPacket(Object packet) {
+        ServerWindowItemsPacket windowItemsPacket = (ServerWindowItemsPacket) packet;
+        return windowItemsPacket.getItems();
+    }
+
+    @Override
+    public String getItemName(Object itemStack) {
+        if (itemStack == null) {
+            return null;
+        }
+        ItemStack item = (ItemStack) itemStack;
+        CompoundTag nbtData = item.getNbt();
+        HashMap<?, ?> hashMap = (HashMap<?, ?>) nbtData.get("display").getValue();
+        if (hashMap.get("Name") == null) {
+            return null;
+        }
+        return ((StringTag) hashMap.get("Name")).getValue();
+    }
+
+    @Override
+    public List<String> getItemLore(Object itemStack) {
+        if (itemStack == null) {
+            return null;
+        }
+        ItemStack item = (ItemStack) itemStack;
+        CompoundTag nbtData = item.getNbt();
+        HashMap<?, ?> hashMap = (HashMap<?, ?>) nbtData.get("display").getValue();
+        if (hashMap.get("Lore") == null) {
+            return null;
+        }
+        List<Tag> itemLore = ((ListTag) hashMap.get("Lore")).getValue();
+        List<String> loreList = new ArrayList<>();
+        for (Tag tag:itemLore) {
+            loreList.add((String) tag.getValue());
+        }
+        return loreList;
+    }
+
+    @Override
+    public void sendPlayerInteractEntityPacket(Object client, int entityId, float[] location) {
+        TcpClientSession session = (TcpClientSession) client;
+        ClientPlayerInteractEntityPacket interactEntityPacket = new ClientPlayerInteractEntityPacket(entityId, InteractAction.INTERACT, false);
+        session.send(interactEntityPacket);
+    }
+
+    @Override
+    public void sendLeftClickWindowItemPacket(Object client, int windowId, int slot, Object itemStack) {
+        TcpClientSession session = (TcpClientSession) client;
+        ItemStack item = (ItemStack) itemStack;
+        ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(windowId, 6, slot, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK, item, new HashMap<>());
+        session.send(windowActionPacket);
+    }
+
+    @Override
+    public void sendRightClickWindowItemPacket(Object client,int windowId, int slot, Object itemStack) {
+        TcpClientSession session = (TcpClientSession) client;
+        ItemStack item = (ItemStack) itemStack;
+        ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(windowId, 6, slot, WindowAction.CLICK_ITEM, ClickItemParam.RIGHT_CLICK, item, new HashMap<>());
+        session.send(windowActionPacket);
     }
 
     @Override
