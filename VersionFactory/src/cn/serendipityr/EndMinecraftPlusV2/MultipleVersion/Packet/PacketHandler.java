@@ -31,7 +31,7 @@ public interface PacketHandler {
 
     boolean checkSpawnPlayerName(Object packet, String checkName);
 
-    List<String> getSpawnPlayerMetadata(Object packet);
+    List<Object> getSpawnPlayerMetadata(Object packet);
 
     Double[] getSpawnPlayerLocation(Object packet);
 

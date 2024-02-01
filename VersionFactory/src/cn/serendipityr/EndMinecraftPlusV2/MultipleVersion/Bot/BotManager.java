@@ -96,16 +96,16 @@ public class BotManager {
                     case "goToLobby":
                         if (protocolVersion > 498) {
                             LogUtil.doLog(0, "[" + userName + "] [DEBUG] [行动] 无法移动到NPC所处位置: 当前版本不支持。", "BotAttack");
-                            return;
+                            break;
                         }
 
                         Object npc = getNpc();
                         if (npc == null) {
-                            return;
+                            break;
                         }
                         Double[] npcLoc = packetHandler.getSpawnPlayerLocation(npc);
                         if (npcLoc == null) {
-                            return;
+                            break;
                         }
                         LogUtil.doLog(0, "[DEBUG] [行动] 尝试移动到NPC所处位置: " + Arrays.toString(npcLoc), "BotAttack");
                         moveToLocation(client, npcLoc);

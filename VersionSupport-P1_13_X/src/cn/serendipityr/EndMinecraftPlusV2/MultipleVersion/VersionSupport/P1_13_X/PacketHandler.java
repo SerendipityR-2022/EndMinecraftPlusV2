@@ -193,11 +193,11 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     }
 
     @Override
-    public List<String> getSpawnPlayerMetadata(Object packet) {
+    public List<Object> getSpawnPlayerMetadata(Object packet) {
         ServerSpawnPlayerPacket playerPacket = (ServerSpawnPlayerPacket) packet;
-        List<String> metaData = new ArrayList<>();
-        for (EntityMetadata metadata:playerPacket.getMetadata()) {
-            metaData.add((String) metadata.getValue());
+        List<Object> metaData = new ArrayList<>();
+        for (EntityMetadata metadata : playerPacket.getMetadata()) {
+            metaData.add(metadata.getValue());
         }
         return metaData;
     }

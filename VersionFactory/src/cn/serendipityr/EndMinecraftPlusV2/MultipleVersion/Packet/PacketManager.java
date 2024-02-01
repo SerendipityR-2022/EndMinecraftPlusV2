@@ -45,6 +45,9 @@ public class PacketManager {
         } else if (packetHandler.checkServerSpawnPlayerPacket(packet)) {
             // 其他玩家位置数据包
             boolean add = true;
+            if (ConfigUtil.AttackMethod.equals(5)) {
+                LogUtil.doLog(0, "[DEBUG] 接收到其他玩家位置: " + packetHandler.getSpawnPlayerMetadata(packet), "BotAttack");
+            }
             for (String checkName : ConfigUtil.JoinNPCDetect) {
                 if (!packetHandler.checkSpawnPlayerName(packet, checkName)) {
                     add = false;

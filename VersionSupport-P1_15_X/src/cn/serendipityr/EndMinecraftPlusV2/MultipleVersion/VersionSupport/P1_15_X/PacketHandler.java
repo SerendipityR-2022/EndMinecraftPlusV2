@@ -9,7 +9,6 @@ import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.OtherUtils;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.entity.player.InteractAction;
@@ -176,7 +175,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     }
 
     @Override
-    public List<String> getSpawnPlayerMetadata(Object packet) {
+    public List<Object> getSpawnPlayerMetadata(Object packet) {
         return null;
     }
 

@@ -172,7 +172,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     }
 
     @Override
-    public List<String> getSpawnPlayerMetadata(Object packet) {
+    public List<Object> getSpawnPlayerMetadata(Object packet) {
         return null;
     }
 
