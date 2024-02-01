@@ -28,8 +28,13 @@ public interface PacketHandler {
     void handleServerPlayerHealthPacket(Object client, Object packet, String username);
 
     boolean checkServerSpawnPlayerPacket(Object packet);
+
     boolean checkSpawnPlayerName(Object packet, String checkName);
+
+    List<String> getSpawnPlayerMetadata(Object packet);
+
     Double[] getSpawnPlayerLocation(Object packet);
+
     int getSpawnPlayerEntityId(Object packet);
 
     void moveToLocation(Object client, Double[] targetLocation, double moveSpeed);

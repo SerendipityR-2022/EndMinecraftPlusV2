@@ -94,7 +94,15 @@ public class BotManager {
                         moveToLocation(client, loc);
                         break;
                     case "goToLobby":
+                        if (protocolVersion > 498) {
+                            LogUtil.doLog(0, "[" + userName + "] [DEBUG] [行动] 无法移动到NPC所处位置: 当前版本不支持。", "BotAttack");
+                            return;
+                        }
+
                         Object npc = getNpc();
+                        if (npc == null) {
+                            return;
+                        }
                         Double[] npcLoc = packetHandler.getSpawnPlayerLocation(npc);
                         if (npcLoc == null) {
                             return;
@@ -361,9 +369,18 @@ public class BotManager {
             case "goToLobby":
                 String[] lobbyArgs = _action[1].split("_");
                 String lobbyFlag = lobbyArgs[0];
+
+                if (protocolVersion > 498) {
+                    LogUtil.doLog(0, "[" + userName + "] [行动] 无法移动到NPC所处位置: 当前版本不支持。", "BotAttack");
+                    return;
+                }
+
                 if ("none".equals(lobbyFlag) || botHandler.hasClientFlag(client, lobbyFlag)) {
                     // 必须禁用默认处理方式
                     Object npc = getNpc();
+                    if (npc == null) {
+                        return;
+                    }
                     Double[] npcLoc = packetHandler.getSpawnPlayerLocation(npc);
                     if (npcLoc == null) {
                         return;
