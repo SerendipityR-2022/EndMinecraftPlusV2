@@ -344,32 +344,39 @@ public class BotManager {
             case "moveToLocation":
                 String[] moveArgs = _action[1].split("_");
                 boolean doOnce = Boolean.parseBoolean(moveArgs[0]);
-                if (doOnce && botHandler.hasClientFlag(client, "moved")) {
-                    return;
-                } else if (doOnce) {
-                    botHandler.setClientFlag(client, "moved", true);
+                String moveFlag = moveArgs[4];
+                if ("none".equals(moveFlag) || botHandler.hasClientFlag(client, moveFlag)) {
+                    if (doOnce && botHandler.hasClientFlag(client, "moved")) {
+                        return;
+                    } else if (doOnce) {
+                        botHandler.setClientFlag(client, "moved", true);
+                    }
+                    Double[] loc = new Double[]{Double.valueOf(moveArgs[1]), Double.valueOf(moveArgs[2]), Double.valueOf(moveArgs[3])};
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试移动到指定位置: " + Arrays.toString(loc), "BotAttack");
+                    }
+                    moveToLocation(client, loc);
                 }
-                Double[] loc = new Double[]{Double.valueOf(moveArgs[1]), Double.valueOf(moveArgs[2]), Double.valueOf(moveArgs[3])};
-                if (ConfigUtil.BotActionDetails) {
-                    LogUtil.doLog(0, "[" + userName + "] [行动] 尝试移动到指定位置: " + Arrays.toString(loc), "BotAttack");
-                }
-                moveToLocation(client, loc);
                 break;
             case "goToLobby":
-                // 必须禁用默认处理方式
-                Object npc = getNpc();
-                Double[] npcLoc = packetHandler.getSpawnPlayerLocation(npc);
-                if (npcLoc == null) {
-                    return;
+                String[] lobbyArgs = _action[1].split("_");
+                String lobbyFlag = lobbyArgs[0];
+                if ("none".equals(lobbyFlag) || botHandler.hasClientFlag(client, lobbyFlag)) {
+                    // 必须禁用默认处理方式
+                    Object npc = getNpc();
+                    Double[] npcLoc = packetHandler.getSpawnPlayerLocation(npc);
+                    if (npcLoc == null) {
+                        return;
+                    }
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试移动到NPC所处位置: " + Arrays.toString(npcLoc), "BotAttack");
+                    }
+                    moveToLocation(client, npcLoc);
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试与NPC交互: " + Arrays.toString(npcLoc), "BotAttack");
+                    }
+                    packetHandler.sendPlayerInteractEntityPacket(client, packetHandler.getSpawnPlayerEntityId(npc), new float[]{npcLoc[0].floatValue(), npcLoc[1].floatValue(), npcLoc[2].floatValue()});
                 }
-                if (ConfigUtil.BotActionDetails) {
-                    LogUtil.doLog(0, "[" + userName + "] [行动] 尝试移动到NPC所处位置: " + Arrays.toString(npcLoc), "BotAttack");
-                }
-                moveToLocation(client, npcLoc);
-                if (ConfigUtil.BotActionDetails) {
-                    LogUtil.doLog(0, "[" + userName + "] [行动] 尝试与NPC交互: " + Arrays.toString(npcLoc), "BotAttack");
-                }
-                packetHandler.sendPlayerInteractEntityPacket(client, packetHandler.getSpawnPlayerEntityId(npc), new float[]{npcLoc[0].floatValue(), npcLoc[1].floatValue(), npcLoc[2].floatValue()});
                 break;
             default:
                 LogUtil.doLog(0, "[" + userName + "] [行动] 无法识别的action语句: " + action, "BotAttack");
