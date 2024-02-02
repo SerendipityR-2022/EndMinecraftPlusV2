@@ -1,8 +1,10 @@
 package cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Packet;
 
+import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Bot.BotHandler;
 import cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Bot.BotManager;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.ConfigUtil;
 import cn.serendipityr.EndMinecraftPlusV2.Tools.LogUtil;
+import cn.serendipityr.EndMinecraftPlusV2.Tools.OtherUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +35,20 @@ public class PacketManager {
             // 聊天信息包
             packetHandler.handleServerChatPacket(client, packet, username);
             Object message = packetHandler.getMessageFromPacket(packet);
+            String msg = packetHandler.getMessageText(message);
+
             // 处理点击信息
             clickVerifiesHandle(packetHandler, client, message, username);
+
+            // 下落检测绕过
+            if (!ConfigUtil.BypassFallCheck.isEmpty()) {
+                bypassFallCheckHandle(packetHandler, client, msg, username, false);
+            }
+
+            // 检查登录信息
+            if (ConfigUtil.LoginCheck && !BotManager.botHandler.hasClientFlag(client, "login")) {
+                checkLoginMsg(client, msg, username);
+            }
         } else if (packetHandler.checkServerPlayerHealthPacket(packet)) {
             // 血量数据包
             packetHandler.handleServerPlayerHealthPacket(client, packet, username);
@@ -43,21 +57,17 @@ public class PacketManager {
             packetHandler.handleServerPlayerPositionRotationPacket(client, packet, username);
             BotManager.positionList.put(client, packet);
         } else if (packetHandler.checkServerSpawnPlayerPacket(packet)) {
-            // 其他玩家位置数据包
-            boolean add = true;
+            // 玩家生成数据包
+            // 高版本返回皆为null
+            if (BotManager.protocolVersion > 498) {
+                return;
+            }
+
             if (ConfigUtil.AttackMethod.equals(5)) {
                 LogUtil.doLog(0, "[DEBUG] 接收到其他玩家位置: " + packetHandler.getSpawnPlayerMetadata(packet), "BotAttack");
             }
-            for (String checkName : ConfigUtil.JoinNPCDetect) {
-                if (!packetHandler.checkSpawnPlayerName(packet, checkName)) {
-                    add = false;
-                    break;
-                }
-            }
-            if (add && !npcDetect.contains(packet)) {
-                LogUtil.doLog(0, "存在符合条件的NPC: " + Arrays.toString(packetHandler.getSpawnPlayerLocation(packet)), "NPCDetect");
-                npcDetect.add(packet);
-            }
+
+            npcDetectHandle(packetHandler, client, packet);
         } else if (packetHandler.checkServerOpenWindowPacket(packet)) {
             // 收到打开Inventory数据包
             if (ConfigUtil.BotActionDetails) {
@@ -145,6 +155,60 @@ public class PacketManager {
 
         if (packetHandler.hasMessageExtra(message)) {
             packetHandler.handleMessageExtra(packetHandler, message, client, username);
+        }
+    }
+
+    public static void npcDetectHandle(PacketHandler packetHandler, Object client, Object packet) {
+        boolean add = false;
+        for (String checkName : ConfigUtil.JoinNPCDetect) {
+            if (packetHandler.checkSpawnPlayerName(packet, checkName)) {
+                add = true;
+                break;
+            }
+        }
+        if (add && !npcDetect.contains(packet)) {
+            LogUtil.doLog(0, "存在符合条件的NPC: " + Arrays.toString(packetHandler.getSpawnPlayerLocation(packet)), "NPCDetect");
+            npcDetect.add(packet);
+        }
+    }
+
+    public static void bypassFallCheckHandle(PacketHandler packetHandler, Object client, String msg, String username, boolean forceRun) {
+        if (!forceRun && BotManager.botHandler.hasClientFlag(client, "bypassFallCheck")) {
+            return;
+        }
+
+        if (!BotManager.positionList.containsKey(client)) {
+            LogUtil.doLog(0, "[" + username + "] [行动] 尝试发送下落检测数据包时发生错误! 无法确定原点位置。", "BotAttack");
+            return;
+        }
+
+        for (String bypassDetect : ConfigUtil.BypassFallCheck) {
+            if (forceRun || msg.contains(bypassDetect)) {
+                double[] location = packetHandler.getLocationFromPacket(BotManager.positionList.get(client));
+
+                // 必须禁用默认处理方式
+                boolean moveHandler = ConfigUtil.PacketHandlerMove;
+
+                for (int i = 0; i < ConfigUtil.BypassFallCheckTicks; i++) {
+                    double fallHeight = -((Math.pow(0.98, i) - 1) * 3.92);
+                    location[2] = location[2] - fallHeight;
+                    packetHandler.sendPlayerPositionPacket(client, false, location);
+                    OtherUtils.doSleep(50);
+                }
+
+                ConfigUtil.PacketHandlerMove = moveHandler;
+
+                BotManager.botHandler.setClientFlag(client, "bypassFallCheck", true);
+                LogUtil.doLog(0, "[" + username + "] 已发送下落检测数据包。", "BotAttack");
+                break;
+            }
+        }
+    }
+
+    public static void checkLoginMsg(Object client, String message, String username) {
+        if (message.contains(ConfigUtil.LoginSuccessMsg)) {
+            LogUtil.doLog(0, "[" + username + "] 成功完成登录。", "BotAttack");
+            BotManager.botHandler.setClientFlag(client, "login", "");
         }
     }
 }

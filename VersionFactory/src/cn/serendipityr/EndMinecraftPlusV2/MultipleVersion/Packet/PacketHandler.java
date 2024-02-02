@@ -55,9 +55,13 @@ public interface PacketHandler {
 
     String getItemName(Object itemStack);
 
+    double[] getLocationFromPacket(Object packet);
+
     List<String> getItemLore(Object itemStack);
 
     void sendPlayerInteractEntityPacket(Object client, int entityId, float[] location);
+
+    void sendPlayerPositionPacket(Object client, boolean onGround, double[] location);
 
     void sendLeftClickWindowItemPacket(Object client, int windowId, int slot, Object itemStack);
 

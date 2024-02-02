@@ -50,10 +50,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.MultipleVersion.Packet.PacketHandler {
-    private double selfX = 0;
-    private double selfY = 0;
-    private double selfZ = 0;
-
     @Override
     public boolean checkServerPluginMessagePacket(Object packet) {
         return packet instanceof ClientboundCustomPayloadPacket;
@@ -118,9 +114,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     public void handleServerPlayerPositionRotationPacket(Object client, Object recvPacket, String username) {
         TcpClientSession session = (TcpClientSession) client;
         ClientboundPlayerPositionPacket positionRotationPacket = (ClientboundPlayerPositionPacket) recvPacket;
-        selfX = positionRotationPacket.getX();
-        selfY = positionRotationPacket.getY();
-        selfZ = positionRotationPacket.getZ();
+        session.setFlag("location", new double[]{positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), positionRotationPacket.getYaw(), positionRotationPacket.getPitch()});
         if (ConfigUtil.PacketHandlerMove) {
             sendClientPlayerMovementPacket(session, true);
             ServerboundAcceptTeleportationPacket teleportConfirmPacket = new ServerboundAcceptTeleportationPacket(positionRotationPacket.getTeleportId());
@@ -217,6 +211,11 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
 
         // 持续移动直到接近目标位置
         while (true) {
+            double[] location = session.getFlag("location");
+            double selfX = location[0];
+            double selfY = location[1];
+            double selfZ = location[2];
+
             double previousX = selfX;
             double previousY = selfY;
             double previousZ = selfZ;
@@ -244,10 +243,11 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
                 moveYFirst = !moveYFirst; // 下次尝试另一个方向
             }
 
+            session.setFlag("location", new double[]{selfX, selfY, selfZ, location[3], location[4]});
             ServerboundMovePlayerPosPacket playerPositionPacket = new ServerboundMovePlayerPosPacket(true, selfX, selfY, selfZ);
             session.send(playerPositionPacket);
 
-            OtherUtils.doSleep(100); // 暂停以等待服务器响应
+            OtherUtils.doSleep(50); // 暂停以等待服务器响应
 
             // 检查是否成功移动
             movedLastTime = (previousX != selfX || previousY != selfY || previousZ != selfZ);
@@ -311,6 +311,12 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     }
 
     @Override
+    public double[] getLocationFromPacket(Object packet) {
+        ClientboundPlayerPositionPacket positionRotationPacket = (ClientboundPlayerPositionPacket) packet;
+        return new double[]{positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), positionRotationPacket.getYaw(), positionRotationPacket.getPitch()};
+    }
+
+    @Override
     public List<String> getItemLore(Object itemStack) {
         if (itemStack == null) {
             return null;
@@ -337,6 +343,13 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
         TcpClientSession session = (TcpClientSession) client;
         ServerboundInteractPacket interactEntityPacket = new ServerboundInteractPacket(entityId, InteractAction.INTERACT, false);
         session.send(interactEntityPacket);
+    }
+
+    @Override
+    public void sendPlayerPositionPacket(Object client, boolean onGround, double[] location) {
+        TcpClientSession session = (TcpClientSession) client;
+        ServerboundMovePlayerPosPacket positionPacket = new ServerboundMovePlayerPosPacket(onGround, location[0], location[1], location[2]);
+        session.send(positionPacket);
     }
 
     @Override

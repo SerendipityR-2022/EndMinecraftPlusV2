@@ -112,6 +112,10 @@ public class BotManager {
                         LogUtil.doLog(0, "[DEBUG] [行动] 尝试与NPC交互: " + Arrays.toString(npcLoc), "BotAttack");
                         packetHandler.sendPlayerInteractEntityPacket(client, packetHandler.getSpawnPlayerEntityId(npc), new float[]{npcLoc[0].floatValue(), npcLoc[1].floatValue(), npcLoc[2].floatValue()});
                         break;
+                    case "bypassFallCheck":
+                        LogUtil.doLog(0, "[DEBUG] [行动] 尝试发送下落检测数据包。", "BotAttack");
+                        PacketManager.bypassFallCheckHandle(packetHandler, client, null, userName, true);
+                        break;
                     default:
                         LogUtil.doLog(0, "[DEBUG] [行动] 无法识别的action语句: " + action, "BotAttack");
                 }
@@ -313,7 +317,8 @@ public class BotManager {
                 String[] loginArgs = _action[1].split("_");
                 boolean randomPwd = Boolean.parseBoolean(loginArgs[0]);
                 String pwd = loginArgs[1];
-                if (!botHandler.hasClientFlag(client, "login")) {
+                String loginFlag = loginArgs[2];
+                if (!botHandler.hasClientFlag(client, "login") && ("none".equals(loginFlag) || botHandler.hasClientFlag(client, loginFlag))) {
                     if (randomPwd) {
                         pwd = DataUtil.botRegPasswordsMap.get(userName);
                     }
@@ -395,6 +400,16 @@ public class BotManager {
                     packetHandler.sendPlayerInteractEntityPacket(client, packetHandler.getSpawnPlayerEntityId(npc), new float[]{npcLoc[0].floatValue(), npcLoc[1].floatValue(), npcLoc[2].floatValue()});
                 }
                 break;
+            case "bypassFallCheck":
+                String[] bypassFCArgs = _action[1].split("_");
+                String bypassFCFlag = bypassFCArgs[0];
+                if ("none".equals(bypassFCFlag) || botHandler.hasClientFlag(client, bypassFCFlag)) {
+                    if (ConfigUtil.BotActionDetails) {
+                        LogUtil.doLog(0, "[" + userName + "] [行动] 尝试发送下落检测数据包。", "BotAttack");
+                    }
+                    PacketManager.bypassFallCheckHandle(packetHandler, client, null, userName, true);
+                }
+                break;
             default:
                 LogUtil.doLog(0, "[" + userName + "] [行动] 无法识别的action语句: " + action, "BotAttack");
         }
@@ -449,6 +464,7 @@ public class BotManager {
                     // 处理连接断开
                     String failMsg = botHandler.getClientDisconnectMsg(client);
                     clientList.remove(client);
+                    positionList.remove(client);
 
                     LogUtil.doLog(0, "[假人重连失败] [" + userName + "] [" + proxy + "] " + failMsg, "BotAttack");
 
@@ -459,7 +475,10 @@ public class BotManager {
     }
 
     public static void doRegisterLogin(Object client, String userName, long delay, String password) {
-        botHandler.setClientFlag(client, "login", "");
+        if (!ConfigUtil.LoginCheck) {
+            botHandler.setClientFlag(client, "login", "");
+        }
+
         new Thread(() -> {
             for (String text : ConfigUtil.RegisterCommands) {
                 String cmd = text;

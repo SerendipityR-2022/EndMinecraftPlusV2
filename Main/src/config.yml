@@ -3,7 +3,7 @@
 #   Designed by SerendipityR  #
 ###############################
 
-CfgVer: 12
+CfgVer: 13
 
 AttackSettings:
   Address: "example.com"
@@ -24,7 +24,7 @@ AttackSettings:
   # 进行无代理Motd压测时不建议大于32
   MaxConnections: 2500
   # 旧版漏洞利用，大概率无效
-  AntiAttackMode: true
+  AntiAttackMode: false
   DoubleExploitPlayer: "ImOldSix_666"
   # 假人调试模式
   DebugPlayer: "Genshin_Activate"
@@ -39,6 +39,7 @@ AttackSettings:
     # crashPacket - 发送崩服数据包:<数量>
     # goToLobby - 尝试寻找并与加入大厅NPC交互
     # moveToLocation - 向目标位置移动:<X>_<Y>_<Z>
+    # bypassFallCheck - 发送下落检测数据包
     Actions:
       - "wait:2000"
       - "register&Login:genshinImpact"
@@ -52,13 +53,14 @@ AttackSettings:
       #- "backTeleport"
       #- "wait:1000"
       #- "crashPacket:20"
+  # 输出错误信息
   ShowFails: false
 
 AdvancedSettings:
   # 启用Forge支持
   ForgeSupport:
   # 从mods文件夹中读取modId:version信息
-    Enable: true
+    Enable: false
     ReadFromFiles: true
     ModList:
       - "exampleMod:1.0.0"
@@ -86,6 +88,53 @@ AdvancedSettings:
     # 5 - PEX
     Mode: 1
     PacketDelay: 100
+  # 在此处控制数据包响应单元
+  PacketHandler:
+    # 是否回复KeepAlive数据包
+    # 如果你发现假人断开连接的原因与"Timeout"相关，请尝试切换此项。
+    KeepAlive: false
+    # 是否响应服务器位置数据包
+    # 如果你发现假人断开连接的原因与"位置异常"相关，请尝试切换此项。
+    Move: false
+  # 自动重连设置
+  Rejoin:
+    # 重新加入前模拟刷新服务器列表
+    GetMotdBeforeRejoin: true
+    GetMotdCount: 5
+    GetMotdDelay: 500
+    # 自动重连次数/间隔
+    RejoinCount: 5
+    RejoinDelay: 3500
+    # 若踢出信息为空，则无条件执行重连
+    EmptyMsgRejoin: true
+    # 若踢出信息中检测到以下字段，则执行重连
+    RejoinDetect:
+      - "AntiAttack"
+  # 检测可交互聊天信息包含的命令
+  # 针对特定服务器，利用全服喊话跳出登录大厅
+  ServerShoutDetect:
+    - "tpserver"
+  # 自动加入大厅
+  GoToLobby:
+    # 检测出生点附近的NPC名称
+    # 实现通过NPC加入服务器大厅
+    JoinNPCDetect:
+      - "点击加入"
+    # 与NPC交互后可能返回交互界面
+    # 若界面内存在匹配的物品，则尝试模拟物品点击
+    JoinLobbyItem:
+      - "LEFT:点击加入"
+  # 针对特定服务器绕过下落状态检测
+  BypassFallCheck:
+    # 受到检测的游戏刻，默认与服务端设置保持一致
+    # 若检测超时可尝试适当调大此项。
+    Ticks: 128
+    DetectMsg: "反假人检查已开始"
+  # 从服务器返回信息判断是否成功登录
+  # 接收到符合条件的信息才赋予 Flag:login
+  LoginCheck:
+    Enable: true
+    LoginSuccessMsg: "成功登录"
 
 BotSettings:
   # 可用占位符:
@@ -102,38 +151,6 @@ BotSettings:
   RandomFlag: 1
   RandomMinLength: 6
   RandomMaxLength: 8
-  # 在此处控制数据包响应单元
-  PacketHandler:
-    # 是否回复KeepAlive数据包
-    # 如果你发现假人断开连接的原因与"Timeout"相关，请尝试切换此项。
-    KeepAlive: false
-    # 是否响应服务器位置数据包
-    # 如果你发现假人断开连接的原因与"位置异常"相关，请尝试切换此项。
-    Move: true
-  # 重新加入前模拟刷新服务器列表
-  GetMotdBeforeRejoin: true
-  GetMotdCount: 5
-  GetMotdDelay: 500
-  # 自动重连次数/间隔
-  RejoinCount: 5
-  RejoinDelay: 3500
-  # 若踢出信息中检测到以下字段，则执行重连
-  RejoinDetect:
-    - "AntiAttack"
-  # 若踢出信息为空，则无条件执行重连
-  EmptyMsgRejoin: true
-  # 检测可交互聊天信息包含的命令
-  # 针对特定服务器，利用全服喊话跳出登录大厅
-  ServerShoutDetect:
-    - "tpserver"
-  # 检测出生点附近的NPC名称
-  # 实现通过NPC加入服务器大厅
-  JoinNPCDetect:
-    - "点击加入"
-  # 与NPC交互后可能返回交互界面
-  # 若界面内存在匹配的物品，则尝试模拟物品点击
-  JoinLobbyItem:
-    - "LEFT:点击加入"
   # 若聊天信息中检测到以下字段，则尝试进行点击验证
   ClickVerifiesDetect:
     - "点击验证"
@@ -156,14 +173,17 @@ BotSettings:
   # chatSpam - 随机发送聊天信息:<次数>_<间隔(ms)>_<flag/none>
   # randomTeleport - 随机传送:<次数>_<间隔(ms)>_<flag/none>
   # backTeleport - 回到重生点_<flag/none>
-  # register&Login - 执行注册/登录:<是否使用已生成密码>_<自定义密码> - Flag:login
+  # register&Login - 执行注册/登录:<是否使用已生成密码>_<自定义密码>_<flag/none> - Flag:login
   # crashPacket - 发送崩服数据包:<数量>_<flag/none>
   # tabAttack - 执行Tab补全:<数量>_<间隔(ms)>_<flag/none>
   # moveToLocation - 向目标位置移动:<只执行一次>_<X>_<Y>_<Z>_<flag/none>
   # goToLobby - 尝试寻找并与加入大厅NPC交互:<flag/none> (只执行一次)
+  # bypassFallCheck - 发送下落检测数据包:<flag/none> - Flag:bypassFallCheck
   Actions:
+    #- "bypassFallCheck:none"
     - "wait:3000_none"
-    - "register&Login:true_genshinImpact"
+    - "register&Login:true_genshinImpact_none"
+    #- "register&Login:true_genshinImpact_bypassFallCheck"
     - "async|chatSpam:10_3000_login"
     #- "async|randomTeleport:25_100_login"
     - "wait:3000_login"
