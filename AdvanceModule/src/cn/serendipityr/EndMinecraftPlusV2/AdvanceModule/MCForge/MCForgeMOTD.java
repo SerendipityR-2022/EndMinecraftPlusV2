@@ -18,7 +18,7 @@ public class MCForgeMOTD {
         Socket socket = new Socket();
         try {
             socket.connect(new InetSocketAddress(ip, port));
-            if(socket.isConnected()) {
+            if (socket.isConnected()) {
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
                 ByteArrayOutputStream packet = new ByteArrayOutputStream();
@@ -62,7 +62,8 @@ public class MCForgeMOTD {
             try {
                 if (socket.isConnected())
                     socket.close();
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
         return modList;
     }

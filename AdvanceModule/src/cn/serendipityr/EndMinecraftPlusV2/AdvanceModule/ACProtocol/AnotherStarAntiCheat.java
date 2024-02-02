@@ -58,7 +58,7 @@ public class AnotherStarAntiCheat {
     private byte[] stcDecode(ByteBuf buf) {
         try {
             CompoundTag nbt = (CompoundTag) NBTIO.readTag(new DataInputStream(new ByteBufInputStream(buf)));
-            return ((ByteArrayTag) nbt.get("salt")).getValue();    
+            return ((ByteArrayTag) nbt.get("salt")).getValue();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -232,7 +232,7 @@ public class BotManager {
 
         @Override
         public void run() {
-            if (botHandler.hasClientFlag(client, "activity") && botHandler.getClientFlag(client,"activity").equals(true)) {
+            if (botHandler.hasClientFlag(client, "activity") && botHandler.getClientFlag(client, "activity").equals(true)) {
                 return;
             }
 

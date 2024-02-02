@@ -124,7 +124,9 @@ public class MCForgeHandShakeV2 extends MCForgeHandShake {
         private String targetNetworkReceiver;
         private byte[] payload;
 
-        public LoginWrapper() {}
+        public LoginWrapper() {
+        }
+
         public LoginWrapper(String targetNetworkReceiver, byte[] payload) {
             this.targetNetworkReceiver = targetNetworkReceiver;
             this.payload = payload;

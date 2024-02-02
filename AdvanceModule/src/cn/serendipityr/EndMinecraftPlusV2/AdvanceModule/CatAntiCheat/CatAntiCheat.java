@@ -40,7 +40,8 @@ public class CatAntiCheat {
                     out.writeBytes(new byte[]{sendPacketID, 0, clientVersion, salt});
                     // LogUtil.doLog(0,"发送PluginMessage: " + "CatAntiCheat" + " | " + Arrays.toString(buf.toByteArray()), "CatAntiCheat");
                     session.send(new ClientPluginMessagePacket("CatAntiCheat", buf.toByteArray()));
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+                }
                 break;
             case 1:
                 // File Check packet reply
@@ -87,7 +88,7 @@ public class CatAntiCheat {
                     out.writeByte(sendPacketID);
                     out.writeShort(foundClassList.size());
 
-                    for (String s:foundClassList) {
+                    for (String s : foundClassList) {
                         writeUTF8String(out, s);
                     }
 
@@ -156,7 +157,7 @@ public class CatAntiCheat {
     public static List<String> getFileHashList(File filesDir) {
         List<String> fileHashList = new ArrayList<>();
 
-        for (File file: Objects.requireNonNull(filesDir.listFiles())) {
+        for (File file : Objects.requireNonNull(filesDir.listFiles())) {
             fileHashList.add(getFileHash(file));
         }
 
@@ -168,7 +169,8 @@ public class CatAntiCheat {
             try (InputStream in = Files.newInputStream(file.toPath())) {
                 return calcHash(in) + "\0" + file.getName();
             }
-        } catch (IOException ignored) { }
+        } catch (IOException ignored) {
+        }
         return null;
     }
 
@@ -198,7 +200,7 @@ public class CatAntiCheat {
     }
 
     public static void writeVarInt(StreamNetOutput to, int toWrite) throws IOException {
-        while((toWrite & -128) != 0) {
+        while ((toWrite & -128) != 0) {
             to.writeByte(toWrite & 127 | 128);
             toWrite >>>= 7;
         }
@@ -214,7 +216,8 @@ public class CatAntiCheat {
             ImageIO.write(bufferedImage, "png", gzipOutputStream);
             gzipOutputStream.flush();
             gzipOutputStream.close();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return out.toByteArray();
     }

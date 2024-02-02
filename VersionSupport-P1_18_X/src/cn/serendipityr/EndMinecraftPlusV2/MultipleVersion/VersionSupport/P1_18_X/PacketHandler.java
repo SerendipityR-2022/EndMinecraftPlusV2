@@ -319,7 +319,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
         }
         List<Tag> itemLore = ((ListTag) hashMap.get("Lore")).getValue();
         List<String> loreList = new ArrayList<>();
-        for (Tag tag:itemLore) {
+        for (Tag tag : itemLore) {
             loreList.add((String) tag.getValue());
         }
         return loreList;
@@ -348,7 +348,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     }
 
     @Override
-    public void sendRightClickWindowItemPacket(Object client,int windowId, int slot, Object itemStack) {
+    public void sendRightClickWindowItemPacket(Object client, int windowId, int slot, Object itemStack) {
         TcpClientSession session = (TcpClientSession) client;
         ItemStack item = (ItemStack) itemStack;
         ServerboundContainerClickPacket windowActionPacket = new ServerboundContainerClickPacket(windowId, 6, slot, ContainerActionType.CLICK_ITEM, ClickItemAction.RIGHT_CLICK, item, new HashMap<>());
@@ -356,7 +356,8 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     }
 
     @Override
-    public void handleOtherPacket(Object packet) {}
+    public void handleOtherPacket(Object packet) {
+    }
 
     @Override
     public void sendChatPacket(Object client, String text) {

@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class DataUtil {
     public static boolean notModify = false;
     public static List<String> botRegPasswords;
-    public static HashMap<String,String> botRegPasswordsMap = new HashMap<>();
+    public static HashMap<String, String> botRegPasswordsMap = new HashMap<>();
 
     public static void loadData() {
         File dataFile = new File("data.yml");
@@ -59,30 +59,31 @@ public class DataUtil {
 
                 switch (ConfigUtil.RandomFlag) {
                     case 2:
-                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_Ili(ConfigUtil.RandomMinLength,ConfigUtil.RandomMaxLength));
+                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_Ili(ConfigUtil.RandomMinLength, ConfigUtil.RandomMaxLength));
                         break;
                     case 3:
-                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_Abc(ConfigUtil.RandomMinLength,ConfigUtil.RandomMaxLength));
+                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_Abc(ConfigUtil.RandomMinLength, ConfigUtil.RandomMaxLength));
                         break;
                     case 4:
-                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_123(ConfigUtil.RandomMinLength,ConfigUtil.RandomMaxLength));
+                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString_123(ConfigUtil.RandomMinLength, ConfigUtil.RandomMaxLength));
                         break;
                     case 1:
                     default:
-                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString(ConfigUtil.RandomMinLength,ConfigUtil.RandomMaxLength));
+                        newBotName = ConfigUtil.BotName.replace("$rnd", OtherUtils.getRandomString(ConfigUtil.RandomMinLength, ConfigUtil.RandomMaxLength));
                         break;
                 }
 
-                String newBotPwd = OtherUtils.getRandomString(8,10);
+                String newBotPwd = OtherUtils.getRandomString(8, 10);
                 botRegPasswords.add(newBotName + "@" + newBotPwd);
             }
         }
 
-        for (String PwdData:botRegPasswords) {
+        for (String PwdData : botRegPasswords) {
             try {
                 String[] aPwdData = PwdData.split("@");
                 botRegPasswordsMap.put(aPwdData[0], aPwdData[1]);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         updateData(botRegPasswords);

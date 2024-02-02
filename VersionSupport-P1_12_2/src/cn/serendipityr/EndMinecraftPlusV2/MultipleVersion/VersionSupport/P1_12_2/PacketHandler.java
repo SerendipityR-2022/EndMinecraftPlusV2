@@ -181,7 +181,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     public boolean checkSpawnPlayerName(Object packet, String checkName) {
         ServerSpawnPlayerPacket playerPacket = (ServerSpawnPlayerPacket) packet;
 
-        for (EntityMetadata metadata:playerPacket.getMetadata()) {
+        for (EntityMetadata metadata : playerPacket.getMetadata()) {
             if (metadata.getValue().toString().contains(checkName)) {
                 return true;
             }
@@ -347,7 +347,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
         }
         List<Tag> itemLore = ((ListTag) hashMap.get("Lore")).getValue();
         List<String> loreList = new ArrayList<>();
-        for (Tag tag:itemLore) {
+        for (Tag tag : itemLore) {
             loreList.add((String) tag.getValue());
         }
         return loreList;
@@ -376,7 +376,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
     }
 
     @Override
-    public void sendRightClickWindowItemPacket(Object client,int windowId, int slot, Object itemStack) {
+    public void sendRightClickWindowItemPacket(Object client, int windowId, int slot, Object itemStack) {
         Session session = ((Client) client).getSession();
         ItemStack item = (ItemStack) itemStack;
         ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(windowId, 6, slot, item, WindowAction.CLICK_ITEM, ClickItemParam.RIGHT_CLICK);

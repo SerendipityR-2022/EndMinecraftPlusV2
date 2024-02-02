@@ -71,11 +71,11 @@ public class OtherUtils {
     }
 
     public static Integer getRandomInt(int min, int max) {
-        return (int)(Math.random()*(max-min+1)+min);
+        return (int) (Math.random() * (max - min + 1) + min);
     }
 
     public static float getRandomFloat(double min, double max) {
-        return (float) (Math.random()*(max-min)+min);
+        return (float) (Math.random() * (max - min) + min);
     }
 
     public static String getRandomUser(boolean isDoubleAttack) {

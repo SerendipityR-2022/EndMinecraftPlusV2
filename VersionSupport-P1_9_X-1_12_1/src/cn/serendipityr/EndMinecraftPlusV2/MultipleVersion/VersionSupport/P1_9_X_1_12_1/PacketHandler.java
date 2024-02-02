@@ -122,6 +122,7 @@ public class PacketHandler implements cn.serendipityr.EndMinecraftPlusV2.Multipl
         Session session = ((Client) client).getSession();
         ServerPlayerPositionRotationPacket positionRotationPacket = (ServerPlayerPositionRotationPacket) recvPacket;
         session.setFlag("location", new double[]{positionRotationPacket.getX(), positionRotationPacket.getY(), positionRotationPacket.getZ(), positionRotationPacket.getYaw(), positionRotationPacket.getPitch()});
+
         if (ConfigUtil.PacketHandlerMove) {
             sendClientPlayerMovementPacket(session, true);
             ClientTeleportConfirmPacket teleportConfirmPacket = new ClientTeleportConfirmPacket(positionRotationPacket.getTeleportId());

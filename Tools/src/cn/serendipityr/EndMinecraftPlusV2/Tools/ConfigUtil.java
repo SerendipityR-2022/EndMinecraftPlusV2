@@ -145,7 +145,7 @@ public class ConfigUtil {
                 if (ReadFromFiles) {
                     ForgeModList.putAll(readModInfo("mods"));
                 }
-                for (String modInfo:config.getStringList("AdvancedSettings.ForgeSupport.ModList")) {
+                for (String modInfo : config.getStringList("AdvancedSettings.ForgeSupport.ModList")) {
                     String modName = modInfo.split(":")[0];
                     String modVersion = modInfo.split(":")[1];
                     ForgeModList.put(modName, modVersion);
@@ -234,7 +234,7 @@ public class ConfigUtil {
                     return 0;
                 }
 
-                LogUtil.doLog(0, "任务完成。转换前编码: " + currentCharset + " | 转换后编码: " + getFileCharset(configFile) , "CFGUtil");
+                LogUtil.doLog(0, "任务完成。转换前编码: " + currentCharset + " | 转换后编码: " + getFileCharset(configFile), "CFGUtil");
             }
 
             loadConfig(cfgVer);
@@ -308,13 +308,13 @@ public class ConfigUtil {
         return charset;
     }
 
-    public static int convertFileCharset(File inputFile, File outputFile,String currentCharset ,String targetCharset) {
+    public static int convertFileCharset(File inputFile, File outputFile, String currentCharset, String targetCharset) {
         try {
-            InputStreamReader isr = new InputStreamReader(Files.newInputStream(inputFile.toPath()) ,currentCharset);
-            OutputStreamWriter osw = new OutputStreamWriter(Files.newOutputStream(outputFile.toPath()) ,targetCharset);
+            InputStreamReader isr = new InputStreamReader(Files.newInputStream(inputFile.toPath()), currentCharset);
+            OutputStreamWriter osw = new OutputStreamWriter(Files.newOutputStream(outputFile.toPath()), targetCharset);
 
             int len;
-            while((len = isr.read())!=-1){
+            while ((len = isr.read()) != -1) {
                 osw.write(len);
             }
 
@@ -379,10 +379,10 @@ public class ConfigUtil {
             if (attribute != null) {
                 String[] re = attribute.get().toString().split(" ", 4);
                 LogUtil.doLog(0, "=============================================================", "CheckSRV");
-                LogUtil.doLog(0,"域名: " + AttackAddress, "CheckSRV");
-                LogUtil.doLog(0,"源地址: " + re[3], "CheckSRV");
-                LogUtil.doLog(0,"源端口: " + re[2], "CheckSRV");
-                LogUtil.doLog(-1,"检测到服务器存在SRV记录，是否替换地址为SRV解析记录？[y/n]: ", "CheckSRV");
+                LogUtil.doLog(0, "域名: " + AttackAddress, "CheckSRV");
+                LogUtil.doLog(0, "源地址: " + re[3], "CheckSRV");
+                LogUtil.doLog(0, "源端口: " + re[2], "CheckSRV");
+                LogUtil.doLog(-1, "检测到服务器存在SRV记录，是否替换地址为SRV解析记录？[y/n]: ", "CheckSRV");
                 Scanner scanner = new Scanner(System.in);
                 String cmd = scanner.nextLine();
 
@@ -391,7 +391,8 @@ public class ConfigUtil {
                     AttackPort = Integer.parseInt(re[2]);
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     public static HashMap<String, String> readModInfo(String directoryPath) {
