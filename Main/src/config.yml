@@ -99,7 +99,7 @@ AdvancedSettings:
   # 自动重连设置
   Rejoin:
     # 重新加入前模拟刷新服务器列表
-    GetMotdBeforeRejoin: true
+    GetMotdBeforeRejoin: false
     GetMotdCount: 5
     GetMotdDelay: 500
     # 自动重连次数/间隔

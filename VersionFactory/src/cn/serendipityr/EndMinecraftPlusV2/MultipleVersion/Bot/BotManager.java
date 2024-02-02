@@ -198,15 +198,6 @@ public class BotManager {
             botHandler.setClientTimeout(client, ConfigUtil.ConnectTimeout);
 
             // 连接到服务器
-            if (!doubleAttack && ConfigUtil.GetMotdBeforeRejoin) {
-                for (int i = 0; i < ConfigUtil.GetMotdCount; i++) {
-                    try {
-                        new UniverseMethods().getMotd(proxy, ConfigUtil.AttackAddress, ConfigUtil.AttackPort);
-                    } catch (Throwable ignored) {
-                    }
-                    OtherUtils.doSleep(ConfigUtil.GetMotdDelay);
-                }
-            }
             botHandler.connect(client, proxy);
 
             while (botHandler.checkClientStatus(client)) {
@@ -455,6 +446,17 @@ public class BotManager {
                     Object client = botHandler.createClient(proxy, userName);
                     BotManager.clientList.put(client, userName);
                     botHandler.setClientTimeout(client, ConfigUtil.ConnectTimeout);
+
+                    if (ConfigUtil.GetMotdBeforeRejoin) {
+                        for (int a = 0; a < ConfigUtil.GetMotdCount; a++) {
+                            try {
+                                new UniverseMethods().getMotd(proxy, ConfigUtil.AttackAddress, ConfigUtil.AttackPort);
+                            } catch (Throwable ignored) {
+                            }
+                            OtherUtils.doSleep(ConfigUtil.GetMotdDelay);
+                        }
+                    }
+
                     botHandler.connect(client, proxy);
 
                     while (botHandler.checkClientStatus(client)) {

@@ -47,7 +47,12 @@ public class UniverseMethods {
         int size = ProxyUtil.proxies.size();
         String p = ProxyUtil.proxies.get(BotManager.clientList.size() % size);
         String[] _p = p.split(":");
-        return new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
+        try {
+            return new Proxy(proxyType, new InetSocketAddress(_p[0], Integer.parseInt(_p[1])));
+        } catch (Exception e) {
+            ProxyUtil.proxies.remove(p);
+        }
+        return getProxy(proxyType);
     }
 
     public static Proxy.Type getProxyType(int type) {
