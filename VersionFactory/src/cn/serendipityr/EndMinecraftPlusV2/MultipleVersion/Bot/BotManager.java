@@ -544,8 +544,8 @@ public class BotManager {
     public static void moveToLocation(Object client, Double[] loc) {
         // 必须禁用默认处理方式
         boolean moveHandler = ConfigUtil.PacketHandlerMove;
-
         ConfigUtil.PacketHandlerMove = false;
+
         if (!BotManager.positionList.containsKey(client)) {
             LogUtil.doLog(0, "[行动] 尝试移动到指定位置时发生错误! 无法确定原点位置。", "BotAttack");
             return;

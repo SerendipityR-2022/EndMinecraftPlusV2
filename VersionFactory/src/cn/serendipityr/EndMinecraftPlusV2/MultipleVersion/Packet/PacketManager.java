@@ -188,6 +188,7 @@ public class PacketManager {
 
                 // 必须禁用默认处理方式
                 boolean moveHandler = ConfigUtil.PacketHandlerMove;
+                ConfigUtil.PacketHandlerMove = false;
 
                 for (int i = 0; i < ConfigUtil.BypassFallCheckTicks; i++) {
                     double fallHeight = -((Math.pow(0.98, i) - 1) * 3.92);
