@@ -31,8 +31,6 @@ ___
 服务端使用了LightFall或其他模组代理端，工具目前仅支持Forge官服。
 ### 5. IO异常: Too many open files
 Linux系统对线程有一定限制，尝试修改配置并重启系统。
-### 6. 获取代理时: java.net.SocketException: Connection reset
-存在一个或多个代理API无法访问，尝试编辑「config.yml」文件中的「Proxy.APIs」节点移除无效的代理API。
 
 [/etc/systemd/system.conf] 及 [/etc/systemd/user.conf]
 
@@ -40,6 +38,8 @@ Linux系统对线程有一定限制，尝试修改配置并重启系统。
 DefaultLimitNOFILE=100000
 DefaultLimitNPROC=100000
 ```
+### 6. 获取代理时: java.net.SocketException: Connection reset
+存在一个或多个代理API无法访问，尝试编辑「config.yml」文件中的「Proxy.APIs」节点移除无效的代理API。
 ___
 ## 有其他Bug怎么办？
 ### 发Issues，心情好的时候可能会修~
